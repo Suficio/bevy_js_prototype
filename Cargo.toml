@@ -1,0 +1,26 @@
+[package]
+name = "bevy_js"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+bevy = { git = "https://github.com/bevyengine/bevy.git", default-features = false, branch = "main" }
+deno_core = "0.137.0"
+
+# Enable only a small amount of optimization in debug mode
+[profile.dev]
+opt-level = 1
+
+# Enable high optimizations for dependencies (incl. Bevy), but not for our code:
+[profile.dev.package."*"]
+opt-level = 3
+
+[[example]]
+name = "hello_world"
+path = "examples/hello_world.rs"
+
+[[example]]
+name = "startup_system"
+path = "examples/startup_system.rs"
