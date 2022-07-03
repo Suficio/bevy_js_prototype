@@ -1,0 +1,7 @@
+{
+  "name": "bevy_js",
+  "description": "Javascript integration for Bevy game engine",
+  "dependencies": {
+    "three": "^0.142.0"
+  }
+}

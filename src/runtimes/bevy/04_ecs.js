@@ -1,7 +1,7 @@
 "use strict";
 
 ((window) => {
-    const { primordials: { ObjectAssign }, core } = window.__bootstrap;
+    const core = window.__bootstrap.core;
     const { Reflectable } = window.Bevy;
 
     function worldResourceId() {
@@ -31,7 +31,12 @@
                 throw new Error("Component must have Reflectable prototype");
             }
 
-            core.opSync("op_entity_insert_component", component, this.entity, component.reflect());
+            let reflected = component.reflect();
+            try {
+                core.opSync("op_entity_insert_component", component, this.entity, reflected);
+            } catch (error) {
+                throw new Error(`Could not insert component into entity ${this.entity}\n${JSON.stringify(reflected)}\n${error}`)
+            }
         }
 
         remove(component) { }
@@ -63,26 +68,8 @@
             ridWorld = worldResourceId();
         }
 
-        // Last function should always be the callback function
-        if (args.length === 0) {
-            throw new Error(
-                "No arguments were passed to the system, expected at least a callback function"
-            );
-        }
-
-        const fn = args.pop();
-
         await core.opAsync("op_request_system", ridWorld);
-
-        let callBind = [];
-        for (let either of args) {
-            if (either === World) {
-                callBind.push(new World())
-            }
-        }
-
-        fn.call(window, ...callBind);
     }
 
-    window.Bevy = ObjectAssign({ system, Entity, World }, window.Bevy);
+    window.Bevy = Object.assign({ system, Entity, World }, window.Bevy);
 })(globalThis);

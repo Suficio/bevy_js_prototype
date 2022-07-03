@@ -4,25 +4,17 @@ use std::rc::Rc;
 
 /// A helper builder for `bevy_js` JavaScript
 /// [RuntimeOptions](bjs::RuntimeOptions)
+#[derive(Default)]
 pub struct JsRuntimeBuilder {
     options: bjs::RuntimeOptions,
 }
 
-impl Default for JsRuntimeBuilder {
-    fn default() -> Self {
+impl JsRuntimeBuilder {
+    pub fn new() -> Self {
         JsRuntimeBuilder {
             options: bjs::RuntimeOptions::default(),
         }
     }
-}
-
-impl JsRuntimeBuilder {
-    // /// Whether an inspector should be registered for this
-    // /// [JsRuntime](bjs::JsRuntime)
-    // pub fn register_inspector(mut self, register_inspector: bool) -> Self {
-    //     self.options.register_inspector = register_inspector;
-    //     self
-    // }
 
     // /// Whether inspector should break on the first line and wait
     // pub fn inspector_should_wait(mut self, inspector_should_wait: bool) -> Self {

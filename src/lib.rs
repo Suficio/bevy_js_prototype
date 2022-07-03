@@ -3,6 +3,7 @@ use std::marker::PhantomData;
 use bevy::prelude::*;
 
 mod builder;
+pub mod inspector;
 pub mod lend;
 mod loader;
 mod runtime;
@@ -32,6 +33,12 @@ pub struct JsPlugin<R>(PhantomData<R>);
 
 impl<R: IntoRuntime + Send + Sync + 'static> Plugin for JsPlugin<R> {
     fn build(&self, app: &mut App) {
+        // #[cfg(inspector)]
+        {
+            let host = std::net::SocketAddr::new("127.0.0.1".parse().unwrap(), 9229);
+            app.insert_resource(inspector::JsInspector::new(host));
+        }
+
         app.init_non_send_resource::<JsRuntimeResource<R>>()
             .add_system(drive_runtime::<R>.exclusive_system());
     }

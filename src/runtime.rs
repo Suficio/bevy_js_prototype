@@ -5,8 +5,8 @@ use crate::{
     futures::{channel::oneshot, executor, future},
     v8,
 };
-use bevy::{prelude::*, tasks::IoTaskPool};
-use std::{cell::RefCell, marker::PhantomData, rc::Rc, task::Poll};
+use bevy::{prelude::*, tasks::IoTaskPool, utils::Uuid};
+use std::{cell::RefCell, marker::PhantomData, net::SocketAddr, rc::Rc, task::Poll};
 
 /// Represents a trait used to construct [JsRuntimes](bjs::JsRuntime) in a way
 /// that is user configurable
@@ -27,6 +27,23 @@ impl JsRuntime {
         Self {
             deno: Rc::new(RefCell::new(dc::JsRuntime::new(options))),
         }
+    }
+
+    pub fn inspector(
+        &self,
+        specifier: bjs::ModuleSpecifier,
+        host: SocketAddr,
+    ) -> bjs::inspector::InspectorInfo {
+        let mut inspector = self.deno.borrow_mut();
+        let inspector = inspector.inspector();
+        crate::inspector::InspectorInfo::new(
+            host,
+            Uuid::new_v4(),
+            specifier.clone(),
+            inspector.get_session_sender(),
+            inspector.add_deregister_handler(),
+            true,
+        )
     }
 
     pub fn execute_script(
@@ -51,25 +68,26 @@ impl JsRuntime {
                 let mut deno = match deno.try_borrow_mut() {
                     Ok(deno) => deno,
                     Err(_) => {
+                        let err = anyhow!("Could not borrow Deno runtime");
+                        error!("{}", err);
                         return sender
-                            .send(Err(anyhow!("Could not borrow Deno runtime")))
-                            .expect("Module execution result receiving end dropped A")
+                            .send(Err(err))
+                            .expect("Module execution result receiving end dropped A");
                     }
                 };
 
                 let module_id = match deno.load_main_module(&specifier, source_code).await {
                     Ok(mid) => mid,
                     Err(err) => {
-                        eprintln!("Could not load module {}", &specifier);
-                        eprintln!("{}", err);
-
+                        error!("Could not load module {}", &specifier);
+                        error!("{}", err);
                         return sender
                             .send(Err(err))
                             .expect("Module execution result receiving end dropped");
                     }
                 };
 
-                println!("Loaded module {}", &specifier);
+                info!("Loaded module {}", &specifier);
 
                 // Spawn seperate task to pipe result so that we do not hold
                 // the borrow on `deno`.
@@ -79,8 +97,17 @@ impl JsRuntime {
                         // Receive socket may be dropped as user is not
                         // listening to the final result of the module.
                         let _ = match recv.await {
-                            Ok(res) => sender.send(res),
-                            Err(_) => sender.send(Err(anyhow!("Module evaluation was cancelled"))),
+                            Ok(res) => {
+                                if let Err(err) = &res {
+                                    error!("{}", err);
+                                }
+                                sender.send(res)
+                            }
+                            Err(_canceled) => {
+                                let err = anyhow!("Module evaluation was cancelled");
+                                error!("{}", err);
+                                sender.send(Err(err))
+                            }
                         };
                     })
                     .detach();
@@ -126,6 +153,17 @@ impl<R: IntoRuntime> FromWorld for JsRuntimeResource<R> {
 }
 
 impl<R> JsRuntimeResource<R> {
+    pub fn register_inspector(
+        &self,
+        specifier: bjs::ModuleSpecifier,
+        meta: &bjs::inspector::InspectorMeta,
+    ) {
+        let info = self.runtime.inspector(specifier, meta.host);
+        meta.register_inspector_tx
+            .unbounded_send(info)
+            .expect("Inspector server was dropped");
+    }
+
     pub fn execute_script(
         &mut self,
         name: &str,
@@ -163,7 +201,7 @@ pub fn drive_runtime<R: IntoRuntime + 'static>(world: &mut World) {
             match deno.poll_event_loop(cx, false) {
                 // Keep event loop alive
                 Poll::Ready(Err(err)) => {
-                    println!("{}", err)
+                    error!("{}", err)
                 }
                 _ => {}
             };

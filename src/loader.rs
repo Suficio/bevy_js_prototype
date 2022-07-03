@@ -1,5 +1,8 @@
 use crate as bjs;
-use bjs::{anyhow::Error as AnyError, futures::FutureExt};
+use bjs::{
+    anyhow::{Context, Error as AnyError},
+    futures::FutureExt,
+};
 use std::pin::Pin;
 
 /// Basic file system module loader.
@@ -49,14 +52,15 @@ impl bjs::ModuleLoader for FsModuleLoader {
                 bjs::ModuleType::JavaScript
             };
 
-            let code = std::fs::read(path)?;
-            let module = bjs::ModuleSource {
+            let code = std::fs::read(path.clone())
+                .with_context(|| format!("Could not load {}", module_specifier))?;
+
+            Ok(bjs::ModuleSource {
                 code: code.into_boxed_slice(),
                 module_type,
                 module_url_specified: module_specifier.to_string(),
                 module_url_found: module_specifier.to_string(),
-            };
-            Ok(module)
+            })
         }
         .boxed_local()
     }

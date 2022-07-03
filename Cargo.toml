@@ -8,10 +8,19 @@ readme = "README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[features]
+default = ["inspector"]
+inspector = ["tide", "tide-websockets"]
+
 [dependencies]
 bevy = { git = "https://github.com/MrGVSV/bevy.git", branch = "reflect-improved-serialization" }
 deno_core = "0.141.0"
+
 serde_json = "1.0.81"
+serde_path_to_error = "0.1.7"
+
+tide = { version = "0.16.0", default-features = false, features = ["h1-server"], optional = true }
+tide-websockets = { version = "0.4.0", optional = true }
 
 # Enable only a small amount of optimization in debug mode
 [profile.dev]
