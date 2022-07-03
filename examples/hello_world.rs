@@ -1,6 +1,6 @@
-use bevy::{prelude::*, tasks::IoTaskPool};
+use bevy::prelude::*;
 use bevy_js as bjs;
-use bjs::{anyhow::Error, futures::channel::oneshot};
+use bjs::{anyhow::Error, futures::channel::oneshot, runtimes::BevyRuntime};
 
 #[derive(Default)]
 struct ExecutionTracker {
@@ -12,7 +12,7 @@ struct ExecutionTracker {
 fn main() {
     App::new()
         .add_plugins(MinimalPlugins)
-        .add_plugin(bjs::JsPlugin)
+        .add_plugin(bjs::JsPlugin::<BevyRuntime>::default())
         .init_resource::<ExecutionTracker>()
         .add_startup_system(setup_runtime)
         .add_system(monitor_excecution)
@@ -21,18 +21,13 @@ fn main() {
 
 fn setup_runtime(
     mut tracker: ResMut<ExecutionTracker>,
-    mut res: NonSendMut<bjs::JsRuntimeResource>,
-    tp_io: Res<IoTaskPool>,
+    mut res: NonSendMut<bjs::JsRuntimeResource<BevyRuntime>>,
 ) {
-    res.init_runtime::<bjs::runtimes::BevyRuntime>();
-
     res.execute_script("<anon>", "Deno.core.print('BevyJS running\\n');")
         .unwrap();
 
     let specifier = bjs::resolve::path("./examples/hello_world.js").unwrap();
-    tracker
-        .modules
-        .push(res.execute_module(&tp_io, specifier, None));
+    tracker.modules.push(res.execute_module(specifier, None));
 }
 
 fn monitor_excecution(mut tracker: ResMut<ExecutionTracker>) {

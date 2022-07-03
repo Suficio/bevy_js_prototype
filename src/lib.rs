@@ -1,17 +1,23 @@
+use std::marker::PhantomData;
+
 use bevy::prelude::*;
 
 mod builder;
+pub mod lend;
+mod loader;
 mod runtime;
 pub mod runtimes;
 mod world;
 
 pub use builder::JsRuntimeBuilder;
-pub use runtime::{IntoRuntime, JsRuntime, JsRuntimeResource};
-pub use world::JsWorld;
+pub use loader::FsModuleLoader;
+pub use runtime::{drive_runtime, IntoRuntime, JsRuntime, JsRuntimeResource};
+pub use world::BevyResource;
 
 pub use deno_core::{
     self, anyhow, futures, include_js_files, op, v8, Extension, ExtensionBuilder, ModuleId,
-    ModuleSpecifier, OpState, Resource, ResourceId, ResourceTable, RuntimeOptions,
+    ModuleLoader, ModuleSource, ModuleSourceFuture, ModuleSpecifier, ModuleType, OpState, Resource,
+    ResourceId, ResourceTable, RuntimeOptions,
 };
 
 pub mod resolve {
@@ -21,13 +27,18 @@ pub mod resolve {
     };
 }
 
-/// Represents the entry plugin to get `bevy_js` up and running in your game
-#[derive(Default)]
-pub struct JsPlugin;
+/// Provides a shorthand to register a runtime [R] and drive it
+pub struct JsPlugin<R>(PhantomData<R>);
 
-impl Plugin for JsPlugin {
+impl<R: IntoRuntime + Send + Sync + 'static> Plugin for JsPlugin<R> {
     fn build(&self, app: &mut App) {
-        app.init_non_send_resource::<JsRuntimeResource>()
-            .add_system(runtime::drive_runtimes);
+        app.init_non_send_resource::<JsRuntimeResource<R>>()
+            .add_system(drive_runtime::<R>.exclusive_system());
+    }
+}
+
+impl<R> Default for JsPlugin<R> {
+    fn default() -> Self {
+        Self(Default::default())
     }
 }

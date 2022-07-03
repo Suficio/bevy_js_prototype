@@ -1,6 +1,9 @@
 use crate as bjs;
-use dc::anyhow::Error as AnyError;
-use dc::{op, OpState};
+use bevy::{
+    prelude::*,
+    reflect::{serde::UntypedReflectDeserializer, TypeRegistry},
+};
+use dc::{anyhow::Error as AnyError, op, serde::de::DeserializeSeed, serde_json::Value, OpState};
 use deno_core as dc;
 use std::{cell::RefCell, rc::Rc};
 
@@ -15,14 +18,19 @@ impl BevyRuntime {
         let extension = bjs::Extension::builder()
             .js(bjs::include_js_files!(
                 prefix "bevy:core",
-                "../../js/03_core.js",
+                "../../03_reflect.js",
+                "../../04_ecs.js",
             ))
-            .ops(vec![op_register_system::decl(), op_system::decl()])
+            .ops(vec![
+                op_request_system::decl(),
+                entity::op_entity_spawn::decl(),
+                entity::op_entity_insert_component::decl(),
+            ])
             .build();
 
         let mut builder = bjs::JsRuntime::builder();
         builder
-            .with_module_loader(Rc::new(dc::FsModuleLoader))
+            .with_module_loader(Rc::new(bjs::FsModuleLoader))
             .with_extension(extension);
 
         builder
@@ -30,23 +38,65 @@ impl BevyRuntime {
 }
 
 impl bjs::IntoRuntime for BevyRuntime {
-    fn runtime() -> bjs::JsRuntime {
+    fn runtime(_world: &mut World) -> bjs::JsRuntime {
         Self::builder().build()
     }
 }
 
 #[op]
-async fn op_register_system(
+async fn op_request_system(
     state: Rc<RefCell<OpState>>,
     rid: bjs::ResourceId,
-) -> Result<bjs::ResourceId, AnyError> {
-    bjs::runtimes::unwrap_world(&state, rid).evaluate().await
+) -> Result<(), AnyError> {
+    bjs::runtimes::unwrap_bevy_resource(&state, rid)
+        .wait_for_world()
+        .await
 }
 
-#[op]
-async fn op_system(
-    state: Rc<RefCell<OpState>>,
-    rid: bjs::ResourceId,
-) -> Result<bjs::ResourceId, AnyError> {
-    Ok(0)
+mod entity {
+    use super::*;
+
+    #[op]
+    pub fn op_entity_spawn(state: Rc<RefCell<OpState>>, rid_world: bjs::ResourceId) -> u64 {
+        let res = bjs::runtimes::unwrap_bevy_resource(&state, rid_world);
+        let world = res.world_mut();
+
+        world.spawn().id().to_bits()
+    }
+
+    #[op]
+    pub fn op_entity_insert_component(
+        state: Rc<RefCell<OpState>>,
+        rid_world: bjs::ResourceId,
+        e_entity: u64,
+        component: Value,
+    ) -> Result<(), AnyError> {
+        let res = bjs::runtimes::unwrap_bevy_resource(&state, rid_world);
+
+        let world = res.world_mut();
+        let e_entity = Entity::from_bits(e_entity);
+
+        let type_registry = world.resource::<TypeRegistry>().clone();
+        let type_registry = type_registry.read();
+        let reflect_deserializer = UntypedReflectDeserializer::new(&type_registry);
+
+        let component = reflect_deserializer.deserialize(&component)?;
+
+        // TODO: Should remove this lookup by allowing type_id to be passed to deserializer
+        let type_name = component.type_name();
+        let registration = type_registry
+            .get_with_name(type_name)
+            .ok_or(AnyError::msg(format!(
+                "Could not find type registration for {}",
+                type_name
+            )))?;
+
+        if let Some(component_impl) =
+            type_registry.get_type_data::<ReflectComponent>(registration.type_id())
+        {
+            component_impl.add_component(world, e_entity, component.as_reflect());
+        }
+
+        Ok(())
+    }
 }

@@ -2,14 +2,11 @@ use crate::{
     self as bjs,
     anyhow::{anyhow, Error as AnyError},
     deno_core as dc,
-    futures::{channel::oneshot, future},
+    futures::{channel::oneshot, executor, future},
     v8,
 };
-use bevy::{
-    prelude::*,
-    tasks::{ComputeTaskPool, IoTaskPool},
-};
-use std::{cell::RefCell, rc::Rc, task::Poll};
+use bevy::{prelude::*, tasks::IoTaskPool};
+use std::{cell::RefCell, marker::PhantomData, rc::Rc, task::Poll};
 
 /// Represents a trait used to construct [JsRuntimes](bjs::JsRuntime) in a way
 /// that is user configurable
@@ -18,7 +15,7 @@ pub trait IntoRuntime {
     ///
     /// Takes [IoTaskPool] in order to allow the runtime to register monitoring
     /// tasks such as file watching for hot-reloading.
-    fn runtime() -> JsRuntime;
+    fn runtime(world: &mut World) -> JsRuntime;
 }
 
 pub struct JsRuntime {
@@ -42,16 +39,14 @@ impl JsRuntime {
 
     pub fn execute_module(
         &self,
-        tp_io: &IoTaskPool,
         specifier: bjs::ModuleSpecifier,
         source_code: Option<String>,
     ) -> oneshot::Receiver<Result<(), AnyError>> {
         let (sender, receiver) = oneshot::channel();
 
         let deno = self.deno.clone();
-        let t_tp_io = tp_io.clone();
 
-        tp_io
+        IoTaskPool::get()
             .spawn_local(async move {
                 let mut deno = match deno.try_borrow_mut() {
                     Ok(deno) => deno,
@@ -65,10 +60,12 @@ impl JsRuntime {
                 let module_id = match deno.load_main_module(&specifier, source_code).await {
                     Ok(mid) => mid,
                     Err(err) => {
-                        println!("Could not load module {} due to {}", &specifier, &err);
+                        eprintln!("Could not load module {}", &specifier);
+                        eprintln!("{}", err);
+
                         return sender
                             .send(Err(err))
-                            .expect("Module execution result receiving end dropped B");
+                            .expect("Module execution result receiving end dropped");
                     }
                 };
 
@@ -77,7 +74,7 @@ impl JsRuntime {
                 // Spawn seperate task to pipe result so that we do not hold
                 // the borrow on `deno`.
                 let recv = deno.mod_evaluate(module_id);
-                t_tp_io
+                IoTaskPool::get()
                     .spawn(async move {
                         // Receive socket may be dropped as user is not
                         // listening to the final result of the module.
@@ -98,26 +95,17 @@ impl JsRuntime {
     }
 }
 
-pub struct JsRuntimeResource {
-    world: Rc<bjs::JsWorld>,
-    runtimes: Vec<JsRuntime>,
+pub struct JsRuntimeResource<R> {
+    bevy: Rc<bjs::BevyResource>,
+    runtime: JsRuntime,
+    _phantom: PhantomData<R>,
 }
 
-impl FromWorld for JsRuntimeResource {
-    fn from_world(_world: &mut World) -> Self {
-        // let tp = world
-        //     .get_resource::<ComputeTaskPool>()
-        //     .expect("ComputeTaskPool was not initialized");
+impl<R: IntoRuntime> FromWorld for JsRuntimeResource<R> {
+    fn from_world(world: &mut World) -> Self {
+        let bevy = Rc::new(bjs::BevyResource::default());
+        let runtime = R::runtime(world);
 
-        Self {
-            world: Rc::new(bjs::JsWorld::default()),
-            runtimes: Vec::default(),
-        }
-    }
-}
-
-impl JsRuntimeResource {
-    pub fn insert_runtime(&mut self, runtime: JsRuntime) {
         // Register [JsRuntimeWorld] with the runtime so Bevy specific ops can
         // have access to the [World].
         runtime
@@ -127,54 +115,46 @@ impl JsRuntimeResource {
             .op_state()
             .borrow_mut()
             .resource_table
-            .add_rc(self.world.clone());
+            .add_rc(bevy.clone());
 
-        self.runtimes.push(runtime);
+        Self {
+            bevy,
+            runtime,
+            _phantom: PhantomData::default(),
+        }
     }
+}
 
-    pub fn init_runtime<T>(&mut self)
-    where
-        T: IntoRuntime,
-    {
-        self.insert_runtime(T::runtime())
-    }
-
+impl<R> JsRuntimeResource<R> {
     pub fn execute_script(
         &mut self,
         name: &str,
         source_code: &str,
     ) -> Result<v8::Global<v8::Value>, AnyError> {
-        // TODO: This could potentially be removed with NonSendComponents
-        let runtime = &mut self.runtimes[0];
-        runtime.execute_script(name, source_code)
+        self.runtime.execute_script(name, source_code)
     }
 
     pub fn execute_module(
         &mut self,
-        tp_io: &IoTaskPool,
         specifier: bjs::ModuleSpecifier,
         source_code: Option<String>,
     ) -> oneshot::Receiver<Result<(), AnyError>> {
-        // TODO: This could potentially be removed with NonSendComponents
-        let runtime = &mut self.runtimes[0];
-        runtime.execute_module(tp_io, specifier, source_code)
+        self.runtime.execute_module(specifier, source_code)
     }
 }
 
-pub(crate) fn drive_runtimes(res: NonSendMut<JsRuntimeResource>, tp_c: Res<ComputeTaskPool>) {
-    // Handle pending system registrations
-    for sender in res.world.pending_registrations.borrow_mut().drain(..) {
-        // TODO: Instantiate resource for each SystemParam collection
-        sender
-            .send(1)
-            .expect("Could not instantiate system resource due to receiver being dropped");
-    }
+pub fn drive_runtime<R: IntoRuntime + 'static>(world: &mut World) {
+    let res = world
+        .get_non_send_resource::<JsRuntimeResource<R>>()
+        .unwrap();
 
-    for runtime in &res.runtimes {
-        let deno = runtime.deno.clone();
+    let deno = res.runtime.deno.clone();
+    let bevy = res.bevy.clone();
 
-        tp_c.spawn_local(future::poll_fn::<(), _>(move |cx| {
-            // Borrow can be held while loading modules
+    // Lend [Commands] reference to the resource
+    bevy.lend(world, || {
+        // Drive runtime
+        executor::block_on(future::poll_fn(move |cx| {
             let mut deno = match deno.try_borrow_mut() {
                 Ok(deno) => deno,
                 Err(_) => return Poll::Ready(()),
@@ -189,7 +169,6 @@ pub(crate) fn drive_runtimes(res: NonSendMut<JsRuntimeResource>, tp_c: Res<Compu
             };
 
             Poll::Ready(())
-        }))
-        .detach();
-    }
+        }));
+    });
 }

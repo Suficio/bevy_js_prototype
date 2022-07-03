@@ -2,12 +2,16 @@
 name = "bevy_js"
 version = "0.1.0"
 edition = "2021"
+exclude = ["assets/"]
+license = "MIT OR Apache-2.0"
+readme = "README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bevy = { git = "https://github.com/bevyengine/bevy.git", default-features = false, branch = "main" }
-deno_core = "0.137.0"
+bevy = { git = "https://github.com/MrGVSV/bevy.git", branch = "reflect-improved-serialization" }
+deno_core = "0.141.0"
+serde_json = "1.0.81"
 
 # Enable only a small amount of optimization in debug mode
 [profile.dev]
