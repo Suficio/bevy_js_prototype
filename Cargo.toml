@@ -22,6 +22,10 @@ serde_path_to_error = "0.1.7"
 tide = { version = "0.16.0", default-features = false, features = ["h1-server"], optional = true }
 tide-websockets = { version = "0.4.0", optional = true }
 
+convert_case = "0.5.0"
+syn = { version = "1.0.98", features = ["extra-traits"] }
+proc-macro2 = "1.0.40"
+
 # Enable only a small amount of optimization in debug mode
 [profile.dev]
 opt-level = 1

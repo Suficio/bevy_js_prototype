@@ -4,19 +4,22 @@
     const core = window.__bootstrap.core;
     const { Reflectable } = window.Bevy;
 
-    function worldResourceId() {
-        let res = core.resources();
-        let rid = Object.keys(res).find(rid => res[rid] === "bevy_js::Resource");
-        if (rid === undefined) {
-            throw new Error("Could not find Bevy world resource id. Ensure that you are running within a Bevy context.");
-        }
-
-        return rid;
-    }
-
     // Cache global reference to the `World` resource
-    let ridWorld = undefined;
+    let rWorld = undefined;
 
+    function worldResourceId() {
+        if (rWorld) {
+            return rWorld
+        } else {
+            let res = core.resources();
+            let rid = Object.keys(res).find(rid => res[rid] === "bevy_js::Resource");
+            if (rid === undefined) {
+                throw new Error("Could not find Bevy world resource id. Ensure that you are running within a Bevy context.");
+            }
+
+            return rWorld
+        }
+    }
     class Entity {
         constructor(eEntity) {
             this.entity = eEntity
@@ -38,15 +41,11 @@
                 throw new Error(`Could not insert component into entity ${this.entity}\n${JSON.stringify(reflected)}\n${error}`)
             }
         }
-
-        remove(component) { }
-
-        despawn() { }
     }
 
     class World {
         constructor() {
-            if (ridWorld === undefined) {
+            if (rWorld === worldResourceId()) {
                 throw new Error("World was not borrowed when constructing World in JS")
             }
         }
@@ -56,20 +55,14 @@
         }
 
         spawn() {
-            let eEntity = core.opSync("op_entity_spawn", ridWorld);
+            let eEntity = core.opSync("op_entity_spawn", worldResourceId());
             return new Entity(eEntity)
         }
     };
 
     async function system(...args) {
-        // Lazily extract wouldResourceId which is not otherwise available at
-        // startup
-        if (ridWorld === undefined) {
-            ridWorld = worldResourceId();
-        }
-
-        await core.opAsync("op_request_system", ridWorld);
+        await core.opAsync("op_request_system", worldResourceId());
     }
 
-    window.Bevy = Object.assign({ system, Entity, World }, window.Bevy);
+    window.Bevy = Object.assign({ system, Entity, World, worldResourceId, }, window.Bevy);
 })(globalThis);

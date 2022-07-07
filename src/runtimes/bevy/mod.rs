@@ -5,6 +5,7 @@ use deno_core as dc;
 use std::{cell::RefCell, rc::Rc};
 
 mod entity;
+pub mod ext;
 
 /// Represents the default `bevy_js` [JsRuntime](bjs::JsRuntime) which provides
 /// methods to interact with `Bevy` [Worlds](bevy::prelude::World).
@@ -30,7 +31,8 @@ impl BevyRuntime {
         let mut builder = bjs::JsRuntime::builder();
         builder
             .with_module_loader(Rc::new(bjs::FsModuleLoader))
-            .with_extension(extension);
+            .with_extension(extension)
+            .with_extension(ext::bevy_asset::init());
 
         builder
     }

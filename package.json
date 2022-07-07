@@ -3,5 +3,8 @@
   "description": "Javascript integration for Bevy game engine",
   "dependencies": {
     "three": "^0.142.0"
+  },
+  "devDependencies": {
+    "js-beautify": "^1.14.4"
   }
 }

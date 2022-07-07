@@ -8,8 +8,8 @@ use deno_core as dc;
 use std::{cell::RefCell, rc::Rc};
 
 #[op]
-pub fn op_entity_spawn(state: Rc<RefCell<OpState>>, rid_world: bjs::ResourceId) -> u64 {
-    let res = bjs::runtimes::unwrap_bevy_resource(&state, rid_world);
+pub fn op_entity_spawn(state: Rc<RefCell<OpState>>, r_world: bjs::ResourceId) -> u64 {
+    let res = bjs::runtimes::unwrap_bevy_resource(&state, r_world);
     let world = res.world_mut();
 
     world.spawn().id().to_bits()
@@ -18,11 +18,11 @@ pub fn op_entity_spawn(state: Rc<RefCell<OpState>>, rid_world: bjs::ResourceId) 
 #[op]
 pub fn op_entity_insert_component(
     state: Rc<RefCell<OpState>>,
-    rid_world: bjs::ResourceId,
+    r_world: bjs::ResourceId,
     e_entity: u64,
     component: Value,
 ) -> Result<(), AnyError> {
-    let res = bjs::runtimes::unwrap_bevy_resource(&state, rid_world);
+    let res = bjs::runtimes::unwrap_bevy_resource(&state, r_world);
 
     let world = res.world_mut();
     let e_entity = Entity::from_bits(e_entity);
@@ -30,8 +30,6 @@ pub fn op_entity_insert_component(
     let type_registry = world.resource::<TypeRegistry>().clone();
     let type_registry = type_registry.read();
     let reflect_deserializer = UntypedReflectDeserializer::new(&type_registry);
-
-    dbg!(&component);
 
     let mut track = serde_path_to_error::Track::new();
     let tracked = serde_path_to_error::Deserializer::new(&component, &mut track);

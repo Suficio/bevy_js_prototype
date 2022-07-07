@@ -132,11 +132,11 @@ export class AlignItemsStretch extends ReflectableEnumEntry {
 }
 
 export class AlignItems extends ReflectableEnum {
-    static FlexStart = AlignItemsFlexStart;
-    static FlexEnd = AlignItemsFlexEnd;
-    static Center = AlignItemsCenter;
-    static Baseline = AlignItemsBaseline;
-    static Stretch = AlignItemsStretch;
+    static FlexStart = (...args) => new AlignItems(new AlignItemsFlexStart(...args));
+    static FlexEnd = (...args) => new AlignItems(new AlignItemsFlexEnd(...args));
+    static Center = (...args) => new AlignItems(new AlignItemsCenter(...args));
+    static Baseline = (...args) => new AlignItems(new AlignItemsBaseline(...args));
+    static Stretch = (...args) => new AlignItems(new AlignItemsStretch(...args));
 
     constructor(variant = new AlignItemsStretch()) {
         super("bevy_ui::ui_node::AlignItems", variant);
@@ -229,12 +229,12 @@ export class AlignContentSpaceAround extends ReflectableEnumEntry {
 }
 
 export class AlignContent extends ReflectableEnum {
-    static FlexStart = AlignContentFlexStart;
-    static FlexEnd = AlignContentFlexEnd;
-    static Center = AlignContentCenter;
-    static Stretch = AlignContentStretch;
-    static SpaceBetween = AlignContentSpaceBetween;
-    static SpaceAround = AlignContentSpaceAround;
+    static FlexStart = (...args) => new AlignContent(new AlignContentFlexStart(...args));
+    static FlexEnd = (...args) => new AlignContent(new AlignContentFlexEnd(...args));
+    static Center = (...args) => new AlignContent(new AlignContentCenter(...args));
+    static Stretch = (...args) => new AlignContent(new AlignContentStretch(...args));
+    static SpaceBetween = (...args) => new AlignContent(new AlignContentSpaceBetween(...args));
+    static SpaceAround = (...args) => new AlignContent(new AlignContentSpaceAround(...args));
 
     constructor(variant = new AlignContentStretch()) {
         super("bevy_ui::ui_node::AlignContent", variant);
@@ -260,9 +260,9 @@ export class DirectionRightToLeft extends ReflectableEnumEntry {
 }
 
 export class Direction extends ReflectableEnum {
-    static Inherit = DirectionInherit;
-    static LeftToRight = DirectionLeftToRight;
-    static RightToLeft = DirectionRightToLeft;
+    static Inherit = (...args) => new Direction(new DirectionInherit(...args));
+    static LeftToRight = (...args) => new Direction(new DirectionLeftToRight(...args));
+    static RightToLeft = (...args) => new Direction(new DirectionRightToLeft(...args));
 
     constructor(variant = new DirectionInherit()) {
         super("bevy_ui::ui_node::Direction", variant);
@@ -282,8 +282,8 @@ export class DisplayNone extends ReflectableEnumEntry {
 }
 
 export class Display extends ReflectableEnum {
-    static Flex = DisplayFlex;
-    static None = DisplayNone;
+    static Flex = (...args) => new Display(new DisplayFlex(...args));
+    static None = (...args) => new Display(new DisplayNone(...args));
 
     constructor(variant = new DisplayFlex()) {
         super("bevy_ui::ui_node::Display", variant);
@@ -315,10 +315,10 @@ export class FlexDirectionColumnReverse extends ReflectableEnumEntry {
 }
 
 export class FlexDirection extends ReflectableEnum {
-    static Row = FlexDirectionRow;
-    static Column = FlexDirectionColumn;
-    static RowReverse = FlexDirectionRowReverse;
-    static ColumnReverse = FlexDirectionColumnReverse;
+    static Row = (...args) => new FlexDirection(new FlexDirectionRow(...args));
+    static Column = (...args) => new FlexDirection(new FlexDirectionColumn(...args));
+    static RowReverse = (...args) => new FlexDirection(new FlexDirectionRowReverse(...args));
+    static ColumnReverse = (...args) => new FlexDirection(new FlexDirectionColumnReverse(...args));
 
     constructor(variant = new FlexDirectionRow()) {
         super("bevy_ui::ui_node::FlexDirection", variant);
@@ -362,12 +362,12 @@ export class JustifyContentSpaceEvenly extends ReflectableEnumEntry {
 }
 
 export class JustifyContent extends ReflectableEnum {
-    static FlexStart = JustifyContentFlexStart;
-    static FlexEnd = JustifyContentFlexEnd;
-    static Center = JustifyContentCenter;
-    static SpaceBetween = JustifyContentSpaceBetween;
-    static SpaceAround = JustifyContentSpaceAround;
-    static SpaceEvenly = JustifyContentSpaceEvenly;
+    static FlexStart = (...args) => new JustifyContent(new JustifyContentFlexStart(...args));
+    static FlexEnd = (...args) => new JustifyContent(new JustifyContentFlexEnd(...args));
+    static Center = (...args) => new JustifyContent(new JustifyContentCenter(...args));
+    static SpaceBetween = (...args) => new JustifyContent(new JustifyContentSpaceBetween(...args));
+    static SpaceAround = (...args) => new JustifyContent(new JustifyContentSpaceAround(...args));
+    static SpaceEvenly = (...args) => new JustifyContent(new JustifyContentSpaceEvenly(...args));
 
     constructor(variant = new JustifyContentFlexStart()) {
         super("bevy_ui::ui_node::JustifyContent", variant);
@@ -387,8 +387,8 @@ export class OverflowHidden extends ReflectableEnumEntry {
 }
 
 export class Overflow extends ReflectableEnum {
-    static Visible = OverflowVisible;
-    static Hidden = OverflowHidden;
+    static Visible = (...args) => new Overflow(new OverflowVisible(...args));
+    static Hidden = (...args) => new Overflow(new OverflowHidden(...args));
 
     constructor(variant = new OverflowVisible()) {
         super("bevy_ui::ui_node::Overflow", variant);
@@ -409,7 +409,7 @@ export class PositionTypeAbsolute extends ReflectableEnumEntry {
 
 export class PositionType extends ReflectableEnum {
     static Relative = (...args) => new PositionType(new PositionTypeRelative(...args));
-    static Absolute = (...args) => new PositionType(new PositionTypeAbsolute(...args));;
+    static Absolute = (...args) => new PositionType(new PositionTypeAbsolute(...args));
 
     constructor(variant = new PositionTypeRelative()) {
         super("bevy_ui::ui_node::PositionType", variant);
@@ -447,9 +447,9 @@ export class FlexWrapWrapReverse extends ReflectableEnumEntry {
 }
 
 export class FlexWrap extends ReflectableEnum {
-    static NoWrap = FlexWrapNoWrap;
-    static Wrap = FlexWrapWrap;
-    static WrapReverse = FlexWrapWrapReverse;
+    static NoWrap = (...args) => new FlexWrap(new FlexWrapNoWrap(...args));
+    static Wrap = (...args) => new FlexWrap(new FlexWrapWrap(...args));
+    static WrapReverse = (...args) => new FlexWrap(new FlexWrapWrapReverse(...args));
 
     constructor(variant = new FlexWrapNoWrap()) {
         super("bevy_ui::ui_node::FlexWrap", variant);
@@ -465,7 +465,5 @@ export class CalculatedSize extends ReflectableStruct {
             },
             struct
         )
-
-        Deno.core.print(JSON.stringify(this));
     }
 }

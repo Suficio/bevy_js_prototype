@@ -48,21 +48,6 @@ fn setup_ui(world: &mut World) {
     let asset_server = world.get_resource::<AssetServer>().unwrap().clone();
     let type_registry = world.get_resource::<TypeRegistry>().unwrap().clone();
 
-    let style = Style {
-        align_self: AlignSelf::FlexEnd,
-        position_type: PositionType::Absolute,
-        position: UiRect {
-            bottom: Val::Px(5.0),
-            right: Val::Px(15.0),
-            ..default()
-        },
-        ..default()
-    };
-    let style: Box<dyn Reflect> = Box::new(style);
-
-    // dbg!(style.get_type_info());
-    // register_component(world, &type_registry, entity, style.as_reflect());
-
     let text: Box<dyn Reflect> = Box::new(Text::with_section(
         "hello\nbevy!",
         TextStyle {
@@ -75,7 +60,6 @@ fn setup_ui(world: &mut World) {
             ..default()
         },
     ));
-    // dbg!(&text);
-    // dbg!(text.get_type_info());
+
     register_component(world, &type_registry, entity, text.as_reflect());
 }

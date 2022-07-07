@@ -17,6 +17,9 @@ import { Transform, GlobalTransform } from "../js/transform";
 async function setup() {
     await Bevy.system();
 
+    let handle = Bevy.asset.AssetServer.load("fonts/FiraSans-Bold.ttf");
+    Deno.core.print(JSON.stringify(handle));
+
     let entity = new Entity(0);
     entity.insert(new Style({
         align_self: AlignSelf.FlexEnd(),
