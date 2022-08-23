@@ -137,7 +137,5 @@ pub async fn pump_websocket_messages(
         _ = inbound_pump => ()
     );
 
-    // Users don't care if there was an error coming from debugger,
-    // just about the fact that debugger did disconnect.
     warn!("Debugger session ended");
 }

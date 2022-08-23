@@ -1,19 +1,28 @@
 "use strict";
 
 ((window) => {
-    class Reflectable {
-        constructor(type) {
-            this.type = type;
-        }
+  class Reflectable {
+    constructor(type, generics) {
+      this.type = type;
 
-        reflect() {
-            return { type: this.type, value: this.reflectUntyped() };
+      if (generics) {
+        if (generics instanceof Array) {
+          generics = generics.join(",");
         }
-
-        reflectUntyped() {
-            throw new Error("Reflectable must implement reflectUntyped");
-        }
+        this.type = `${type}<${generics}>`;
+      }
     }
 
-    window.Bevy = Object.assign({ Reflectable }, window.Bevy);
+    reflect() {
+      let obj = {};
+      obj[type] = this.reflectUntyped();
+      return obj;
+    }
+
+    reflectUntyped() {
+      throw new Error("Reflectable must implement reflectUntyped");
+    }
+  }
+
+  window.Bevy = Object.assign({ Reflectable }, window.Bevy);
 })(globalThis);

@@ -1,8 +1,5 @@
 use crate as bjs;
-use bevy::{
-    prelude::*,
-    reflect::{serde::UntypedReflectDeserializer, TypeRegistry},
-};
+use bevy::{prelude::*, reflect::serde::UntypedReflectDeserializer};
 use dc::{anyhow::Error as AnyError, op, serde::de::DeserializeSeed, serde_json::Value, OpState};
 use deno_core as dc;
 use std::{cell::RefCell, rc::Rc};
@@ -27,7 +24,7 @@ pub fn op_entity_insert_component(
     let world = res.world_mut();
     let e_entity = Entity::from_bits(e_entity);
 
-    let type_registry = world.resource::<TypeRegistry>().clone();
+    let type_registry = world.resource::<AppTypeRegistry>().clone();
     let type_registry = type_registry.read();
     let reflect_deserializer = UntypedReflectDeserializer::new(&type_registry);
 
@@ -57,7 +54,7 @@ pub fn op_entity_insert_component(
     if let Some(component_impl) =
         type_registry.get_type_data::<ReflectComponent>(registration.type_id())
     {
-        component_impl.add_component(world, e_entity, component.as_reflect());
+        component_impl.insert(world, e_entity, component.as_reflect());
     }
 
     Ok(())

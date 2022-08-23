@@ -18,6 +18,7 @@ pub struct InspectorMeta {
 
 /// `Websocket` server that is used to proxy connections from
 /// devtools to the inspector.
+#[derive(Resource)]
 pub struct JsInspector {
     meta: InspectorMeta,
     shutdown_server_tx: Option<channel::oneshot::Sender<()>>,

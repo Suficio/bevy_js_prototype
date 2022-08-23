@@ -1,10 +1,6 @@
-//! Demonstrates a startup system (one that runs once when the app starts up).
-
 use bevy::{prelude::*, reflect::TypeRegistry};
 use bevy_js::{self as bjs, runtimes::BevyRuntime};
 
-// In this example we add a counter resource and increase it's value in one system,
-// while a different system prints the current count to the console.
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
@@ -38,26 +34,22 @@ fn register_component(
     if let Some(component_impl) =
         type_registry.get_type_data::<ReflectComponent>(component.type_id())
     {
-        component_impl.add_component(world, entity, component)
+        component_impl.insert(world, entity, component)
     }
 }
 
 fn setup_ui(world: &mut World) {
     let entity = world.spawn().id();
 
-    let asset_server = world.get_resource::<AssetServer>().unwrap().clone();
-    let type_registry = world.get_resource::<TypeRegistry>().unwrap().clone();
+    let asset_server = world.resource::<AssetServer>().clone();
+    let type_registry = world.resource::<AppTypeRegistry>().clone();
 
-    let text: Box<dyn Reflect> = Box::new(Text::with_section(
+    let text: Box<dyn Reflect> = Box::new(Text::from_section(
         "hello\nbevy!",
         TextStyle {
             font: asset_server.load("fonts/FiraSans-Bold.ttf"),
             font_size: 100.0,
             color: Color::WHITE,
-        },
-        TextAlignment {
-            horizontal: HorizontalAlign::Center,
-            ..default()
         },
     ));
 

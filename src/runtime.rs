@@ -189,7 +189,7 @@ pub fn drive_runtime<R: IntoRuntime + 'static>(world: &mut World) {
     let deno = res.runtime.deno.clone();
     let bevy = res.bevy.clone();
 
-    // Lend [Commands] reference to the resource
+    // Lend [World] reference to the resource
     bevy.lend(world, || {
         // Drive runtime
         executor::block_on(future::poll_fn(move |cx| {
