@@ -1,16 +1,16 @@
 "use strict";
 
-import { ReflectableEnum, ReflectableEnumEntry } from "./bevy";
+import { ReflectableEnum, ReflectableArray } from "./../bevy.js";
 
-export class OptionNone extends ReflectableEnumEntry {
+export class OptionNone extends ReflectableArray {
   constructor() {
     super("None", []);
   }
 }
 
-export class OptionSome extends ReflectableEnumEntry {
-  constructor(associated, seq) {
-    super("Some", [associated], seq);
+export class OptionSome extends ReflectableArray {
+  constructor(seq) {
+    super("Some", null, seq);
   }
 }
 

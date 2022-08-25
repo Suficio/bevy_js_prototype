@@ -59,7 +59,7 @@ fn generate_array_type_init<A>(
         write!(
             o,
             r#"{},"#,
-            generate_type_init(type_registry, structure, e.reflect_ref(), true)
+            generate_type_init(type_registry, structure, e, true)
         )
         .unwrap();
     }
@@ -69,23 +69,31 @@ fn generate_array_type_init<A>(
 fn generate_type_init(
     type_registry: &TypeRegistryInternal,
     structure: &mut Structure,
-    reflect: ReflectRef,
+    reflect: &dyn Reflect,
     use_constructor: bool,
 ) -> String {
     let mut o = String::new();
 
-    match reflect {
-        ReflectRef::Struct(s) => {
-            let registration = match type_registry.get(s.type_id()) {
-                Some(r) => r,
-                None => return "null".to_string(),
-            };
-            let (short_name, _generics) = strip_generics(registration.short_name());
+    let registration = match type_registry.get(reflect.get_type_info().type_id()) {
+        Some(r) => r,
+        None => return "null".to_string(),
+    };
 
-            let info = match s.get_type_info() {
-                TypeInfo::Struct(s) => s,
-                _ => unreachable!(),
-            };
+    let (short_name, _) = strip_generics(registration.short_name());
+    let (type_name, _generics) = strip_generics(registration.type_name());
+
+    let path = normalize_path(&type_name);
+    // Check if path isn't a primitive
+    if !path.to_string_lossy().is_empty() {
+        // Do not generate imports for reflectable values
+        if !matches!(reflect.reflect_ref(), ReflectRef::Value(_)) {
+            structure.insert_import(&display_path(&path), &short_name);
+        }
+    }
+
+    match reflect.reflect_ref() {
+        ReflectRef::Struct(s) => {
+            structure.insert_import("js/bevy.js", "ReflectableObject");
 
             if use_constructor {
                 write!(&mut o, r#"new {short_name}("#).unwrap();
@@ -93,13 +101,13 @@ fn generate_type_init(
             write!(&mut o, r#"{{"#).unwrap();
 
             for i in 0..s.field_len() {
-                let name = info.field_at(i).unwrap().name();
+                let name = s.name_at(i).unwrap();
                 let field = s.field_at(i).unwrap();
                 write!(
                     &mut o,
                     r#"{}: {},"#,
                     name,
-                    generate_type_init(type_registry, structure, field.reflect_ref(), true)
+                    generate_type_init(type_registry, structure, field, true)
                 )
                 .unwrap();
             }
@@ -115,7 +123,7 @@ fn generate_type_init(
                 write!(
                     &mut o,
                     r#"{},"#,
-                    generate_type_init(type_registry, structure, field.reflect_ref(), true)
+                    generate_type_init(type_registry, structure, field, true)
                 )
                 .unwrap();
             }
@@ -137,12 +145,6 @@ fn generate_type_init(
             };
         }
         ReflectRef::Enum(e) => {
-            let registration = match type_registry.get(e.type_id()) {
-                Some(r) => r,
-                None => return "null".to_string(),
-            };
-            let (short_name, _generics) = strip_generics(registration.short_name());
-
             write!(&mut o, r#"{short_name}.{}("#, e.variant_name()).unwrap();
 
             match e.variant_type() {
@@ -156,12 +158,7 @@ fn generate_type_init(
                                     &mut o,
                                     r#"{}: {},"#,
                                     name,
-                                    generate_type_init(
-                                        type_registry,
-                                        structure,
-                                        value.reflect_ref(),
-                                        true
-                                    )
+                                    generate_type_init(type_registry, structure, value, true)
                                 )
                                 .unwrap();
                             }
@@ -180,12 +177,7 @@ fn generate_type_init(
                                 write!(
                                     &mut o,
                                     r#"{},"#,
-                                    generate_type_init(
-                                        type_registry,
-                                        structure,
-                                        value.reflect_ref(),
-                                        true
-                                    )
+                                    generate_type_init(type_registry, structure, value, true)
                                 )
                                 .unwrap();
                             }
@@ -223,7 +215,7 @@ fn generate_default_type_init(
                 generate_type_init(
                     type_registry,
                     structure,
-                    default.default().reflect_ref(),
+                    default.default().as_ref(),
                     use_constructor,
                 )
             )
@@ -231,33 +223,6 @@ fn generate_default_type_init(
         }
         // Since there is no ReflectDefault we can generate from TypeInfo
         None => match registration.type_info() {
-            // TypeInfo::Struct(s) => {
-            //     if use_constructor {
-            //         write!(&mut o, r#"new {}("#, registration.short_name()).unwrap();
-            //     }
-            //     write!(&mut o, r#"{{"#).unwrap();
-            //     for field in s.iter() {
-            //         write!(&mut o, r#"{}: "#, field.name()).unwrap();
-            //         match type_registry.get(field.type_id()) {
-            //             Some(registration) => write!(
-            //                 &mut o,
-            //                 r#"{}, "#,
-            //                 generate_default_type_init(
-            //                     type_registry,
-            //                     structure,
-            //                     registration,
-            //                     true
-            //                 )
-            //             )
-            //             .unwrap(),
-            //             None => write!(&mut o, r#"null, "#).unwrap(),
-            //         }
-            //     }
-            //     write!(&mut o, r#"}}"#).unwrap();
-            //     if use_constructor {
-            //         write!(&mut o, r#")"#).unwrap();
-            //     }
-            // }
             TypeInfo::Value(v) => {
                 // A bunch of primitives dont have implemented ReflectDefault
                 match v.type_name() {
@@ -374,6 +339,8 @@ fn generate_type(
                 let name = variant.name();
                 match variant {
                     VariantInfo::Struct(_) => {
+                        structure.insert_import("js/bevy.js", "ReflectableObject");
+
                         write!(
                             &mut o,
                             r#"export class {short_name}{name} extends ReflectableObject {{ constructor(struct) {{ super("{name}", {}, struct) }}}}"#,
@@ -381,6 +348,8 @@ fn generate_type(
                         ).unwrap();
                     }
                     VariantInfo::Tuple(_) => {
+                        structure.insert_import("js/bevy.js", "ReflectableArray");
+
                         write!(
                             &mut o,
                             r#"export class {short_name}{name} extends ReflectableArray {{ constructor(seq) {{ super("{name}", {}, seq) }}}}"#,
@@ -388,6 +357,8 @@ fn generate_type(
                         ).unwrap();
                     }
                     VariantInfo::Unit(_) => {
+                        structure.insert_import("js/bevy.js", "ReflectableArray");
+
                         write!(
                             &mut o,
                             r#"export class {short_name}{name} extends ReflectableArray {{ constructor() {{ super("{name}", []); }}}} "#
@@ -439,13 +410,13 @@ fn strip_generics(name: &str) -> (String, Punctuated<GenericArgument, Comma>) {
     (stripped, arguments)
 }
 
-/// Convert `bevy_C::` crate types into `js/generated/bevy/C/` paths
-fn normalize_path(type_name: &str) -> (PathBuf, PathSegment) {
+/// Convert `bevy_C::` crate types into `bevy/C/` paths
+fn normalize_path(type_name: &str) -> PathBuf {
     let t: TypePath = syn::parse_str(type_name).unwrap();
     let mut segments = t.path.segments;
 
     // Extract type
-    let type_def = segments.pop().unwrap().into_value();
+    let _type_def = segments.pop().unwrap().into_value();
 
     // Normalize root segment
     match segments.first_mut() {
@@ -471,28 +442,37 @@ fn normalize_path(type_name: &str) -> (PathBuf, PathSegment) {
             };
         }
         // Exit early on primitives
-        None => return (PathBuf::new(), type_def),
+        None => return PathBuf::new(),
     };
 
     // Generate path
-    let mut path = PathBuf::new();
-    path.push("js");
-    path.push("generated");
-    for segment in segments.iter() {
-        let f = format!("{}", segment.ident);
-        path.push(f.to_case(Case::Camel));
+    let mut path = PathBuf::from("js");
+    let mut iter = segments
+        .iter()
+        .map(|s| format!("{}", s.ident).to_case(Case::Camel));
+
+    // If first element is in bevy namespace then we automatically generate it
+    if let Some(i) = iter.next() {
+        if "bevy" == i.as_str() {
+            path.push("generated");
+        };
+        path.push(i);
     }
+
+    for segment in iter {
+        path.push(segment);
+    }
+
     path.set_extension("js");
 
-    (path, type_def)
+    path
 }
 
 fn generate(type_registry: &TypeRegistryInternal) -> Result<(), AnyError> {
     let mut files = HashMap::<String, Structure>::default();
 
     for registration in type_registry.iter() {
-        let (path, _) = normalize_path(registration.type_name());
-
+        let path = normalize_path(registration.type_name());
         if let Some(path) = path.to_str() {
             // Filter out primitives and non-bevy types
             if !path.contains("bevy") {
@@ -516,20 +496,20 @@ fn generate(type_registry: &TypeRegistryInternal) -> Result<(), AnyError> {
         let mut f = File::create(path.clone())?;
         write!(&mut f, r#""use strict";"#).unwrap();
         for (file, imports) in structure.imports.iter() {
+            // Need to filter out if attempting to import from the same file
+            let mut p = PathBuf::from(p);
+            if file == &display_path(&p) {
+                continue;
+            }
+
             write!(&mut f, r#"import {{ "#).unwrap();
             for import in imports.iter() {
                 write!(&mut f, r#"{}, "#, import).unwrap();
             }
 
-            let path = diff_paths(&file, p.parent().unwrap()).unwrap();
-
-            let path = path
-                .iter()
-                .map(|s| s.to_str().unwrap())
-                .collect::<Vec<&str>>()
-                .join("/");
-
-            write!(&mut f, r#"}} from "{path}";"#,).unwrap();
+            p.pop();
+            let path = diff_paths(&file, p).unwrap();
+            write!(&mut f, r#"}} from "./{}";"#, display_path(&path)).unwrap();
         }
 
         for def in structure.types.values() {
@@ -552,6 +532,14 @@ fn generate(type_registry: &TypeRegistryInternal) -> Result<(), AnyError> {
     }
 
     Ok(())
+}
+
+/// Force path to display with forward slash
+fn display_path(path: &PathBuf) -> String {
+    path.iter()
+        .map(|s| s.to_str().unwrap())
+        .collect::<Vec<&str>>()
+        .join("/")
 }
 
 fn main() -> Result<(), AnyError> {

@@ -6,10 +6,7 @@ export { Reflectable, World, Entity };
 export class ReflectableObject extends Reflectable {
   constructor(type, generics, defaults, struct) {
     super(type, generics);
-    this.struct = Object.seal(Object.assign({}, defaults));
-    if (struct) {
-      Object.assign(this.struct, struct);
-    }
+    this.struct = Object.seal(Object.assign({}, defaults, struct));
   }
 
   reflectUntyped() {
@@ -30,13 +27,10 @@ export class ReflectableArray extends Reflectable {
   constructor(type, generics, defaults, seq) {
     super(type, generics);
     if (defaults) {
-      this.tuple_struct = Object.seal(Object.assign([], defaults));
-      if (seq) {
-        if (!(seq instanceof Array)) {
-          seq = [seq];
-        }
-        Object.assign(this.tuple_struct, seq);
+      if (!(seq instanceof Array)) {
+        seq = [seq];
       }
+      this.tuple_struct = Object.seal(Object.assign([], defaults, seq));
     }
   }
 
