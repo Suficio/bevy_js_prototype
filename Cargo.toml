@@ -15,14 +15,16 @@ generator = ["pathdiff", "convert_case", "syn", "proc-macro2"]
 
 [dependencies]
 bevy = { git = "https://github.com/MrGVSV/bevy.git", branch = "reflect-improved-serialization" }
-deno_core = "0.147.0"
+deno_core = "0.148.0"
 
-serde_json = "1.0.81"
-serde_path_to_error = "0.1.7"
+serde_json = "1.0.85"
+serde_path_to_error = "0.1.8"
 
+# Inspector dependencies
 tide = { version = "0.16.0", default-features = false, features = ["h1-server"], optional = true }
 tide-websockets = { version = "0.4.0", optional = true }
 
+# Generator dependencies
 pathdiff = { version = "0.2.1", optional = true }
 convert_case = { version = "0.5.0", optional = true }
 syn = { version = "1.0.98", features = ["extra-traits", "printing"], optional = true }
@@ -47,3 +49,12 @@ path = "examples/hello_world.rs"
 [[example]]
 name = "startup_system"
 path = "examples/startup_system.rs"
+
+[[example]]
+name = "text"
+path = "examples/text.rs"
+
+[[example]]
+name = "inspector"
+path = "examples/inspector.rs"
+required-features = ["inspector"]

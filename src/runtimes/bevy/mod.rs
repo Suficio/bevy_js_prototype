@@ -49,7 +49,7 @@ async fn op_request_system(
     state: Rc<RefCell<OpState>>,
     rid: bjs::ResourceId,
 ) -> Result<(), AnyError> {
-    bjs::runtimes::unwrap_bevy_resource(&state, rid)
+    bjs::runtimes::unwrap_world_resource(&state, rid)
         .wait_for_world()
         .await
 }

@@ -5,15 +5,15 @@ mod bevy;
 
 pub use self::bevy::BevyRuntime;
 
-/// Obtains shared [BevyResource] reference from [OpState]
-pub fn unwrap_bevy_resource(
+/// Obtains shared [WorldResource] reference from [OpState]
+pub fn unwrap_world_resource(
     state: &Rc<RefCell<bjs::OpState>>,
     rid: bjs::ResourceId,
-) -> Rc<bjs::BevyResource> {
+) -> Rc<bjs::WorldResource> {
     state
         .borrow()
         .resource_table
-        .get::<bjs::BevyResource>(rid)
+        .get::<bjs::WorldResource>(rid)
         .expect(
             "
                 Could not find Bevy world resource from provided ID.

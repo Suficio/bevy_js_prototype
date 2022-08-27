@@ -68,7 +68,7 @@ impl Drop for JsInspector {
                 );
             };
 
-            if let Err(_) = shutdown_server_tx.send(()) {
+            if shutdown_server_tx.send(()).is_err() {
                 error!("Failed to shutdown inspector");
             }
         }

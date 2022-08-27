@@ -19,6 +19,7 @@ export class ReflectableObject extends Reflectable {
         reflected[property] = element;
       }
     }
+
     return reflected;
   }
 }
@@ -26,35 +27,28 @@ export class ReflectableObject extends Reflectable {
 export class ReflectableArray extends Reflectable {
   constructor(type, generics, defaults, seq) {
     super(type, generics);
-    if (defaults) {
-      if (!(seq instanceof Array)) {
-        seq = [seq];
-      }
-      this.tuple_struct = Object.seal(Object.assign([], defaults, seq));
+
+    if (seq && !(seq instanceof Array)) {
+      seq = [seq];
     }
+
+    this.array = Object.seal(Object.assign([], defaults, seq));
   }
 
   reflectUntyped() {
-    const len = this.tuple_struct.length;
-    if (len === 0) {
+    if (!this.array || this.array.length === 0) {
       return null;
-    } else if (len === 1) {
-      const element = this.tuple_struct[0];
-      if (element instanceof Reflectable) {
-        return element.reflectUntyped();
-      } else {
-        return element;
-      }
     } else {
       const reflected = [];
-      for (let i = 0; i < len; i++) {
-        const element = this.tuple_struct[i];
+      for (let i = 0; i < this.array.length; i++) {
+        const element = this.array[i];
         if (element instanceof Reflectable) {
           reflected[i] = element.reflectUntyped();
         } else {
           reflected[i] = element;
         }
       }
+
       return reflected;
     }
   }
@@ -68,17 +62,32 @@ export class ReflectableEnum extends Reflectable {
   }
 
   reflectUntyped() {
-    const type = this.type;
     const value = this.value;
 
-    const reflected = {};
     if (value === undefined) {
-      reflected[type] = null;
-    } else if (value instanceof ReflectableEnumEntry) {
-      reflected[value.type] = value.reflectUntyped();
+      return null;
+    } else if (value instanceof ReflectableArray) {
+      const seq = value.reflectUntyped();
+      if (!seq || seq.length === 0) {
+        return null;
+      }
+
+      const reflected = {};
+      if (seq.length === 1) {
+        reflected[value.type] = seq[0];
+      } else {
+        reflected[value.type] = seq;
+      }
+      return reflected;
+    } else if (value instanceof Reflectable) {
+      const untyped = value.reflectUntyped();
+      if (untyped) {
+        return untyped;
+      } else {
+        return null;
+      }
     } else {
-      reflected[type] = value;
+      return value;
     }
-    return reflected;
   }
 }

@@ -21,7 +21,7 @@ fn setup_runtime(
     let specifier = bjs::resolve::path("./examples/text.js").unwrap();
     let _ = runtime.execute_module(specifier.clone(), None);
 
-    runtime.register_inspector(specifier, inspector.meta());
+    runtime.register_inspector(inspector.meta());
 }
 
 fn register_component(

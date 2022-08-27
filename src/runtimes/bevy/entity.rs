@@ -6,7 +6,7 @@ use std::{cell::RefCell, rc::Rc};
 
 #[op]
 pub fn op_entity_spawn(state: Rc<RefCell<OpState>>, r_world: bjs::ResourceId) -> u64 {
-    let res = bjs::runtimes::unwrap_bevy_resource(&state, r_world);
+    let res = bjs::runtimes::unwrap_world_resource(&state, r_world);
     let world = res.world_mut();
 
     world.spawn().id().to_bits()
@@ -19,10 +19,12 @@ pub fn op_entity_insert_component(
     e_entity: u64,
     component: Value,
 ) -> Result<(), AnyError> {
-    let res = bjs::runtimes::unwrap_bevy_resource(&state, r_world);
+    let res = bjs::runtimes::unwrap_world_resource(&state, r_world);
 
     let world = res.world_mut();
     let e_entity = Entity::from_bits(e_entity);
+
+    // dbg!(&component);
 
     let type_registry = world.resource::<AppTypeRegistry>().clone();
     let type_registry = type_registry.read();
@@ -44,12 +46,12 @@ pub fn op_entity_insert_component(
 
     // TODO: Should remove this lookup by allowing type_id to be passed to deserializer
     let type_name = component.type_name();
-    let registration = type_registry
-        .get_with_name(type_name)
-        .ok_or(AnyError::msg(format!(
+    let registration = type_registry.get_with_name(type_name).ok_or_else(|| {
+        AnyError::msg(format!(
             "Could not find type registration for {}",
             type_name
-        )))?;
+        ))
+    })?;
 
     if let Some(component_impl) =
         type_registry.get_type_data::<ReflectComponent>(registration.type_id())

@@ -8,10 +8,11 @@ use dc::{
 use deno_core as dc;
 use std::{net::SocketAddr, process};
 
+/// Information for inspector how to connect to a runtime
 pub struct InspectorInfo {
     pub host: SocketAddr,
     pub uuid: Uuid,
-    pub module: dc::ModuleSpecifier,
+    pub name: String,
     pub new_session_tx: channel::mpsc::UnboundedSender<dc::InspectorSessionProxy>,
     pub deregister_rx: channel::oneshot::Receiver<()>,
     pub inspector_should_wait: bool,
@@ -21,7 +22,7 @@ impl InspectorInfo {
     pub fn new(
         host: SocketAddr,
         uuid: Uuid,
-        module: dc::ModuleSpecifier,
+        name: String,
         new_session_tx: channel::mpsc::UnboundedSender<dc::InspectorSessionProxy>,
         deregister_rx: channel::oneshot::Receiver<()>,
         inspector_should_wait: bool,
@@ -29,7 +30,7 @@ impl InspectorInfo {
         Self {
             host,
             uuid,
-            module,
+            name,
             new_session_tx,
             deregister_rx,
             inspector_should_wait,
@@ -40,8 +41,8 @@ impl InspectorInfo {
         self.uuid
     }
 
-    pub fn name(&self) -> &dc::ModuleSpecifier {
-        &self.module
+    pub fn name(&self) -> &str {
+        &self.name
     }
 
     pub fn json_version_response() -> Value {
@@ -60,7 +61,7 @@ impl InspectorInfo {
           "id": self.uuid.to_string(),
           "title": self.title(),
           "type": "node",
-          "url": self.name(),
+          "url": self.name().to_string(),
           "webSocketDebuggerUrl": self.websocket_debugger_url(),
         })
     }

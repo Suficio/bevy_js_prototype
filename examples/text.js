@@ -25,15 +25,14 @@ import { GlobalTransform } from "../js/generated/bevy/transform/components/globa
 async function setup() {
   await Bevy.system();
 
-  let handle = Bevy.asset.AssetServer.load("fonts/FiraSans-Bold.ttf");
-  Deno.core.print(JSON.stringify(handle));
+  let _handle = Bevy.asset.AssetServer.load("fonts/FiraSans-Bold.ttf");
 
   let entity = new Entity(0);
   entity.insert(
     new Style({
       align_self: AlignSelf.FlexEnd(),
       position_type: PositionType.Absolute(),
-      position: new UiRect(new Val(), {
+      position: new UiRect({
         bottom: Val.Px(5.0),
         right: Val.Px(15.0),
       }),
@@ -41,7 +40,7 @@ async function setup() {
   );
   entity.insert(new Node());
   entity.insert(new CalculatedSize());
-  entity.insert(new FocusPolicy());
+  entity.insert(FocusPolicy.Pass());
   entity.insert(new Transform());
   entity.insert(new GlobalTransform());
   entity.insert(new Visibility());

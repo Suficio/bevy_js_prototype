@@ -37,7 +37,7 @@ impl bjs::ModuleLoader for FsModuleLoader {
                 ))
             })?;
 
-            if let None = path.extension() {
+            if path.extension().is_none() {
                 path.set_extension("js");
             }
 

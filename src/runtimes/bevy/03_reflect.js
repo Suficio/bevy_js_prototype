@@ -15,7 +15,7 @@
 
     reflect() {
       let obj = {};
-      obj[type] = this.reflectUntyped();
+      obj[this.type] = this.reflectUntyped();
       return obj;
     }
 

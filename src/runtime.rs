@@ -1,6 +1,6 @@
 use crate::{
     self as bjs,
-    anyhow::{anyhow, Error as AnyError},
+    anyhow::Error as AnyError,
     deno_core as dc,
     futures::{channel::oneshot, executor, future},
     v8,
@@ -29,21 +29,8 @@ impl JsRuntime {
         }
     }
 
-    pub fn inspector(
-        &self,
-        specifier: bjs::ModuleSpecifier,
-        host: SocketAddr,
-    ) -> bjs::inspector::InspectorInfo {
-        let mut inspector = self.deno.borrow_mut();
-        let inspector = inspector.inspector();
-        crate::inspector::InspectorInfo::new(
-            host,
-            Uuid::new_v4(),
-            specifier.clone(),
-            inspector.get_session_sender(),
-            inspector.add_deregister_handler(),
-            true,
-        )
+    pub fn builder() -> crate::JsRuntimeBuilder {
+        crate::JsRuntimeBuilder::default()
     }
 
     pub fn execute_script(
@@ -54,6 +41,7 @@ impl JsRuntime {
         self.deno.borrow_mut().execute_script(name, source_code)
     }
 
+    #[allow(clippy::await_holding_refcell_ref)]
     pub fn execute_module(
         &self,
         specifier: bjs::ModuleSpecifier,
@@ -68,11 +56,12 @@ impl JsRuntime {
                 let mut deno = match deno.try_borrow_mut() {
                     Ok(deno) => deno,
                     Err(_) => {
-                        let err = anyhow!("Could not borrow Deno runtime");
+                        let err = AnyError::msg("Could not borrow Deno runtime");
                         error!("{}", err);
-                        return sender
-                            .send(Err(err))
-                            .expect("Module execution result receiving end dropped A");
+                        if sender.send(Err(err)).is_err() {
+                            error!("Module execution stopped due to receiving end dropped");
+                        }
+                        return;
                     }
                 };
 
@@ -81,9 +70,10 @@ impl JsRuntime {
                     Err(err) => {
                         error!("Could not load module {}", &specifier);
                         error!("{}", err);
-                        return sender
-                            .send(Err(err))
-                            .expect("Module execution result receiving end dropped");
+                        if sender.send(Err(err)).is_err() {
+                            error!("Module execution stopped due to receiving end dropped");
+                        }
+                        return;
                     }
                 };
 
@@ -104,7 +94,7 @@ impl JsRuntime {
                                 sender.send(res)
                             }
                             Err(_canceled) => {
-                                let err = anyhow!("Module evaluation was cancelled");
+                                let err = AnyError::msg("Module evaluation was cancelled");
                                 error!("{}", err);
                                 sender.send(Err(err))
                             }
@@ -116,21 +106,33 @@ impl JsRuntime {
 
         receiver
     }
+}
 
-    pub fn builder() -> crate::JsRuntimeBuilder {
-        crate::JsRuntimeBuilder::default()
+#[cfg(feature = "inspector")]
+impl JsRuntime {
+    pub fn inspector(&self, name: String, host: SocketAddr) -> bjs::inspector::InspectorInfo {
+        let mut inspector = self.deno.borrow_mut();
+        let inspector = inspector.inspector();
+        crate::inspector::InspectorInfo::new(
+            host,
+            Uuid::new_v4(),
+            name,
+            inspector.get_session_sender(),
+            inspector.add_deregister_handler(),
+            true,
+        )
     }
 }
 
 pub struct JsRuntimeResource<R> {
-    bevy: Rc<bjs::BevyResource>,
+    world: Rc<bjs::WorldResource>,
     runtime: JsRuntime,
     _phantom: PhantomData<R>,
 }
 
 impl<R: IntoRuntime> FromWorld for JsRuntimeResource<R> {
     fn from_world(world: &mut World) -> Self {
-        let bevy = Rc::new(bjs::BevyResource::default());
+        let res = Rc::new(bjs::WorldResource::default());
         let runtime = R::runtime(world);
 
         // Register [JsRuntimeWorld] with the runtime so Bevy specific ops can
@@ -142,10 +144,10 @@ impl<R: IntoRuntime> FromWorld for JsRuntimeResource<R> {
             .op_state()
             .borrow_mut()
             .resource_table
-            .add_rc(bevy.clone());
+            .add_rc(res.clone());
 
         Self {
-            bevy,
+            world: res,
             runtime,
             _phantom: PhantomData::default(),
         }
@@ -153,17 +155,6 @@ impl<R: IntoRuntime> FromWorld for JsRuntimeResource<R> {
 }
 
 impl<R> JsRuntimeResource<R> {
-    pub fn register_inspector(
-        &self,
-        specifier: bjs::ModuleSpecifier,
-        meta: &bjs::inspector::InspectorMeta,
-    ) {
-        let info = self.runtime.inspector(specifier, meta.host);
-        meta.register_inspector_tx
-            .unbounded_send(info)
-            .expect("Inspector server was dropped");
-    }
-
     pub fn execute_script(
         &mut self,
         name: &str,
@@ -181,30 +172,38 @@ impl<R> JsRuntimeResource<R> {
     }
 }
 
+#[cfg(feature = "inspector")]
+impl<R> JsRuntimeResource<R> {
+    pub fn register_inspector(&self, meta: &bjs::inspector::InspectorMeta) {
+        let info = self
+            .runtime
+            .inspector(std::any::type_name::<R>().to_string(), meta.host);
+        meta.register_inspector_tx
+            .unbounded_send(info)
+            .expect("Inspector server was dropped");
+    }
+}
+
 pub fn drive_runtime<R: IntoRuntime + 'static>(world: &mut World) {
     let res = world
         .get_non_send_resource::<JsRuntimeResource<R>>()
         .unwrap();
 
     let deno = res.runtime.deno.clone();
-    let bevy = res.bevy.clone();
+    let res = res.world.clone();
 
-    // Lend [World] reference to the resource
-    bevy.lend(world, || {
-        // Drive runtime
+    // Lend [World] reference to the resource and execute the Deno event loop
+    // within the scope
+    res.lend(world, || {
         executor::block_on(future::poll_fn(move |cx| {
             let mut deno = match deno.try_borrow_mut() {
                 Ok(deno) => deno,
                 Err(_) => return Poll::Ready(()),
             };
 
-            match deno.poll_event_loop(cx, false) {
-                // Keep event loop alive
-                Poll::Ready(Err(err)) => {
-                    error!("{}", err)
-                }
-                _ => {}
-            };
+            if let Poll::Ready(Err(err)) = deno.poll_event_loop(cx, false) {
+                error!("{}", err)
+            }
 
             Poll::Ready(())
         }));

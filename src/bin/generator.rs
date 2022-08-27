@@ -3,7 +3,7 @@
 use bevy::{
     prelude::*,
     reflect::{
-        serde::ReflectSerializer, Array, ReflectRef, TypeInfo, TypeRegistration,
+        serde::TypedReflectSerializer, Array, ReflectRef, TypeInfo, TypeRegistration,
         TypeRegistryInternal, VariantField, VariantInfo, VariantType,
     },
     utils::{HashMap, HashSet},
@@ -139,9 +139,11 @@ fn generate_type_init(
         ReflectRef::Map(_) => unimplemented!(),
         ReflectRef::Value(v) => {
             let mut json_ser = serde_json::Serializer::new(unsafe { o.as_mut_vec() });
-            match ReflectSerializer::new(v, type_registry).serialize(&mut json_ser) {
-                Ok(_) => {}
-                Err(_) => return "null".to_string(),
+            if TypedReflectSerializer::new(v, type_registry)
+                .serialize(&mut json_ser)
+                .is_err()
+            {
+                return "null".to_string();
             };
         }
         ReflectRef::Enum(e) => {
@@ -262,30 +264,24 @@ fn generate_type(
 
             write!(
                 &mut o,
-                r#"export class {short_name} extends ReflectableObject {{ constructor("#
+                r#"export class {short_name} extends ReflectableObject {{ constructor({}struct)"#,
+                match !generics.is_empty() {
+                    true => "generics, ",
+                    false => "",
+                },
             )
             .unwrap();
 
-            if !generics.is_empty() {
-                write!(&mut o, r#"generics,"#).unwrap();
-            }
-
-            write!(&mut o, r#"struct) {{ super("{type_name}","#).unwrap();
-
-            match !generics.is_empty() {
-                true => write!(&mut o, r#"generics,"#).unwrap(),
-                false => write!(&mut o, r#"null,"#).unwrap(),
-            }
-
-            // Generate default fields
             write!(
                 &mut o,
-                "{},",
+                r#"{{ super("{type_name}", {}{}, struct) }}"#,
+                match !generics.is_empty() {
+                    true => "generics, ",
+                    false => "null, ",
+                },
                 generate_default_type_init(type_registry, structure, registration, false)
             )
             .unwrap();
-
-            write!(&mut o, r#"struct)}}"#).unwrap();
 
             for field in s.iter() {
                 write!(
@@ -308,19 +304,10 @@ fn generate_type(
 
             write!(
                 &mut o,
-                r#"export class {short_name} extends ReflectableArray {{ constructor(seq) {{ super("{type_name}", undefined,"#,
-            )
-            .unwrap();
-
-            // Generate default fields
-            write!(
-                &mut o,
-                "{},",
+                r#"export class {short_name} extends ReflectableArray {{ constructor(seq) {{ super("{type_name}", null, {}, seq) }}}}"#,
                 generate_default_type_init(type_registry, structure, registration, false)
             )
             .unwrap();
-
-            write!(&mut o, r#"seq)}}}};"#).unwrap();
         }
         TypeInfo::Tuple(_) => unimplemented!(),
         TypeInfo::List(_) => unimplemented!(),
@@ -343,7 +330,7 @@ fn generate_type(
 
                         write!(
                             &mut o,
-                            r#"export class {short_name}{name} extends ReflectableObject {{ constructor(struct) {{ super("{name}", {}, struct) }}}}"#,
+                            r#"export class {short_name}{name} extends ReflectableObject {{ constructor(struct) {{ super("{name}", null, {}, struct) }}}}"#,
                             generate_default_type_init(type_registry, structure, registration, false)
                         ).unwrap();
                     }
@@ -352,17 +339,17 @@ fn generate_type(
 
                         write!(
                             &mut o,
-                            r#"export class {short_name}{name} extends ReflectableArray {{ constructor(seq) {{ super("{name}", {}, seq) }}}}"#,
+                            r#"export class {short_name}{name} extends ReflectableArray {{ constructor(seq) {{ super("{name}", null, {}, seq) }}}}"#,
                             generate_default_type_init(type_registry, structure, registration, false)
                         ).unwrap();
                     }
                     VariantInfo::Unit(_) => {
-                        structure.insert_import("js/bevy.js", "ReflectableArray");
+                        // structure.insert_import("js/bevy.js", "ReflectableArray");
 
-                        write!(
-                            &mut o,
-                            r#"export class {short_name}{name} extends ReflectableArray {{ constructor() {{ super("{name}", []); }}}} "#
-                        ).unwrap();
+                        // write!(
+                        //     &mut o,
+                        //     r#"export class {short_name}{name} extends ReflectableArray {{ constructor() {{ super("{name}"); }}}} "#
+                        // ).unwrap();
                     }
                 }
             }
@@ -374,17 +361,28 @@ fn generate_type(
             .unwrap();
 
             for variant in e.iter() {
-                write!(
-                    &mut o,
-                    r#"static {name} = (...args) => new {short_name}(new {short_name}{name}(...args));"#,
-                    name = variant.name()
-                )
-                .unwrap();
+                let name = variant.name();
+                match variant {
+                    VariantInfo::Struct(_) | VariantInfo::Tuple(_) => {
+                        write!(
+                            &mut o,
+                            r#"static {name} = (...args) => new {short_name}(new {short_name}{name}(...args));"#,
+                        )
+                        .unwrap();
+                    }
+                    VariantInfo::Unit(_) => {
+                        write!(
+                            &mut o,
+                            r#"static {name} = () => new {short_name}("{name}");"#,
+                        )
+                        .unwrap();
+                    }
+                }
             }
 
             write!(
                 &mut o,
-                r#"constructor(value) {{ super("{type_name}", undefined, value) }}}};"#,
+                r#"constructor(value) {{ super("{type_name}", null, value) }}}};"#,
             )
             .unwrap();
         }
