@@ -7,8 +7,8 @@ import { Entity } from "../js/bevy.js";
 import {
   Visibility,
   ComputedVisibility,
-} from "../js/generated/bevy/render/view/visibility.js";
-import { FocusPolicy } from "../js/generated/bevy/ui/focus.js";
+} from "../js/bevy/render/view/visibility.js";
+import { FocusPolicy } from "../js/bevy/ui/focus.js";
 import {
   Node,
   CalculatedSize,
@@ -16,10 +16,10 @@ import {
   AlignSelf,
   PositionType,
   Val,
-} from "../js/generated/bevy/ui/uiNode.js";
-import { UiRect } from "../js/generated/bevy/ui/geometry.js";
-import { Transform } from "../js/generated/bevy/transform/components/transform.js";
-import { GlobalTransform } from "../js/generated/bevy/transform/components/globalTransform.js";
+} from "../js/bevy/ui/uiNode.js";
+import { UiRect } from "../js/bevy/ui/geometry.js";
+import { Transform } from "../js/bevy/transform/components/transform.js";
+import { GlobalTransform } from "../js/bevy/transform/components/globalTransform.js";
 import { Affine3A } from "../js/glam/f32/affine3a.js";
 import {
   Text,
@@ -28,8 +28,8 @@ import {
   TextSection,
   VerticalAlign,
   TextStyle,
-} from "../js/generated/bevy/text/text.js";
-import { Color } from "../js/generated/bevy/render/color.js";
+} from "../js/bevy/text/text.js";
+import { Color } from "../js/bevy/render/color.js";
 import { Vec } from "../js/alloc/vec.js";
 
 (async () => {

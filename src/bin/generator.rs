@@ -456,17 +456,9 @@ fn normalize_path(type_name: &str) -> PathBuf {
 
     // Generate path
     let mut path = PathBuf::from("js");
-    let mut iter = segments
+    let iter = segments
         .iter()
         .map(|s| format!("{}", s.ident).to_case(Case::Camel));
-
-    // If first element is in bevy namespace then we automatically generate it
-    if let Some(i) = iter.next() {
-        if "bevy" == i.as_str() {
-            path.push("generated");
-        };
-        path.push(i);
-    }
 
     for segment in iter {
         path.push(segment);
@@ -558,12 +550,8 @@ fn main() -> Result<(), AnyError> {
     let world = app.world;
     let type_registry = world
         .get_resource::<AppTypeRegistry>()
-        .expect("Type registry not registered by Bevy");
-
-    let mut type_registry = type_registry.read();
-
-    let _ = fs::remove_dir_all("js/generated");
-    fs::create_dir_all("js/generated")?;
+        .expect("Type registry not registered by Bevy")
+        .read();
 
     generate(&type_registry)
 }
