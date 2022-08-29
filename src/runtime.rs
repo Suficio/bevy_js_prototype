@@ -5,8 +5,8 @@ use crate::{
     futures::{channel::oneshot, executor, future},
     v8,
 };
-use bevy::{prelude::*, tasks::IoTaskPool, utils::Uuid};
-use std::{cell::RefCell, marker::PhantomData, net::SocketAddr, rc::Rc, task::Poll};
+use bevy::{prelude::*, tasks::IoTaskPool};
+use std::{cell::RefCell, marker::PhantomData, rc::Rc, task::Poll};
 
 /// Represents a trait used to construct [JsRuntimes](bjs::JsRuntime) in a way
 /// that is user configurable
@@ -110,12 +110,16 @@ impl JsRuntime {
 
 #[cfg(feature = "inspector")]
 impl JsRuntime {
-    pub fn inspector(&self, name: String, host: SocketAddr) -> bjs::inspector::InspectorInfo {
+    pub fn inspector(
+        &self,
+        name: String,
+        host: std::net::SocketAddr,
+    ) -> bjs::inspector::InspectorInfo {
         let mut inspector = self.deno.borrow_mut();
         let inspector = inspector.inspector();
         crate::inspector::InspectorInfo::new(
             host,
-            Uuid::new_v4(),
+            bevy::utils::Uuid::new_v4(),
             name,
             inspector.get_session_sender(),
             inspector.add_deregister_handler(),

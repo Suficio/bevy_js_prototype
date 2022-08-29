@@ -50,7 +50,7 @@ cargo run --example hello_world
 The prototype provides a JavaScript inspector which you can use to peer into your running JavaScript code, it is hidden behind the `#[cfg(feature="inspector")]` flag. The simplest way to try it out is by firing up the following example:
 
 ```
-cargo run --example inspector
+cargo run --features="inspector" --example inspector
 ```
 
 Using Chrome or Edge you can open up `chrome://inspect` or `edge://inspect` in your browser, and a runtime, `bevy_js "bevy_js::runtimes::bevy::BevyRuntime"`, will appear, ready for inspection.

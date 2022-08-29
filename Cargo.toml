@@ -9,7 +9,7 @@ readme = "README.md"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [features]
-default = ["inspector"]
+default = []
 inspector = ["tide", "tide-websockets"]
 generator = ["pathdiff", "convert_case", "syn", "proc-macro2"]
 
