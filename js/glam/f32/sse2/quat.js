@@ -5,14 +5,7 @@ import { Quaternion } from "../../../../node_modules/three/src/math/Quaternion.j
 
 export class Quat extends ReflectableArray {
   constructor(seq) {
-    super("glam::quat::Quat", [0.0, 0.0, 0.0, 0.0], seq);
-
-    const { constructor, ...prototypePatch } = Object.getOwnPropertyDescriptors(
-      Quaternion.prototype
-    );
-    Object.defineProperties(Quat.prototype, prototypePatch);
-
-    Quat.prototype.isQuaternion = true;
+    super("glam::quat::Quat", null, [0.0, 0.0, 0.0, 0.0], seq);
   }
 
   // Quaternion implementation expects to be able to evaluate [`_x`, `_y`, `_z`, `_w`]
@@ -50,3 +43,13 @@ export class Quat extends ReflectableArray {
     this.tuple_struct[3] = w;
   }
 }
+
+// Inject properties into constructor
+(() => {
+  const { constructor, ...prototypePatch } = Object.getOwnPropertyDescriptors(
+    Quaternion.prototype
+  );
+  Object.defineProperties(Quat.prototype, prototypePatch);
+
+  Quat.prototype.isQuaternion = true;
+})();

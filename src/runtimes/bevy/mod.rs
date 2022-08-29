@@ -2,7 +2,7 @@ use crate as bjs;
 use bevy::prelude::*;
 use dc::{anyhow::Error as AnyError, op, OpState};
 use deno_core as dc;
-use std::{cell::RefCell, rc::Rc};
+use std::rc::Rc;
 
 mod entity;
 pub mod ext;
@@ -45,11 +45,8 @@ impl bjs::IntoRuntime for BevyRuntime {
 }
 
 #[op]
-async fn op_request_system(
-    state: Rc<RefCell<OpState>>,
-    rid: bjs::ResourceId,
-) -> Result<(), AnyError> {
-    bjs::runtimes::unwrap_world_resource(&state, rid)
+async fn op_request_system(state: &mut OpState, rid: bjs::ResourceId) -> Result<(), AnyError> {
+    bjs::runtimes::unwrap_world_resource(state, rid)
         .wait_for_world()
         .await
 }

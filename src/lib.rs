@@ -1,7 +1,3 @@
-use std::marker::PhantomData;
-
-use bevy::prelude::*;
-
 mod builder;
 #[cfg(feature = "inspector")]
 pub mod inspector;
@@ -10,6 +6,9 @@ mod loader;
 mod runtime;
 pub mod runtimes;
 mod world;
+
+use bevy::prelude::*;
+use std::marker::PhantomData;
 
 pub use builder::JsRuntimeBuilder;
 pub use loader::FsModuleLoader;

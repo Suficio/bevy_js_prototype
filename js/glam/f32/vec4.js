@@ -7,6 +7,7 @@ export class Vec4 extends ReflectableObject {
   constructor(struct) {
     super(
       "glam::vec4::Vec4",
+      null,
       {
         x: 0.0,
         y: 0.0,
@@ -15,13 +16,6 @@ export class Vec4 extends ReflectableObject {
       },
       struct
     );
-
-    const { constructor, ...prototypePatch } = Object.getOwnPropertyDescriptors(
-      Vector4.prototype
-    );
-    Object.defineProperties(Vec4.prototype, prototypePatch);
-
-    Vec4.prototype.isVector4 = true;
   }
 
   // Vector4 implementation expects to be able to evaluate [`x`, `y`, `z`, `w`]
@@ -58,3 +52,13 @@ export class Vec4 extends ReflectableObject {
     this.struct.w = w;
   }
 }
+
+// Inject properties into constructor
+(() => {
+  const { constructor, ...prototypePatch } = Object.getOwnPropertyDescriptors(
+    Vector4.prototype
+  );
+  Object.defineProperties(Vec4.prototype, prototypePatch);
+
+  Vec4.prototype.isVector4 = true;
+})();

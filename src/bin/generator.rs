@@ -33,6 +33,7 @@ struct Structure {
     pub imports: HashMap<String, HashSet<String>>,
 }
 
+/// Holds the properties necessary to generate a file
 impl Structure {
     pub fn insert_import(&mut self, path: &str, import: &str) {
         self.imports
@@ -46,6 +47,7 @@ impl Structure {
     }
 }
 
+/// Shorthand to generate type initialization for array types
 fn generate_array_type_init<A>(
     o: &mut String,
     type_registry: &TypeRegistryInternal,
@@ -66,6 +68,7 @@ fn generate_array_type_init<A>(
     write!(o, r#"]"#).unwrap();
 }
 
+/// Generate type initialization for reflected types
 fn generate_type_init(
     type_registry: &TypeRegistryInternal,
     structure: &mut Structure,
@@ -198,6 +201,7 @@ fn generate_type_init(
     o
 }
 
+/// Generates type initialization for types with a default implementation
 fn generate_default_type_init(
     type_registry: &TypeRegistryInternal,
     structure: &mut Structure,
@@ -248,6 +252,7 @@ fn generate_default_type_init(
     o
 }
 
+/// Generates a top-level type definition
 fn generate_type(
     type_registry: &TypeRegistryInternal,
     structure: &mut Structure,
@@ -306,8 +311,7 @@ fn generate_type(
                 &mut o,
                 r#"export class {short_name} extends ReflectableArray {{ constructor(seq) {{ super("{type_name}", null, {}, seq) }}}}"#,
                 generate_default_type_init(type_registry, structure, registration, false)
-            )
-            .unwrap();
+            ).unwrap();
         }
         TypeInfo::Tuple(_) => unimplemented!(),
         TypeInfo::List(_) => unimplemented!(),
@@ -334,23 +338,30 @@ fn generate_type(
                             generate_default_type_init(type_registry, structure, registration, false)
                         ).unwrap();
                     }
-                    VariantInfo::Tuple(_) => {
-                        structure.insert_import("js/bevy.js", "ReflectableArray");
+                    VariantInfo::Tuple(t) => {
+                        // Single field structs should be serialized as value
+                        // directly
+                        if t.field_len() == 1 {
+                            structure.insert_import("js/bevy.js", "ReflectableValue");
 
-                        write!(
-                            &mut o,
-                            r#"export class {short_name}{name} extends ReflectableArray {{ constructor(seq) {{ super("{name}", null, {}, seq) }}}}"#,
-                            generate_default_type_init(type_registry, structure, registration, false)
-                        ).unwrap();
-                    }
-                    VariantInfo::Unit(_) => {
-                        // structure.insert_import("js/bevy.js", "ReflectableArray");
+                            write!(
+                                &mut o,
+                                r#"export class {short_name}{name} extends ReflectableValue {{ constructor(value) {{ super("{name}", {}, value) }}}}"#,
+                                generate_default_type_init(type_registry, structure, registration, false)
+                            ).unwrap();
+                        } else {
+                            structure.insert_import("js/bevy.js", "ReflectableArray");
 
-                        // write!(
-                        //     &mut o,
-                        //     r#"export class {short_name}{name} extends ReflectableArray {{ constructor() {{ super("{name}"); }}}} "#
-                        // ).unwrap();
+                            write!(
+                                &mut o,
+                                r#"export class {short_name}{name} extends ReflectableArray {{ constructor(seq) {{ super("{name}", null, {}, seq) }}}}"#,
+                                generate_default_type_init(type_registry, structure, registration, false)
+                            ).unwrap();
+                        }
                     }
+                    // Dont create type definitions for unit variants as
+                    // these will be referenced by value
+                    VariantInfo::Unit(_) => {}
                 }
             }
 
@@ -548,7 +559,8 @@ fn main() -> Result<(), AnyError> {
     let type_registry = world
         .get_resource::<AppTypeRegistry>()
         .expect("Type registry not registered by Bevy");
-    let type_registry = type_registry.read();
+
+    let mut type_registry = type_registry.read();
 
     let _ = fs::remove_dir_all("js/generated");
     fs::create_dir_all("js/generated")?;

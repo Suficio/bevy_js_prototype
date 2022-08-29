@@ -7,19 +7,13 @@ export class Vec2 extends ReflectableObject {
   constructor(struct) {
     super(
       "glam::vec2::Vec2",
+      null,
       {
         x: 0.0,
         y: 0.0,
       },
       struct
     );
-
-    let { constructor, ...prototypePatch } = Object.getOwnPropertyDescriptors(
-      Vector2.prototype
-    );
-    Object.defineProperties(Vec2.prototype, prototypePatch);
-
-    Vec2.prototype.isVector2 = true;
   }
 
   // Vector2 implementation expects to be able to evaluate [`x`, `y`]
@@ -40,3 +34,13 @@ export class Vec2 extends ReflectableObject {
     this.struct.y = y;
   }
 }
+
+// Inject properties into constructor
+(() => {
+  let { constructor, ...prototypePatch } = Object.getOwnPropertyDescriptors(
+    Vector2.prototype
+  );
+  Object.defineProperties(Vec2.prototype, prototypePatch);
+
+  Vec2.prototype.isVector2 = true;
+})();

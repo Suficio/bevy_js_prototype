@@ -3,6 +3,27 @@
 const { Reflectable, World, Entity } = Bevy;
 export { Reflectable, World, Entity };
 
+// Simplified case of Reflectable that handles array-like objects with single
+// fields
+export class ReflectableValue extends Reflectable {
+  constructor(type, defaults, value) {
+    super(type, null);
+    if (value) {
+      this.value = Object.seal(value);
+    } else {
+      this.value = Object.seal(defaults);
+    }
+  }
+
+  reflectUntyped() {
+    if (this.value instanceof Reflectable) {
+      return this.value.reflectUntyped();
+    } else {
+      return this.value;
+    }
+  }
+}
+
 export class ReflectableObject extends Reflectable {
   constructor(type, generics, defaults, struct) {
     super(type, generics);
@@ -36,21 +57,17 @@ export class ReflectableArray extends Reflectable {
   }
 
   reflectUntyped() {
-    if (!this.array || this.array.length === 0) {
-      return null;
-    } else {
-      const reflected = [];
-      for (let i = 0; i < this.array.length; i++) {
-        const element = this.array[i];
-        if (element instanceof Reflectable) {
-          reflected[i] = element.reflectUntyped();
-        } else {
-          reflected[i] = element;
-        }
+    const reflected = [];
+    for (let i = 0; i < this.array.length; i++) {
+      const element = this.array[i];
+      if (element instanceof Reflectable) {
+        reflected[i] = element.reflectUntyped();
+      } else {
+        reflected[i] = element;
       }
-
-      return reflected;
     }
+
+    return reflected;
   }
 }
 
@@ -63,29 +80,8 @@ export class ReflectableEnum extends Reflectable {
 
   reflectUntyped() {
     const value = this.value;
-
-    if (value === undefined) {
-      return null;
-    } else if (value instanceof ReflectableArray) {
-      const seq = value.reflectUntyped();
-      if (!seq || seq.length === 0) {
-        return null;
-      }
-
-      const reflected = {};
-      if (seq.length === 1) {
-        reflected[value.type] = seq[0];
-      } else {
-        reflected[value.type] = seq;
-      }
-      return reflected;
-    } else if (value instanceof Reflectable) {
-      const untyped = value.reflectUntyped();
-      if (untyped) {
-        return untyped;
-      } else {
-        return null;
-      }
+    if (value instanceof Reflectable) {
+      return value.reflect();
     } else {
       return value;
     }
