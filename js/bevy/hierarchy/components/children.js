@@ -3,7 +3,10 @@ import {
     ReflectableArray,
 } from "./../../../bevy.js";
 export class Children extends ReflectableArray {
-    constructor(seq) {
-        super("bevy_hierarchy::components::children::Children", null, null, seq)
+    constructor(struct) {
+        super(null, struct)
+    }
+    typeName() {
+        return "bevy_hierarchy::components::children::Children"
     }
 }

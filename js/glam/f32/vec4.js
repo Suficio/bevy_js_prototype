@@ -6,7 +6,6 @@ import { Vector4 } from "../../../node_modules/three/src/math/Vector4.js";
 export class Vec4 extends ReflectableObject {
   constructor(struct) {
     super(
-      "glam::vec4::Vec4",
       null,
       {
         x: 0.0,
@@ -18,39 +17,43 @@ export class Vec4 extends ReflectableObject {
     );
   }
 
+  typeName() {
+    return "glam::vec4::Vec4";
+  }
+
   // Vector4 implementation expects to be able to evaluate [`x`, `y`, `z`, `w`]
 
-  get x() {
-    return this.struct.x;
-  }
+  // get x() {
+  //   return this.x;
+  // }
 
-  set x(x) {
-    this.struct.x = x;
-  }
+  // set x(x) {
+  //   this.x = x;
+  // }
 
-  get y() {
-    return this.struct.y;
-  }
+  // get y() {
+  //   return this.y;
+  // }
 
-  set y(y) {
-    this.struct.y = y;
-  }
+  // set y(y) {
+  //   this.y = y;
+  // }
 
-  get z() {
-    return this.struct.z;
-  }
+  // get z() {
+  //   return this.z;
+  // }
 
-  set z(z) {
-    this.struct.z = z;
-  }
+  // set z(z) {
+  //   this.z = z;
+  // }
 
-  get w() {
-    return this.struct.w;
-  }
+  // get w() {
+  //   return this.w;
+  // }
 
-  set w(w) {
-    this.struct.w = w;
-  }
+  // set w(w) {
+  //   this.w = w;
+  // }
 }
 
 // Inject properties into constructor

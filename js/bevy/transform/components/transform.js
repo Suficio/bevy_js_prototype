@@ -1,13 +1,13 @@
 "use strict";
 import {
-    Vec3,
-} from "./../../../glam/f32/vec3.js";
-import {
     ReflectableObject,
 } from "./../../../bevy.js";
+import {
+    Vec3,
+} from "./../../../glam/f32/vec3.js";
 export class Transform extends ReflectableObject {
     constructor(struct) {
-        super("bevy_transform::components::transform::Transform", null, {
+        super({
             translation: new Vec3({
                 x: 0.0,
                 y: 0.0,
@@ -21,22 +21,7 @@ export class Transform extends ReflectableObject {
             }),
         }, struct)
     }
-    get translation() {
-        return this.struct.translation;
+    typeName() {
+        return "bevy_transform::components::transform::Transform"
     }
-    set translation(translation) {
-        this.struct.translation = translation
-    }
-    get rotation() {
-        return this.struct.rotation;
-    }
-    set rotation(rotation) {
-        this.struct.rotation = rotation
-    }
-    get scale() {
-        return this.struct.scale;
-    }
-    set scale(scale) {
-        this.struct.scale = scale
-    }
-};
+}

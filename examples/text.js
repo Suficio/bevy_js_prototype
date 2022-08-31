@@ -16,6 +16,7 @@ import {
   AlignSelf,
   PositionType,
   Val,
+  Display,
 } from "../js/bevy/ui/uiNode.js";
 import { UiRect } from "../js/bevy/ui/geometry.js";
 import { Transform } from "../js/bevy/transform/components/transform.js";
@@ -43,6 +44,10 @@ async function setup() {
 
   let entity = new Entity(0);
   entity.insert(new Node());
+
+  Deno.core.print(JSON.stringify(Val.Px(5.0)) + "\n");
+  Deno.core.print(JSON.stringify(Display.None()) + "\n");
+
   entity.insert(
     new Style({
       align_self: AlignSelf.FlexEnd(),
@@ -53,38 +58,38 @@ async function setup() {
       }),
     })
   );
-  entity.insert(
-    new Text({
-      sections: new Vec(null, [
-        new TextSection({
-          value: "hello\nbevy_js!",
-          style: new TextStyle({
-            font: handle,
-            font_size: 100.0,
-            color: Color.Rgba({
-              red: 1.0,
-              green: 1.0,
-              blue: 1.0,
-              alpha: 1.0,
-            }),
-          }),
-        }),
-      ]),
-      alignment: new TextAlignment({
-        vertical: VerticalAlign.Top(),
-        horizontal: HorizontalAlign.Center(),
-      }),
-    })
-  );
-  entity.insert(new CalculatedSize());
-  entity.insert(FocusPolicy.Pass());
-  entity.insert(new Transform());
-  entity.insert(new GlobalTransform(Affine3A.Identity()));
-  entity.insert(new Visibility());
-  entity.insert(
-    new ComputedVisibility({
-      is_visible_in_hierarchy: false,
-      is_visible_in_view: false,
-    })
-  );
+  // entity.insert(
+  //   new Text({
+  //     sections: new Vec(null, [
+  //       new TextSection({
+  //         value: "hello\nbevy_js!",
+  //         style: new TextStyle({
+  //           font: handle,
+  //           font_size: 100.0,
+  //           color: Color.Rgba({
+  //             red: 1.0,
+  //             green: 1.0,
+  //             blue: 1.0,
+  //             alpha: 1.0,
+  //           }),
+  //         }),
+  //       }),
+  //     ]),
+  //     alignment: new TextAlignment({
+  //       vertical: VerticalAlign.Top(),
+  //       horizontal: HorizontalAlign.Center(),
+  //     }),
+  //   })
+  // );
+  // entity.insert(new CalculatedSize());
+  // entity.insert(FocusPolicy.Pass());
+  // entity.insert(new Transform());
+  // entity.insert(new GlobalTransform(Affine3A.Identity()));
+  // entity.insert(new Visibility());
+  // entity.insert(
+  //   new ComputedVisibility({
+  //     is_visible_in_hierarchy: false,
+  //     is_visible_in_view: false,
+  //   })
+  // );
 }

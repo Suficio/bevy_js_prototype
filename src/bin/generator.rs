@@ -14,6 +14,7 @@ use deno_core::serde::Serialize;
 use pathdiff::diff_paths;
 use proc_macro2::Ident;
 use std::{
+    collections::BTreeMap,
     fmt::Write as _,
     fs::{self, File},
     io::Write as _,
@@ -28,9 +29,13 @@ use syn::{
 #[derive(Default)]
 struct Structure {
     /// Type definitions indexed by generics stripped type name
-    pub types: HashMap<String, String>,
+    //
+    // Use [BTreeMap] in order to preserve consistent ordering
+    pub types: BTreeMap<String, String>,
     /// Imports indexed by file path
-    pub imports: HashMap<String, HashSet<String>>,
+    //
+    // Use [BTreeMap] in order to preserve consistent ordering
+    pub imports: BTreeMap<String, HashSet<String>>,
 }
 
 /// Holds the properties necessary to generate a file
@@ -261,57 +266,44 @@ fn generate_type(
     let mut o = String::new();
 
     let (short_name, _) = strip_generics(registration.short_name());
-    let (type_name, generics) = strip_generics(registration.type_name());
+    let (type_name, _generics) = strip_generics(registration.type_name());
 
     match registration.type_info() {
-        TypeInfo::Struct(s) => {
+        TypeInfo::Struct(_) => {
             structure.insert_import("js/bevy.js", "ReflectableObject");
 
             write!(
                 &mut o,
-                r#"export class {short_name} extends ReflectableObject {{ constructor({}struct)"#,
-                match !generics.is_empty() {
-                    true => "generics, ",
-                    false => "",
-                },
+                r#"export class {short_name} extends ReflectableObject {{"#,
             )
             .unwrap();
 
             write!(
                 &mut o,
-                r#"{{ super("{type_name}", {}{}, struct) }}"#,
-                match !generics.is_empty() {
-                    true => "generics, ",
-                    false => "null, ",
-                },
+                r#"constructor(struct) {{ super({}, struct) }}"#,
                 generate_default_type_init(type_registry, structure, registration, false)
             )
             .unwrap();
 
-            for field in s.iter() {
-                write!(
-                    &mut o,
-                    r#"get {m}() {{return this.struct.{n};}}set {m}({m}) {{this.struct.{n} = {m}}}"#,
-                    n = field.name(),
-                    m = field.name().to_case(Case::Camel),
-                )
-                .unwrap();
-            }
-
-            write!(&mut o, r#"}};"#).unwrap();
+            write!(&mut o, r#"typeName() {{ return "{type_name}" }}}}"#,).unwrap();
         }
         TypeInfo::TupleStruct(_) => {
-            if !generics.is_empty() {
-                unimplemented!();
-            }
-
             structure.insert_import("js/bevy.js", "ReflectableArray");
 
             write!(
                 &mut o,
-                r#"export class {short_name} extends ReflectableArray {{ constructor(seq) {{ super("{type_name}", null, {}, seq) }}}}"#,
+                r#"export class {short_name} extends ReflectableArray {{"#,
+            )
+            .unwrap();
+
+            write!(
+                &mut o,
+                r#"constructor(struct) {{ super({}, struct) }}"#,
                 generate_default_type_init(type_registry, structure, registration, false)
-            ).unwrap();
+            )
+            .unwrap();
+
+            write!(&mut o, r#"typeName() {{ return "{type_name}" }}}}"#,).unwrap();
         }
         TypeInfo::Tuple(_) => unimplemented!(),
         TypeInfo::List(_) => unimplemented!(),
@@ -320,12 +312,6 @@ fn generate_type(
         TypeInfo::Value(_) => {}
         TypeInfo::Dynamic(_) => unimplemented!(),
         TypeInfo::Enum(e) => {
-            if !generics.is_empty() {
-                unimplemented!();
-            }
-
-            structure.insert_import("js/bevy.js", "ReflectableEnum");
-
             for variant in e.iter() {
                 let name = variant.name();
                 match variant {
@@ -334,36 +320,42 @@ fn generate_type(
 
                         write!(
                             &mut o,
-                            r#"export class {short_name}{name} extends ReflectableObject {{ constructor(struct) {{ super("{name}", null, {}, struct) }}}}"#,
+                            r#"export class {short_name}{name} extends ReflectableObject {{ constructor(struct) {{ super({}, struct) }}"#,
                             generate_default_type_init(type_registry, structure, registration, false)
                         ).unwrap();
+
+                        write!(&mut o, r#"typeName() {{ return "{type_name}" }} }};"#,).unwrap();
                     }
                     VariantInfo::Tuple(t) => {
-                        // Single field structs should be serialized as value
-                        // directly
-                        if t.field_len() == 1 {
-                            structure.insert_import("js/bevy.js", "ReflectableValue");
-
-                            write!(
-                                &mut o,
-                                r#"export class {short_name}{name} extends ReflectableValue {{ constructor(value) {{ super("{name}", {}, value) }}}}"#,
-                                generate_default_type_init(type_registry, structure, registration, false)
-                            ).unwrap();
-                        } else {
+                        if t.field_len() > 1 {
                             structure.insert_import("js/bevy.js", "ReflectableArray");
 
                             write!(
                                 &mut o,
-                                r#"export class {short_name}{name} extends ReflectableArray {{ constructor(seq) {{ super("{name}", null, {}, seq) }}}}"#,
+                                r#"export class {short_name}{name} extends ReflectableArray {{ constructor(seq) {{ super(null, {}, seq) }}"#,
                                 generate_default_type_init(type_registry, structure, registration, false)
                             ).unwrap();
+
+                            write!(&mut o, r#"typeName() {{ return "{type_name}" }} }};"#,)
+                                .unwrap();
                         }
                     }
                     // Dont create type definitions for unit variants as
                     // these will be referenced by value
-                    VariantInfo::Unit(_) => {}
+                    VariantInfo::Unit(_) => {
+                        structure.insert_import("js/bevy.js", "ReflectableUnit");
+
+                        write!(
+                            &mut o,
+                            r#"export class {short_name}{name} extends ReflectableUnit {{ constructor() {{ super("{name}") }}"#,
+                        ).unwrap();
+
+                        write!(&mut o, r#"typeName() {{ return "{type_name}" }} }};"#,).unwrap();
+                    }
                 }
             }
+
+            structure.insert_import("js/bevy.js", "ReflectableEnum");
 
             write!(
                 &mut o,
@@ -374,28 +366,42 @@ fn generate_type(
             for variant in e.iter() {
                 let name = variant.name();
                 match variant {
-                    VariantInfo::Struct(_) | VariantInfo::Tuple(_) => {
+                    VariantInfo::Struct(_) => {
                         write!(
                             &mut o,
-                            r#"static {name} = (...args) => new {short_name}(new {short_name}{name}(...args));"#,
+                            r#"static {name} = (defaults, struct) => new {short_name}("{name}", new {short_name}{name}(defaults, struct));"#,
                         )
                         .unwrap();
                     }
+                    VariantInfo::Tuple(t) => {
+                        if t.field_len() == 1 {
+                            write!(
+                                &mut o,
+                                r#"static {name} = (value) => new {short_name}("{name}", value);"#,
+                            )
+                            .unwrap();
+                        } else {
+                            write!(
+                                &mut o,
+                                r#"static {name} = (value) => new {short_name}("{name}", new {short_name}{name}(value));"#,
+                            )
+                            .unwrap();
+                        }
+                    }
                     VariantInfo::Unit(_) => {
-                        write!(
-                            &mut o,
-                            r#"static {name} = () => new {short_name}("{name}");"#,
-                        )
-                        .unwrap();
+                        write!(&mut o, r#"static {name} = () => new {short_name}{name}();"#,)
+                            .unwrap();
                     }
                 }
             }
 
             write!(
                 &mut o,
-                r#"constructor(value) {{ super("{type_name}", null, value) }}}};"#,
+                r#"constructor(type, value) {{ super(type, value) }}"#,
             )
             .unwrap();
+
+            write!(&mut o, r#"typeName() {{ return "{type_name}" }}}};"#,).unwrap();
         }
     }
 

@@ -1,57 +1,26 @@
 "use strict";
 import {
-    OrthographicProjection,
+    ReflectableObject,
+} from "./../../bevy.js";
+import {
     WindowOrigin,
     ScalingMode,
+    OrthographicProjection,
 } from "./../render/camera/projection.js";
 import {
     Color,
 } from "./../render/color.js";
-import {
-    ReflectableObject,
-} from "./../../bevy.js";
-export class DirectionalLightShadowMap extends ReflectableObject {
-    constructor(struct) {
-        super("bevy_pbr::light::DirectionalLightShadowMap", null, null, struct)
-    }
-    get size() {
-        return this.struct.size;
-    }
-    set size(size) {
-        this.struct.size = size
-    }
-};
-export class PointLightShadowMap extends ReflectableObject {
-    constructor(struct) {
-        super("bevy_pbr::light::PointLightShadowMap", null, null, struct)
-    }
-    get size() {
-        return this.struct.size;
-    }
-    set size(size) {
-        this.struct.size = size
-    }
-};
 export class AmbientLight extends ReflectableObject {
     constructor(struct) {
-        super("bevy_pbr::light::AmbientLight", null, null, struct)
+        super(null, struct)
     }
-    get color() {
-        return this.struct.color;
+    typeName() {
+        return "bevy_pbr::light::AmbientLight"
     }
-    set color(color) {
-        this.struct.color = color
-    }
-    get brightness() {
-        return this.struct.brightness;
-    }
-    set brightness(brightness) {
-        this.struct.brightness = brightness
-    }
-};
+}
 export class DirectionalLight extends ReflectableObject {
     constructor(struct) {
-        super("bevy_pbr::light::DirectionalLight", null, {
+        super({
             color: Color.Rgba({
                 red: 1.0,
                 green: 1.0,
@@ -75,46 +44,50 @@ export class DirectionalLight extends ReflectableObject {
             shadow_normal_bias: 0.6,
         }, struct)
     }
-    get color() {
-        return this.struct.color;
+    typeName() {
+        return "bevy_pbr::light::DirectionalLight"
     }
-    set color(color) {
-        this.struct.color = color
+}
+export class DirectionalLightShadowMap extends ReflectableObject {
+    constructor(struct) {
+        super(null, struct)
     }
-    get illuminance() {
-        return this.struct.illuminance;
+    typeName() {
+        return "bevy_pbr::light::DirectionalLightShadowMap"
     }
-    set illuminance(illuminance) {
-        this.struct.illuminance = illuminance
+}
+export class PointLight extends ReflectableObject {
+    constructor(struct) {
+        super({
+            color: Color.Rgba({
+                red: 1.0,
+                green: 1.0,
+                blue: 1.0,
+                alpha: 1.0,
+            }),
+            intensity: 800.0,
+            range: 20.0,
+            radius: 0.0,
+            shadows_enabled: false,
+            shadow_depth_bias: 0.02,
+            shadow_normal_bias: 0.6,
+        }, struct)
     }
-    get shadowsEnabled() {
-        return this.struct.shadows_enabled;
+    typeName() {
+        return "bevy_pbr::light::PointLight"
     }
-    set shadowsEnabled(shadowsEnabled) {
-        this.struct.shadows_enabled = shadowsEnabled
+}
+export class PointLightShadowMap extends ReflectableObject {
+    constructor(struct) {
+        super(null, struct)
     }
-    get shadowProjection() {
-        return this.struct.shadow_projection;
+    typeName() {
+        return "bevy_pbr::light::PointLightShadowMap"
     }
-    set shadowProjection(shadowProjection) {
-        this.struct.shadow_projection = shadowProjection
-    }
-    get shadowDepthBias() {
-        return this.struct.shadow_depth_bias;
-    }
-    set shadowDepthBias(shadowDepthBias) {
-        this.struct.shadow_depth_bias = shadowDepthBias
-    }
-    get shadowNormalBias() {
-        return this.struct.shadow_normal_bias;
-    }
-    set shadowNormalBias(shadowNormalBias) {
-        this.struct.shadow_normal_bias = shadowNormalBias
-    }
-};
+}
 export class SpotLight extends ReflectableObject {
     constructor(struct) {
-        super("bevy_pbr::light::SpotLight", null, {
+        super({
             color: Color.Rgba({
                 red: 1.0,
                 green: 1.0,
@@ -131,118 +104,7 @@ export class SpotLight extends ReflectableObject {
             inner_angle: 0.0,
         }, struct)
     }
-    get color() {
-        return this.struct.color;
+    typeName() {
+        return "bevy_pbr::light::SpotLight"
     }
-    set color(color) {
-        this.struct.color = color
-    }
-    get intensity() {
-        return this.struct.intensity;
-    }
-    set intensity(intensity) {
-        this.struct.intensity = intensity
-    }
-    get range() {
-        return this.struct.range;
-    }
-    set range(range) {
-        this.struct.range = range
-    }
-    get radius() {
-        return this.struct.radius;
-    }
-    set radius(radius) {
-        this.struct.radius = radius
-    }
-    get shadowsEnabled() {
-        return this.struct.shadows_enabled;
-    }
-    set shadowsEnabled(shadowsEnabled) {
-        this.struct.shadows_enabled = shadowsEnabled
-    }
-    get shadowDepthBias() {
-        return this.struct.shadow_depth_bias;
-    }
-    set shadowDepthBias(shadowDepthBias) {
-        this.struct.shadow_depth_bias = shadowDepthBias
-    }
-    get shadowNormalBias() {
-        return this.struct.shadow_normal_bias;
-    }
-    set shadowNormalBias(shadowNormalBias) {
-        this.struct.shadow_normal_bias = shadowNormalBias
-    }
-    get outerAngle() {
-        return this.struct.outer_angle;
-    }
-    set outerAngle(outerAngle) {
-        this.struct.outer_angle = outerAngle
-    }
-    get innerAngle() {
-        return this.struct.inner_angle;
-    }
-    set innerAngle(innerAngle) {
-        this.struct.inner_angle = innerAngle
-    }
-};
-export class PointLight extends ReflectableObject {
-    constructor(struct) {
-        super("bevy_pbr::light::PointLight", null, {
-            color: Color.Rgba({
-                red: 1.0,
-                green: 1.0,
-                blue: 1.0,
-                alpha: 1.0,
-            }),
-            intensity: 800.0,
-            range: 20.0,
-            radius: 0.0,
-            shadows_enabled: false,
-            shadow_depth_bias: 0.02,
-            shadow_normal_bias: 0.6,
-        }, struct)
-    }
-    get color() {
-        return this.struct.color;
-    }
-    set color(color) {
-        this.struct.color = color
-    }
-    get intensity() {
-        return this.struct.intensity;
-    }
-    set intensity(intensity) {
-        this.struct.intensity = intensity
-    }
-    get range() {
-        return this.struct.range;
-    }
-    set range(range) {
-        this.struct.range = range
-    }
-    get radius() {
-        return this.struct.radius;
-    }
-    set radius(radius) {
-        this.struct.radius = radius
-    }
-    get shadowsEnabled() {
-        return this.struct.shadows_enabled;
-    }
-    set shadowsEnabled(shadowsEnabled) {
-        this.struct.shadows_enabled = shadowsEnabled
-    }
-    get shadowDepthBias() {
-        return this.struct.shadow_depth_bias;
-    }
-    set shadowDepthBias(shadowDepthBias) {
-        this.struct.shadow_depth_bias = shadowDepthBias
-    }
-    get shadowNormalBias() {
-        return this.struct.shadow_normal_bias;
-    }
-    set shadowNormalBias(shadowNormalBias) {
-        this.struct.shadow_normal_bias = shadowNormalBias
-    }
-};
+}

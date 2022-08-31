@@ -1,98 +1,12 @@
 "use strict";
 import {
+    ReflectableUnit,
     ReflectableObject,
     ReflectableEnum,
-    ReflectableValue,
 } from "./../../../bevy.js";
-export class ProjectionPerspective extends ReflectableValue {
-    constructor(value) {
-        super("Perspective", Projection.Perspective([new PerspectiveProjection({
-            fov: 0.7853982,
-            aspect_ratio: 1.0,
-            near: 0.1,
-            far: 1000.0,
-        }), ]), value)
-    }
-}
-export class ProjectionOrthographic extends ReflectableValue {
-    constructor(value) {
-        super("Orthographic", Projection.Perspective([new PerspectiveProjection({
-            fov: 0.7853982,
-            aspect_ratio: 1.0,
-            near: 0.1,
-            far: 1000.0,
-        }), ]), value)
-    }
-}
-export class Projection extends ReflectableEnum {
-    static Perspective = (...args) => new Projection(new ProjectionPerspective(...args));
-    static Orthographic = (...args) => new Projection(new ProjectionOrthographic(...args));
-    constructor(value) {
-        super("bevy_render::camera::projection::Projection", null, value)
-    }
-};
-export class PerspectiveProjection extends ReflectableObject {
-    constructor(struct) {
-        super("bevy_render::camera::projection::PerspectiveProjection", null, {
-            fov: 0.7853982,
-            aspect_ratio: 1.0,
-            near: 0.1,
-            far: 1000.0,
-        }, struct)
-    }
-    get fov() {
-        return this.struct.fov;
-    }
-    set fov(fov) {
-        this.struct.fov = fov
-    }
-    get aspectRatio() {
-        return this.struct.aspect_ratio;
-    }
-    set aspectRatio(aspectRatio) {
-        this.struct.aspect_ratio = aspectRatio
-    }
-    get near() {
-        return this.struct.near;
-    }
-    set near(near) {
-        this.struct.near = near
-    }
-    get far() {
-        return this.struct.far;
-    }
-    set far(far) {
-        this.struct.far = far
-    }
-};
-export class ScalingModeAuto extends ReflectableObject {
-    constructor(struct) {
-        super("Auto", null, null, struct)
-    }
-}
-export class ScalingModeFixedVertical extends ReflectableValue {
-    constructor(value) {
-        super("FixedVertical", null, value)
-    }
-}
-export class ScalingModeFixedHorizontal extends ReflectableValue {
-    constructor(value) {
-        super("FixedHorizontal", null, value)
-    }
-}
-export class ScalingMode extends ReflectableEnum {
-    static None = () => new ScalingMode("None");
-    static WindowSize = () => new ScalingMode("WindowSize");
-    static Auto = (...args) => new ScalingMode(new ScalingModeAuto(...args));
-    static FixedVertical = (...args) => new ScalingMode(new ScalingModeFixedVertical(...args));
-    static FixedHorizontal = (...args) => new ScalingMode(new ScalingModeFixedHorizontal(...args));
-    constructor(value) {
-        super("bevy_render::camera::projection::ScalingMode", null, value)
-    }
-};
 export class OrthographicProjection extends ReflectableObject {
     constructor(struct) {
-        super("bevy_render::camera::projection::OrthographicProjection", null, {
+        super({
             left: -1.0,
             right: 1.0,
             bottom: -1.0,
@@ -104,65 +18,93 @@ export class OrthographicProjection extends ReflectableObject {
             scale: 1.0,
         }, struct)
     }
-    get left() {
-        return this.struct.left;
+    typeName() {
+        return "bevy_render::camera::projection::OrthographicProjection"
     }
-    set left(left) {
-        this.struct.left = left
+}
+export class PerspectiveProjection extends ReflectableObject {
+    constructor(struct) {
+        super({
+            fov: 0.7853982,
+            aspect_ratio: 1.0,
+            near: 0.1,
+            far: 1000.0,
+        }, struct)
     }
-    get right() {
-        return this.struct.right;
+    typeName() {
+        return "bevy_render::camera::projection::PerspectiveProjection"
     }
-    set right(right) {
-        this.struct.right = right
+}
+export class Projection extends ReflectableEnum {
+    static Perspective = (value) => new Projection("Perspective", value);
+    static Orthographic = (value) => new Projection("Orthographic", value);
+    constructor(type, value) {
+        super(type, value)
     }
-    get bottom() {
-        return this.struct.bottom;
+    typeName() {
+        return "bevy_render::camera::projection::Projection"
     }
-    set bottom(bottom) {
-        this.struct.bottom = bottom
+};
+export class ScalingModeNone extends ReflectableUnit {
+    constructor() {
+        super("None")
     }
-    get top() {
-        return this.struct.top;
+    typeName() {
+        return "bevy_render::camera::projection::ScalingMode"
     }
-    set top(top) {
-        this.struct.top = top
+};
+export class ScalingModeWindowSize extends ReflectableUnit {
+    constructor() {
+        super("WindowSize")
     }
-    get near() {
-        return this.struct.near;
+    typeName() {
+        return "bevy_render::camera::projection::ScalingMode"
     }
-    set near(near) {
-        this.struct.near = near
+};
+export class ScalingModeAuto extends ReflectableObject {
+    constructor(struct) {
+        super(null, struct)
     }
-    get far() {
-        return this.struct.far;
+    typeName() {
+        return "bevy_render::camera::projection::ScalingMode"
     }
-    set far(far) {
-        this.struct.far = far
+};
+export class ScalingMode extends ReflectableEnum {
+    static None = () => new ScalingModeNone();
+    static WindowSize = () => new ScalingModeWindowSize();
+    static Auto = (defaults, struct) => new ScalingMode("Auto", new ScalingModeAuto(defaults, struct));
+    static FixedVertical = (value) => new ScalingMode("FixedVertical", value);
+    static FixedHorizontal = (value) => new ScalingMode("FixedHorizontal", value);
+    constructor(type, value) {
+        super(type, value)
     }
-    get windowOrigin() {
-        return this.struct.window_origin;
+    typeName() {
+        return "bevy_render::camera::projection::ScalingMode"
     }
-    set windowOrigin(windowOrigin) {
-        this.struct.window_origin = windowOrigin
+};
+export class WindowOriginCenter extends ReflectableUnit {
+    constructor() {
+        super("Center")
     }
-    get scalingMode() {
-        return this.struct.scaling_mode;
+    typeName() {
+        return "bevy_render::camera::projection::WindowOrigin"
     }
-    set scalingMode(scalingMode) {
-        this.struct.scaling_mode = scalingMode
+};
+export class WindowOriginBottomLeft extends ReflectableUnit {
+    constructor() {
+        super("BottomLeft")
     }
-    get scale() {
-        return this.struct.scale;
-    }
-    set scale(scale) {
-        this.struct.scale = scale
+    typeName() {
+        return "bevy_render::camera::projection::WindowOrigin"
     }
 };
 export class WindowOrigin extends ReflectableEnum {
-    static Center = () => new WindowOrigin("Center");
-    static BottomLeft = () => new WindowOrigin("BottomLeft");
-    constructor(value) {
-        super("bevy_render::camera::projection::WindowOrigin", null, value)
+    static Center = () => new WindowOriginCenter();
+    static BottomLeft = () => new WindowOriginBottomLeft();
+    constructor(type, value) {
+        super(type, value)
+    }
+    typeName() {
+        return "bevy_render::camera::projection::WindowOrigin"
     }
 };

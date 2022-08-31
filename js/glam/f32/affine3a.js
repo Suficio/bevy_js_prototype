@@ -24,31 +24,19 @@ export class Affine3A extends ReflectableObject {
     });
 
   constructor(struct) {
-    super("glam::f32::Affine3A", null, null, struct);
+    super(null, null, struct);
   }
 
-  get matrix3() {
-    return this.struct.matrix3;
+  typeName() {
+    return "glam::f32::Affine3A";
   }
 
-  set matrix3(matrix3) {
-    this.struct.matrix3 = matrix3;
-  }
-
-  get translation() {
-    return this.struct.translation;
-  }
-
-  set translation(translation) {
-    this.struct.translation = translation;
-  }
-
-  reflectUntyped() {
-    return [
-      ...this.matrix3.x_axis.reflectUntyped(),
-      ...this.matrix3.y_axis.reflectUntyped(),
-      ...this.matrix3.z_axis.reflectUntyped(),
-      ...this.translation.reflectUntyped(),
-    ];
-  }
+  // reflectUntyped() {
+  //   return [
+  //     ...this.matrix3.x_axis.reflectUntyped(),
+  //     ...this.matrix3.y_axis.reflectUntyped(),
+  //     ...this.matrix3.z_axis.reflectUntyped(),
+  //     ...this.translation.reflectUntyped(),
+  //   ];
+  // }
 }

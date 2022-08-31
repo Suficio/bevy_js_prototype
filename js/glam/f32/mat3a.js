@@ -26,30 +26,10 @@ export class Mat3A extends ReflectableObject {
     });
 
   constructor(object) {
-    super("glam::f32::Mat3A", null, null, object);
+    super(null, null, object);
   }
 
-  get x_axis() {
-    return this.struct.x_axis;
-  }
-
-  set x_axis(x_axis) {
-    this.struct.x_axis = x_axis;
-  }
-
-  get y_axis() {
-    return this.struct.y_axis;
-  }
-
-  set y_axis(y_axis) {
-    this.struct.y_axis = y_axis;
-  }
-
-  get z_axis() {
-    return this.struct.z_axis;
-  }
-
-  set z_axis(z_axis) {
-    this.struct.z_axis = z_axis;
+  typeName() {
+    return "glam::f32::Mat3A";
   }
 }

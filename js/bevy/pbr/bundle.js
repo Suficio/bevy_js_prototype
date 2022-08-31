@@ -4,6 +4,9 @@ import {
 } from "./../../bevy.js";
 export class CubemapVisibleEntities extends ReflectableObject {
     constructor(struct) {
-        super("bevy_pbr::bundle::CubemapVisibleEntities", null, null, struct)
+        super(null, struct)
     }
-};
+    typeName() {
+        return "bevy_pbr::bundle::CubemapVisibleEntities"
+    }
+}

@@ -1,89 +1,73 @@
 "use strict";
 
-const { Reflectable, World, Entity } = Bevy;
-export { Reflectable, World, Entity };
+const { World, Entity } = Bevy;
+export { World, Entity };
 
-// Simplified case of Reflectable that handles array-like objects with single
-// fields
-export class ReflectableValue extends Reflectable {
-  constructor(type, defaults, value) {
-    super(type, null);
-    if (value) {
-      this.value = Object.seal(value);
-    } else {
-      this.value = Object.seal(defaults);
-    }
-  }
+export class Reflectable {
+  constructor() {}
 
-  reflectUntyped() {
-    if (this.value instanceof Reflectable) {
-      return this.value.reflectUntyped();
-    } else {
-      return this.value;
-    }
+  static reflect() {
+    let obj = {};
+    obj[this.typeName()] = this;
+    return obj;
   }
 }
 
-export class ReflectableObject extends Reflectable {
-  constructor(type, generics, defaults, struct) {
-    super(type, generics);
-    this.struct = Object.seal(Object.assign({}, defaults, struct));
+export class ReflectableObject extends Object {
+  constructor(defaults, struct) {
+    super();
+    Object.assign(this, defaults, struct);
   }
 
-  reflectUntyped() {
-    const reflected = {};
-    for (let property in this.struct) {
-      const element = this.struct[property];
-      if (element instanceof Reflectable) {
-        reflected[property] = element.reflectUntyped();
-      } else {
-        reflected[property] = element;
-      }
-    }
+  typeName() {
+    throw new Error("ReflectableObject must implement typeName");
+  }
 
-    return reflected;
+  reflect() {
+    return Reflectable.reflect.call(this);
   }
 }
 
-export class ReflectableArray extends Reflectable {
-  constructor(type, generics, defaults, seq) {
-    super(type, generics);
-
-    if (seq && !(seq instanceof Array)) {
-      seq = [seq];
-    }
-
-    this.array = Object.seal(Object.assign([], defaults, seq));
+export class ReflectableArray extends Array {
+  constructor(defaults, seq) {
+    super();
+    Object.assign(this, defaults, seq);
   }
 
-  reflectUntyped() {
-    const reflected = [];
-    for (let i = 0; i < this.array.length; i++) {
-      const element = this.array[i];
-      if (element instanceof Reflectable) {
-        reflected[i] = element.reflectUntyped();
-      } else {
-        reflected[i] = element;
-      }
-    }
+  typeName() {
+    throw new Error("ReflectableArray must implement typeName");
+  }
 
-    return reflected;
+  reflect() {
+    return Reflectable.reflect.call(this);
   }
 }
 
-export class ReflectableEnum extends Reflectable {
-  // TODO: defaults for ReflectableEnum
-  constructor(type, generics, value) {
-    super(type, generics);
-    this.value = value;
+export class ReflectableEnum extends Object {
+  constructor(type, value) {
+    super();
+    this[type] = value;
   }
 
-  reflectUntyped() {
-    const value = this.value;
-    if (value instanceof Reflectable) {
-      return value.reflect();
-    } else {
-      return value;
-    }
+  typeName() {
+    throw new Error("ReflectableEnum must implement typeName");
+  }
+
+  reflect() {
+    return Reflectable.reflect.call(this);
+  }
+}
+
+export class ReflectableUnit extends String {
+  constructor(value) {
+    super(value);
+  }
+
+  typeName() {
+    throw new Error("ReflectableUnit must implement typeName");
+  }
+
+  reflect() {
+    return Reflectable.reflect.call(this);
   }
 }

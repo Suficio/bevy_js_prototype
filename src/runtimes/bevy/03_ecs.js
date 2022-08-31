@@ -2,7 +2,6 @@
 
 ((window) => {
   const core = window.__bootstrap.core;
-  const { Reflectable } = window.Bevy;
 
   // Cache global reference to the `World` resource
   let rWorld = undefined;
@@ -35,11 +34,10 @@
     }
 
     insert(component) {
-      if (!(component instanceof Reflectable)) {
-        throw new Error("Component must have Reflectable prototype");
-      }
-
       let reflected = component.reflect();
+
+      Deno.core.print(JSON.stringify(reflected) + "\n");
+
       try {
         core.opSync(
           "op_entity_insert_component",
@@ -49,9 +47,9 @@
         );
       } catch (error) {
         throw new Error(
-          `Could not insert component into entity ${
-            this.entity
-          }\n${JSON.stringify(reflected)}\n${error}`
+          `Could not insert component into entity: ${this.entity}
+          ${JSON.stringify(reflected)}
+          ${error}`
         );
       }
     }
@@ -74,7 +72,7 @@
     }
   }
 
-  async function system(...args) {
+  async function system() {
     await core.opAsync("op_request_system", worldResourceId());
   }
 

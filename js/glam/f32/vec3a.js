@@ -17,10 +17,9 @@ export class Vec3A extends Vec3 {
 
   constructor(struct) {
     super(struct);
-    this.type = "glam::f32::Vec3A";
   }
 
-  reflectUntyped() {
-    return [this.x, this.y, this.z];
+  typeName() {
+    return "glam::f32::Vec3A";
   }
 }

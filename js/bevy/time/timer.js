@@ -7,7 +7,7 @@ import {
 } from "./stopwatch.js";
 export class Timer extends ReflectableObject {
     constructor(struct) {
-        super("bevy_time::timer::Timer", null, {
+        super({
             stopwatch: new Stopwatch({
                 elapsed: {
                     "secs": 0,
@@ -24,34 +24,7 @@ export class Timer extends ReflectableObject {
             times_finished_this_tick: 0,
         }, struct)
     }
-    get stopwatch() {
-        return this.struct.stopwatch;
+    typeName() {
+        return "bevy_time::timer::Timer"
     }
-    set stopwatch(stopwatch) {
-        this.struct.stopwatch = stopwatch
-    }
-    get duration() {
-        return this.struct.duration;
-    }
-    set duration(duration) {
-        this.struct.duration = duration
-    }
-    get repeating() {
-        return this.struct.repeating;
-    }
-    set repeating(repeating) {
-        this.struct.repeating = repeating
-    }
-    get finished() {
-        return this.struct.finished;
-    }
-    set finished(finished) {
-        this.struct.finished = finished
-    }
-    get timesFinishedThisTick() {
-        return this.struct.times_finished_this_tick;
-    }
-    set timesFinishedThisTick(timesFinishedThisTick) {
-        this.struct.times_finished_this_tick = timesFinishedThisTick
-    }
-};
+}
