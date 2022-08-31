@@ -19,4 +19,4 @@ export class ImageMode extends ReflectableEnum {
     typeName() {
         return "bevy_ui::widget::image::ImageMode"
     }
-};
+}

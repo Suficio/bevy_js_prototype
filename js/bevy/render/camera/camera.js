@@ -15,8 +15,8 @@ export class Camera extends ReflectableObject {
     }
 }
 export class CameraRenderGraph extends ReflectableArray {
-    constructor(struct) {
-        super(null, struct)
+    constructor(seq) {
+        super(null, seq)
     }
     typeName() {
         return "bevy_render::camera::camera::CameraRenderGraph"

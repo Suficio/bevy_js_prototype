@@ -1,8 +1,8 @@
 "use strict";
 import {
-    ReflectableUnit,
-    ReflectableObject,
     ReflectableEnum,
+    ReflectableObject,
+    ReflectableUnit,
 } from "./../../bevy.js";
 export class AnchorCenter extends ReflectableUnit {
     constructor() {
@@ -93,7 +93,7 @@ export class Anchor extends ReflectableEnum {
     typeName() {
         return "bevy_sprite::sprite::Anchor"
     }
-};
+}
 export class Sprite extends ReflectableObject {
     constructor(struct) {
         super(null, struct)

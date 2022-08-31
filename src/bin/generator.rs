@@ -6,7 +6,7 @@ use bevy::{
         serde::TypedReflectSerializer, Array, ReflectRef, TypeInfo, TypeRegistration,
         TypeRegistryInternal, VariantField, VariantInfo, VariantType,
     },
-    utils::{HashMap, HashSet},
+    utils::HashMap,
 };
 use bevy_js::anyhow::Error as AnyError;
 use convert_case::{Case, Casing};
@@ -14,7 +14,7 @@ use deno_core::serde::Serialize;
 use pathdiff::diff_paths;
 use proc_macro2::Ident;
 use std::{
-    collections::BTreeMap,
+    collections::{BTreeMap, BTreeSet},
     fmt::Write as _,
     fs::{self, File},
     io::Write as _,
@@ -35,7 +35,7 @@ struct Structure {
     /// Imports indexed by file path
     //
     // Use [BTreeMap] in order to preserve consistent ordering
-    pub imports: BTreeMap<String, HashSet<String>>,
+    pub imports: BTreeMap<String, BTreeSet<String>>,
 }
 
 /// Holds the properties necessary to generate a file
@@ -277,14 +277,12 @@ fn generate_type(
                 r#"export class {short_name} extends ReflectableObject {{"#,
             )
             .unwrap();
-
             write!(
                 &mut o,
                 r#"constructor(struct) {{ super({}, struct) }}"#,
                 generate_default_type_init(type_registry, structure, registration, false)
             )
             .unwrap();
-
             write!(&mut o, r#"typeName() {{ return "{type_name}" }}}}"#,).unwrap();
         }
         TypeInfo::TupleStruct(_) => {
@@ -295,14 +293,12 @@ fn generate_type(
                 r#"export class {short_name} extends ReflectableArray {{"#,
             )
             .unwrap();
-
             write!(
                 &mut o,
-                r#"constructor(struct) {{ super({}, struct) }}"#,
+                r#"constructor(seq) {{ super({}, seq) }}"#,
                 generate_default_type_init(type_registry, structure, registration, false)
             )
             .unwrap();
-
             write!(&mut o, r#"typeName() {{ return "{type_name}" }}}}"#,).unwrap();
         }
         TypeInfo::Tuple(_) => unimplemented!(),
@@ -320,11 +316,21 @@ fn generate_type(
 
                         write!(
                             &mut o,
-                            r#"export class {short_name}{name} extends ReflectableObject {{ constructor(struct) {{ super({}, struct) }}"#,
-                            generate_default_type_init(type_registry, structure, registration, false)
-                        ).unwrap();
-
-                        write!(&mut o, r#"typeName() {{ return "{type_name}" }} }};"#,).unwrap();
+                            r#"export class {short_name}{name} extends ReflectableObject {{"#,
+                        )
+                        .unwrap();
+                        write!(
+                            &mut o,
+                            r#"constructor(struct) {{ super({}, struct) }}"#,
+                            generate_default_type_init(
+                                type_registry,
+                                structure,
+                                registration,
+                                false
+                            )
+                        )
+                        .unwrap();
+                        write!(&mut o, r#"typeName() {{ return "{type_name}" }} }}"#,).unwrap();
                     }
                     VariantInfo::Tuple(t) => {
                         if t.field_len() > 1 {
@@ -332,12 +338,21 @@ fn generate_type(
 
                             write!(
                                 &mut o,
-                                r#"export class {short_name}{name} extends ReflectableArray {{ constructor(seq) {{ super(null, {}, seq) }}"#,
-                                generate_default_type_init(type_registry, structure, registration, false)
-                            ).unwrap();
-
-                            write!(&mut o, r#"typeName() {{ return "{type_name}" }} }};"#,)
-                                .unwrap();
+                                r#"export class {short_name}{name} extends ReflectableArray {{"#,
+                            )
+                            .unwrap();
+                            write!(
+                                &mut o,
+                                r#"constructor(seq) {{ super(null, {}, seq) }}"#,
+                                generate_default_type_init(
+                                    type_registry,
+                                    structure,
+                                    registration,
+                                    false
+                                )
+                            )
+                            .unwrap();
+                            write!(&mut o, r#"typeName() {{ return "{type_name}" }} }}"#,).unwrap();
                         }
                     }
                     // Dont create type definitions for unit variants as
@@ -347,9 +362,10 @@ fn generate_type(
 
                         write!(
                             &mut o,
-                            r#"export class {short_name}{name} extends ReflectableUnit {{ constructor() {{ super("{name}") }}"#,
-                        ).unwrap();
-
+                            r#"export class {short_name}{name} extends ReflectableUnit {{"#,
+                        )
+                        .unwrap();
+                        write!(&mut o, r#"constructor() {{ super("{name}") }}"#,).unwrap();
                         write!(&mut o, r#"typeName() {{ return "{type_name}" }} }};"#,).unwrap();
                     }
                 }
@@ -401,7 +417,7 @@ fn generate_type(
             )
             .unwrap();
 
-            write!(&mut o, r#"typeName() {{ return "{type_name}" }}}};"#,).unwrap();
+            write!(&mut o, r#"typeName() {{ return "{type_name}" }} }}"#,).unwrap();
         }
     }
 

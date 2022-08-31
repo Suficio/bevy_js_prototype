@@ -5,7 +5,7 @@ import {
 export class Name extends ReflectableObject {
     constructor(struct) {
         super({
-            hash: 7664314576386785066,
+            hash: 3309698360916821802,
             name: "",
         }, struct)
     }

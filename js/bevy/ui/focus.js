@@ -1,7 +1,7 @@
 "use strict";
 import {
-    ReflectableUnit,
     ReflectableEnum,
+    ReflectableUnit,
 } from "./../../bevy.js";
 export class FocusPolicyBlock extends ReflectableUnit {
     constructor() {
@@ -28,7 +28,7 @@ export class FocusPolicy extends ReflectableEnum {
     typeName() {
         return "bevy_ui::focus::FocusPolicy"
     }
-};
+}
 export class InteractionClicked extends ReflectableUnit {
     constructor() {
         super("Clicked")
@@ -63,4 +63,4 @@ export class Interaction extends ReflectableEnum {
     typeName() {
         return "bevy_ui::focus::Interaction"
     }
-};
+}

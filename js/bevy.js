@@ -31,6 +31,11 @@ export class ReflectableObject extends Object {
 export class ReflectableArray extends Array {
   constructor(defaults, seq) {
     super();
+
+    if (seq && !(seq instanceof Array)) {
+      seq = [seq];
+    }
+
     Object.assign(this, defaults, seq);
   }
 

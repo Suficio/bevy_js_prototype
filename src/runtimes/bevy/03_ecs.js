@@ -36,8 +36,6 @@
     insert(component) {
       let reflected = component.reflect();
 
-      Deno.core.print(JSON.stringify(reflected) + "\n");
-
       try {
         core.opSync(
           "op_entity_insert_component",
@@ -48,8 +46,8 @@
       } catch (error) {
         throw new Error(
           `Could not insert component into entity: ${this.entity}
-          ${JSON.stringify(reflected)}
-          ${error}`
+${JSON.stringify(reflected)}
+${error}`
         );
       }
     }

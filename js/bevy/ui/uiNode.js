@@ -1,9 +1,9 @@
 "use strict";
 import {
     ReflectableArray,
-    ReflectableUnit,
     ReflectableEnum,
     ReflectableObject,
+    ReflectableUnit,
 } from "./../../bevy.js";
 import {
     Handle,
@@ -82,7 +82,7 @@ export class AlignContent extends ReflectableEnum {
     typeName() {
         return "bevy_ui::ui_node::AlignContent"
     }
-};
+}
 export class AlignItemsFlexStart extends ReflectableUnit {
     constructor() {
         super("FlexStart")
@@ -135,7 +135,7 @@ export class AlignItems extends ReflectableEnum {
     typeName() {
         return "bevy_ui::ui_node::AlignItems"
     }
-};
+}
 export class AlignSelfAuto extends ReflectableUnit {
     constructor() {
         super("Auto")
@@ -197,7 +197,7 @@ export class AlignSelf extends ReflectableEnum {
     typeName() {
         return "bevy_ui::ui_node::AlignSelf"
     }
-};
+}
 export class CalculatedSize extends ReflectableObject {
     constructor(struct) {
         super(null, struct)
@@ -240,7 +240,7 @@ export class Direction extends ReflectableEnum {
     typeName() {
         return "bevy_ui::ui_node::Direction"
     }
-};
+}
 export class DisplayFlex extends ReflectableUnit {
     constructor() {
         super("Flex")
@@ -266,7 +266,7 @@ export class Display extends ReflectableEnum {
     typeName() {
         return "bevy_ui::ui_node::Display"
     }
-};
+}
 export class FlexDirectionRow extends ReflectableUnit {
     constructor() {
         super("Row")
@@ -310,7 +310,7 @@ export class FlexDirection extends ReflectableEnum {
     typeName() {
         return "bevy_ui::ui_node::FlexDirection"
     }
-};
+}
 export class FlexWrapNoWrap extends ReflectableUnit {
     constructor() {
         super("NoWrap")
@@ -345,7 +345,7 @@ export class FlexWrap extends ReflectableEnum {
     typeName() {
         return "bevy_ui::ui_node::FlexWrap"
     }
-};
+}
 export class JustifyContentFlexStart extends ReflectableUnit {
     constructor() {
         super("FlexStart")
@@ -407,7 +407,7 @@ export class JustifyContent extends ReflectableEnum {
     typeName() {
         return "bevy_ui::ui_node::JustifyContent"
     }
-};
+}
 export class Node extends ReflectableObject {
     constructor(struct) {
         super({
@@ -446,7 +446,7 @@ export class Overflow extends ReflectableEnum {
     typeName() {
         return "bevy_ui::ui_node::Overflow"
     }
-};
+}
 export class PositionTypeRelative extends ReflectableUnit {
     constructor() {
         super("Relative")
@@ -472,7 +472,7 @@ export class PositionType extends ReflectableEnum {
     typeName() {
         return "bevy_ui::ui_node::PositionType"
     }
-};
+}
 export class Style extends ReflectableObject {
     constructor(struct) {
         super({
@@ -533,25 +533,25 @@ export class Style extends ReflectableObject {
     }
 }
 export class UiColor extends ReflectableArray {
-    constructor(struct) {
+    constructor(seq) {
         super([Color.Rgba({
             red: 1.0,
             green: 1.0,
             blue: 1.0,
             alpha: 1.0,
-        }), ], struct)
+        }), ], seq)
     }
     typeName() {
         return "bevy_ui::ui_node::UiColor"
     }
 }
 export class UiImage extends ReflectableArray {
-    constructor(struct) {
+    constructor(seq) {
         super([new Handle({
             id: {
                 "Id": ["6ea26da6-6cf8-4ea2-9986-1d7bf6c17d6f", 13148262314052771789]
             },
-        }), ], struct)
+        }), ], seq)
     }
     typeName() {
         return "bevy_ui::ui_node::UiImage"
@@ -584,4 +584,4 @@ export class Val extends ReflectableEnum {
     typeName() {
         return "bevy_ui::ui_node::Val"
     }
-};
+}

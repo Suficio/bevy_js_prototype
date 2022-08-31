@@ -10,7 +10,7 @@ export class ColorRgba extends ReflectableObject {
     typeName() {
         return "bevy_render::color::Color"
     }
-};
+}
 export class ColorRgbaLinear extends ReflectableObject {
     constructor(struct) {
         super(null, struct)
@@ -18,7 +18,7 @@ export class ColorRgbaLinear extends ReflectableObject {
     typeName() {
         return "bevy_render::color::Color"
     }
-};
+}
 export class ColorHsla extends ReflectableObject {
     constructor(struct) {
         super(null, struct)
@@ -26,7 +26,7 @@ export class ColorHsla extends ReflectableObject {
     typeName() {
         return "bevy_render::color::Color"
     }
-};
+}
 export class Color extends ReflectableEnum {
     static Rgba = (defaults, struct) => new Color("Rgba", new ColorRgba(defaults, struct));
     static RgbaLinear = (defaults, struct) => new Color("RgbaLinear", new ColorRgbaLinear(defaults, struct));
@@ -37,4 +37,4 @@ export class Color extends ReflectableEnum {
     typeName() {
         return "bevy_render::color::Color"
     }
-};
+}

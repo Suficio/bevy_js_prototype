@@ -18,8 +18,7 @@ impl BevyRuntime {
         let extension = bjs::Extension::builder()
             .js(bjs::include_js_files!(
                 prefix "bevy:core",
-                "03_reflect.js",
-                "04_ecs.js",
+                "03_ecs.js",
             ))
             .ops(vec![
                 op_request_system::decl(),

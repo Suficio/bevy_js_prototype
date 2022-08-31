@@ -3,9 +3,9 @@ import {
     ReflectableObject,
 } from "./../../bevy.js";
 import {
-    WindowOrigin,
-    ScalingMode,
     OrthographicProjection,
+    ScalingMode,
+    WindowOrigin,
 } from "./../render/camera/projection.js";
 import {
     Color,

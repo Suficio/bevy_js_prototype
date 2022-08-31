@@ -1,7 +1,7 @@
 "use strict";
 import {
-    ReflectableObject,
     ReflectableEnum,
+    ReflectableObject,
     ReflectableUnit,
 } from "./../../../bevy.js";
 export class Camera3d extends ReflectableObject {
@@ -29,4 +29,4 @@ export class Camera3dDepthLoadOp extends ReflectableEnum {
     typeName() {
         return "bevy_core_pipeline::core_3d::camera_3d::Camera3dDepthLoadOp"
     }
-};
+}

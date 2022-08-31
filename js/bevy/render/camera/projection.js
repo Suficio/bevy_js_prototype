@@ -1,8 +1,8 @@
 "use strict";
 import {
-    ReflectableUnit,
-    ReflectableObject,
     ReflectableEnum,
+    ReflectableObject,
+    ReflectableUnit,
 } from "./../../../bevy.js";
 export class OrthographicProjection extends ReflectableObject {
     constructor(struct) {
@@ -44,7 +44,7 @@ export class Projection extends ReflectableEnum {
     typeName() {
         return "bevy_render::camera::projection::Projection"
     }
-};
+}
 export class ScalingModeNone extends ReflectableUnit {
     constructor() {
         super("None")
@@ -68,7 +68,7 @@ export class ScalingModeAuto extends ReflectableObject {
     typeName() {
         return "bevy_render::camera::projection::ScalingMode"
     }
-};
+}
 export class ScalingMode extends ReflectableEnum {
     static None = () => new ScalingModeNone();
     static WindowSize = () => new ScalingModeWindowSize();
@@ -81,7 +81,7 @@ export class ScalingMode extends ReflectableEnum {
     typeName() {
         return "bevy_render::camera::projection::ScalingMode"
     }
-};
+}
 export class WindowOriginCenter extends ReflectableUnit {
     constructor() {
         super("Center")
@@ -107,4 +107,4 @@ export class WindowOrigin extends ReflectableEnum {
     typeName() {
         return "bevy_render::camera::projection::WindowOrigin"
     }
-};
+}

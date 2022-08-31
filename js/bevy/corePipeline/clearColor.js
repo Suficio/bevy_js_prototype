@@ -1,12 +1,12 @@
 "use strict";
 import {
-    ReflectableEnum,
     ReflectableArray,
+    ReflectableEnum,
     ReflectableUnit,
 } from "./../../bevy.js";
 export class ClearColor extends ReflectableArray {
-    constructor(struct) {
-        super(null, struct)
+    constructor(seq) {
+        super(null, seq)
     }
     typeName() {
         return "bevy_core_pipeline::clear_color::ClearColor"
@@ -38,4 +38,4 @@ export class ClearColorConfig extends ReflectableEnum {
     typeName() {
         return "bevy_core_pipeline::clear_color::ClearColorConfig"
     }
-};
+}

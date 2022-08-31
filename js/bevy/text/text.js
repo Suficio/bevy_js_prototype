@@ -3,9 +3,9 @@ import {
     Vec,
 } from "./../../alloc/vec.js";
 import {
+    ReflectableEnum,
     ReflectableObject,
     ReflectableUnit,
-    ReflectableEnum,
 } from "./../../bevy.js";
 export class HorizontalAlignLeft extends ReflectableUnit {
     constructor() {
@@ -41,7 +41,7 @@ export class HorizontalAlign extends ReflectableEnum {
     typeName() {
         return "bevy_text::text::HorizontalAlign"
     }
-};
+}
 export class Text extends ReflectableObject {
     constructor(struct) {
         super({
@@ -114,4 +114,4 @@ export class VerticalAlign extends ReflectableEnum {
     typeName() {
         return "bevy_text::text::VerticalAlign"
     }
-};
+}
