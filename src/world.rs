@@ -1,6 +1,6 @@
 use crate::{self as bjs, anyhow::Error as AnyError, futures::channel::oneshot, lend::RefLend};
 use bevy::prelude::*;
-use std::{borrow::Cow, cell::RefCell};
+use std::{cell::RefCell, rc::Rc};
 
 /// Shared resource that gets passed to Deno ops
 #[derive(Default)]
@@ -11,23 +11,22 @@ pub struct WorldResource {
     pending_requests: RefCell<Vec<oneshot::Sender<()>>>,
 }
 
-impl bjs::Resource for WorldResource {
-    fn name(&self) -> Cow<str> {
-        // Simpler than bevy_js::world::WorldResource
-        "bevy_js::Resource".into()
-    }
-}
-
 impl WorldResource {
-    pub fn world(&self) -> &World {
-        self.world
-            .borrow()
+    pub fn try_borrow_world(&self) -> Option<&World> {
+        self.world.borrow()
+    }
+
+    pub fn try_borrow_world_mut(&self) -> Option<&mut World> {
+        self.world.borrow_mut()
+    }
+
+    pub fn borrow_world(&self) -> &World {
+        self.try_borrow_world()
             .expect("World was not lent to JS runtime")
     }
 
-    pub fn world_mut(&self) -> &mut World {
-        self.world
-            .borrow_mut()
+    pub fn borrow_world_mut(&self) -> &mut World {
+        self.try_borrow_world_mut()
             .expect("World was not lent to JS runtime")
     }
 }
@@ -43,7 +42,7 @@ impl WorldResource {
             .map_err(|_| AnyError::msg("Evaluation request cancelled by Bevy sender"))
     }
 
-    pub(crate) fn lend<'a, 'l, F>(&'l self, world: &'a mut World, f: F)
+    pub fn lend<'a, 'l, F>(&'l self, world: &'a mut World, f: F)
     where
         F: FnOnce() + 'l,
     {
@@ -57,5 +56,18 @@ impl WorldResource {
 
             f()
         });
+    }
+}
+
+impl bjs::Resource for WorldResource {}
+
+/// Wrap reference counted [WorldResource] to facilitate inter-op between Bevy
+/// and Deno
+#[derive(Default)]
+pub struct WorldResourceExt(Rc<WorldResource>);
+
+impl WorldResourceExt {
+    pub fn inner(&self) -> &Rc<WorldResource> {
+        &self.0
     }
 }

@@ -17,7 +17,7 @@
     } else {
       let res = core.resources();
       let rid = Object.keys(res).find(
-        (rid) => res[rid] === "bevy_js::Resource"
+        (rid) => res[rid] === "bevy_js::world::WorldResource"
       );
       if (rid === undefined) {
         throw new Error(

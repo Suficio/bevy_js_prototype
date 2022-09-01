@@ -13,7 +13,7 @@ use std::marker::PhantomData;
 pub use builder::JsRuntimeBuilder;
 pub use loader::FsModuleLoader;
 pub use runtime::{drive_runtime, IntoRuntime, JsRuntime, JsRuntimeResource};
-pub use world::WorldResource;
+pub use world::{WorldResource, WorldResourceExt};
 
 pub use deno_core::{
     self, anyhow, futures, include_js_files, op, v8, Extension, ExtensionBuilder, ModuleId,
@@ -28,19 +28,32 @@ pub mod resolve {
     };
 }
 
+pub fn register_runtime<R: IntoRuntime + 'static>(app: &mut App) {
+    // [WorldResourceExt] should be created only once
+    if app
+        .world
+        .get_non_send_resource::<WorldResourceExt>()
+        .is_none()
+    {
+        app.init_non_send_resource::<WorldResourceExt>();
+    }
+
+    #[cfg(feature = "inspector")]
+    {
+        let host = std::net::SocketAddr::new("127.0.0.1".parse().unwrap(), 9229);
+        app.insert_resource(inspector::JsInspector::new(host));
+    }
+
+    app.init_non_send_resource::<JsRuntimeResource<R>>()
+        .add_system(drive_runtime::<R>.exclusive_system());
+}
+
 /// Provides a shorthand to register a runtime [R] and drive it
 pub struct JsPlugin<R>(PhantomData<R>);
 
 impl<R: IntoRuntime + Send + Sync + 'static> Plugin for JsPlugin<R> {
     fn build(&self, app: &mut App) {
-        #[cfg(feature = "inspector")]
-        {
-            let host = std::net::SocketAddr::new("127.0.0.1".parse().unwrap(), 9229);
-            app.insert_resource(inspector::JsInspector::new(host));
-        }
-
-        app.init_non_send_resource::<JsRuntimeResource<R>>()
-            .add_system(drive_runtime::<R>.exclusive_system());
+        register_runtime::<R>(app);
     }
 }
 

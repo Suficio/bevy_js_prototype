@@ -38,7 +38,7 @@ impl BevyRuntime {
 }
 
 impl bjs::IntoRuntime for BevyRuntime {
-    fn runtime(_world: &mut World) -> bjs::JsRuntime {
+    fn into_runtime(_world: &mut World) -> bjs::JsRuntime {
         Self::builder().build()
     }
 }
