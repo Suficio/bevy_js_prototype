@@ -17,15 +17,7 @@ export class Vec3 extends ReflectableObject {
   static Axes = () => [Vec3.X(), Vec3.Y(), Vec3.Z()];
 
   constructor(struct) {
-    super(
-      null,
-      {
-        x: 0.0,
-        y: 0.0,
-        z: 0.0,
-      },
-      struct
-    );
+    super(null, struct);
   }
 
   typeName() {

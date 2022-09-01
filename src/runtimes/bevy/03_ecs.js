@@ -3,6 +3,11 @@
 ((window) => {
   const core = window.__bootstrap.core;
 
+  // Need to instruct how to serialize BigInt
+  BigInt.prototype.toJSON = function () {
+    return this.toString();
+  };
+
   // Cache global reference to the `World` resource
   let rWorld = undefined;
 

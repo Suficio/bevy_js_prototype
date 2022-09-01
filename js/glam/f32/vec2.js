@@ -5,14 +5,7 @@ import { Vector2 } from "../../../node_modules/three/src/math/Vector2.js";
 
 export class Vec2 extends ReflectableObject {
   constructor(struct) {
-    super(
-      null,
-      {
-        x: 0.0,
-        y: 0.0,
-      },
-      struct
-    );
+    super(null, struct);
   }
 
   typeName() {

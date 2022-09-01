@@ -4,8 +4,12 @@ import { ReflectableArray } from "../../../bevy.js";
 import { Quaternion } from "../../../../node_modules/three/src/math/Quaternion.js";
 
 export class Quat extends ReflectableArray {
+  static Zero = () => new Affine3A([0.0, 0.0, 0.0, 0.0]);
+  static Identity = () => new Affine3A([0.0, 0.0, 0.0, 1.0]);
+  static Nan = () => new Affine3A([NaN, NaN, NaN, NaN]);
+
   constructor(seq) {
-    super(null, [0.0, 0.0, 0.0, 0.0], seq);
+    super(null, seq);
   }
 
   typeName() {
