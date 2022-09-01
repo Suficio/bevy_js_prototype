@@ -20,7 +20,8 @@ pub fn op_asset_server_load(
 ) -> Result<HandleId, AnyError> {
     let res = bjs::runtimes::unwrap_world_resource(state, r_world);
 
-    let world = res.world_mut();
+    let world = res.borrow_world_mut();
+
     let asset_server = world
         .get_resource::<AssetServer>()
         .ok_or_else(|| AnyError::msg("Could not get AssetServer resource from Bevy"))?;

@@ -8,14 +8,9 @@ use crate::{
 use bevy::{prelude::*, tasks::IoTaskPool};
 use std::{cell::RefCell, marker::PhantomData, rc::Rc, task::Poll};
 
-/// Represents a trait used to construct [JsRuntimes](bjs::JsRuntime) in a way
-/// that is user configurable
+/// Trait used to construct [JsRuntimes](bjs::JsRuntime)
 pub trait IntoRuntime {
-    /// Returns the options used to setup the [JsRuntime](bjs::JsRuntime)
-    ///
-    /// Takes [IoTaskPool] in order to allow the runtime to register monitoring
-    /// tasks such as file watching for hot-reloading.
-    fn runtime(world: &mut World) -> JsRuntime;
+    fn into_runtime(world: &mut World) -> JsRuntime;
 }
 
 pub struct JsRuntime {
@@ -23,14 +18,18 @@ pub struct JsRuntime {
 }
 
 impl JsRuntime {
+    /// Creates a new [JsRuntime] from the provided
+    /// [RuntimeOptions](bjs::RuntimeOptions)
     pub fn new(options: bjs::RuntimeOptions) -> Self {
         Self {
             deno: Rc::new(RefCell::new(dc::JsRuntime::new(options))),
         }
     }
 
-    pub fn builder() -> crate::JsRuntimeBuilder {
-        crate::JsRuntimeBuilder::default()
+    /// Creates a new [JsRuntimeBuilder](bjs::JsRuntimeBuilder) used to
+    /// construct a [RuntimeOptions](bjs::RuntimeOptions)
+    pub fn builder() -> bjs::JsRuntimeBuilder {
+        bjs::JsRuntimeBuilder::default()
     }
 
     pub fn execute_script(
@@ -110,6 +109,8 @@ impl JsRuntime {
 
 #[cfg(feature = "inspector")]
 impl JsRuntime {
+    /// Returns [InspectorInfo](bjs::inspector::InspectorInfo) necessary to
+    /// register the inspector with the [JsRuntime]
     pub fn inspector(
         &self,
         name: String,
@@ -126,18 +127,25 @@ impl JsRuntime {
             true,
         )
     }
+
+    /// Registers inspector with the [JsRuntime]
+    pub fn register_inspector(&self, name: String, meta: &bjs::inspector::InspectorMeta) {
+        let info = self.inspector(name, meta.host);
+        meta.register_inspector_tx
+            .unbounded_send(info)
+            .expect("Inspector server was dropped");
+    }
 }
 
 pub struct JsRuntimeResource<R> {
-    world: Rc<bjs::WorldResource>,
     runtime: JsRuntime,
     _phantom: PhantomData<R>,
 }
 
 impl<R: IntoRuntime> FromWorld for JsRuntimeResource<R> {
     fn from_world(world: &mut World) -> Self {
-        let res = Rc::new(bjs::WorldResource::default());
-        let runtime = R::runtime(world);
+        let runtime = R::into_runtime(world);
+        let res = world.non_send_resource::<bjs::WorldResourceExt>();
 
         // Register [JsRuntimeWorld] with the runtime so Bevy specific ops can
         // have access to the [World].
@@ -148,10 +156,9 @@ impl<R: IntoRuntime> FromWorld for JsRuntimeResource<R> {
             .op_state()
             .borrow_mut()
             .resource_table
-            .add_rc(res.clone());
+            .add_rc(res.inner().clone());
 
         Self {
-            world: res,
             runtime,
             _phantom: PhantomData::default(),
         }
@@ -178,23 +185,35 @@ impl<R> JsRuntimeResource<R> {
 
 #[cfg(feature = "inspector")]
 impl<R> JsRuntimeResource<R> {
+    /// Returns [InspectorInfo](bjs::inspector::InspectorInfo) necessary to
+    /// register the inspector with the [JsRuntime]
+    pub fn inspector(
+        &self,
+        name: String,
+        host: std::net::SocketAddr,
+    ) -> bjs::inspector::InspectorInfo {
+        self.runtime.inspector(name, host)
+    }
+
+    /// Registers inspector with the [JsRuntime]
     pub fn register_inspector(&self, meta: &bjs::inspector::InspectorMeta) {
-        let info = self
-            .runtime
-            .inspector(std::any::type_name::<R>().to_string(), meta.host);
-        meta.register_inspector_tx
-            .unbounded_send(info)
-            .expect("Inspector server was dropped");
+        let name = std::any::type_name::<R>().to_string();
+        self.runtime.register_inspector(name, meta);
     }
 }
 
-pub fn drive_runtime<R: IntoRuntime + 'static>(world: &mut World) {
+/// Drives a [JsRuntime] contained within a [JsRuntimeResource]
+pub fn drive_runtime<R: 'static>(world: &mut World) {
     let res = world
-        .get_non_send_resource::<JsRuntimeResource<R>>()
-        .unwrap();
+        .non_send_resource::<bjs::WorldResourceExt>()
+        .inner()
+        .clone();
 
-    let deno = res.runtime.deno.clone();
-    let res = res.world.clone();
+    let deno = world
+        .non_send_resource::<JsRuntimeResource<R>>()
+        .runtime
+        .deno
+        .clone();
 
     // Lend [World] reference to the resource and execute the Deno event loop
     // within the scope
