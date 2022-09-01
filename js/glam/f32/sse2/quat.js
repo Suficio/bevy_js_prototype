@@ -4,43 +4,51 @@ import { ReflectableArray } from "../../../bevy.js";
 import { Quaternion } from "../../../../node_modules/three/src/math/Quaternion.js";
 
 export class Quat extends ReflectableArray {
+  static Zero = () => new Affine3A([0.0, 0.0, 0.0, 0.0]);
+  static Identity = () => new Affine3A([0.0, 0.0, 0.0, 1.0]);
+  static Nan = () => new Affine3A([NaN, NaN, NaN, NaN]);
+
   constructor(seq) {
-    super("glam::quat::Quat", null, [0.0, 0.0, 0.0, 0.0], seq);
+    super(null, seq);
+  }
+
+  typeName() {
+    return "glam::quat::Quat";
   }
 
   // Quaternion implementation expects to be able to evaluate [`_x`, `_y`, `_z`, `_w`]
   // Quaternion.prototype will itself provide [`x`, `y`, `z`, `w`] accessors
 
   get _x() {
-    return this.tuple_struct[0];
+    return this[0];
   }
 
   set _x(x) {
-    this.tuple_struct[0] = x;
+    this[0] = x;
   }
 
   get _y() {
-    return this.tuple_struct[1];
+    return this[1];
   }
 
   set _y(y) {
-    this.tuple_struct[1] = y;
+    this[1] = y;
   }
 
   get _z() {
-    return this.tuple_struct[2];
+    return this[2];
   }
 
   set _z(z) {
-    this.tuple_struct[2] = z;
+    this[2] = z;
   }
 
   get _w() {
-    return this.tuple_struct[3];
+    return this[3];
   }
 
   set _w(w) {
-    this.tuple_struct[3] = w;
+    this[3] = w;
   }
 }
 

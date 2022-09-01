@@ -16,6 +16,7 @@ import {
   AlignSelf,
   PositionType,
   Val,
+  Display,
 } from "../js/bevy/ui/uiNode.js";
 import { UiRect } from "../js/bevy/ui/geometry.js";
 import { Transform } from "../js/bevy/transform/components/transform.js";
@@ -55,7 +56,7 @@ async function setup() {
   );
   entity.insert(
     new Text({
-      sections: new Vec(null, [
+      sections: new Vec([
         new TextSection({
           value: "hello\nbevy_js!",
           style: new TextStyle({

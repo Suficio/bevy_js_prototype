@@ -3,60 +3,48 @@ import {
     Vec,
 } from "./../../alloc/vec.js";
 import {
-    ReflectableObject,
     ReflectableEnum,
+    ReflectableObject,
+    ReflectableUnit,
 } from "./../../bevy.js";
+export class HorizontalAlignLeft extends ReflectableUnit {
+    constructor() {
+        super("Left")
+    }
+    typeName() {
+        return "bevy_text::text::HorizontalAlign"
+    }
+};
+export class HorizontalAlignCenter extends ReflectableUnit {
+    constructor() {
+        super("Center")
+    }
+    typeName() {
+        return "bevy_text::text::HorizontalAlign"
+    }
+};
+export class HorizontalAlignRight extends ReflectableUnit {
+    constructor() {
+        super("Right")
+    }
+    typeName() {
+        return "bevy_text::text::HorizontalAlign"
+    }
+};
 export class HorizontalAlign extends ReflectableEnum {
-    static Left = () => new HorizontalAlign("Left");
-    static Center = () => new HorizontalAlign("Center");
-    static Right = () => new HorizontalAlign("Right");
-    constructor(value) {
-        super("bevy_text::text::HorizontalAlign", null, value)
+    static Left = () => new HorizontalAlignLeft();
+    static Center = () => new HorizontalAlignCenter();
+    static Right = () => new HorizontalAlignRight();
+    constructor(type, value) {
+        super(type, value)
     }
-};
-export class TextAlignment extends ReflectableObject {
-    constructor(struct) {
-        super("bevy_text::text::TextAlignment", null, null, struct)
+    typeName() {
+        return "bevy_text::text::HorizontalAlign"
     }
-    get vertical() {
-        return this.struct.vertical;
-    }
-    set vertical(vertical) {
-        this.struct.vertical = vertical
-    }
-    get horizontal() {
-        return this.struct.horizontal;
-    }
-    set horizontal(horizontal) {
-        this.struct.horizontal = horizontal
-    }
-};
-export class TextStyle extends ReflectableObject {
-    constructor(struct) {
-        super("bevy_text::text::TextStyle", null, null, struct)
-    }
-    get font() {
-        return this.struct.font;
-    }
-    set font(font) {
-        this.struct.font = font
-    }
-    get fontSize() {
-        return this.struct.font_size;
-    }
-    set fontSize(fontSize) {
-        this.struct.font_size = fontSize
-    }
-    get color() {
-        return this.struct.color;
-    }
-    set color(color) {
-        this.struct.color = color
-    }
-};
+}
 export class Text extends ReflectableObject {
     constructor(struct) {
-        super("bevy_text::text::Text", null, {
+        super({
             sections: [],
             alignment: new TextAlignment({
                 vertical: VerticalAlign.Top(),
@@ -64,41 +52,66 @@ export class Text extends ReflectableObject {
             }),
         }, struct)
     }
-    get sections() {
-        return this.struct.sections;
+    typeName() {
+        return "bevy_text::text::Text"
     }
-    set sections(sections) {
-        this.struct.sections = sections
+}
+export class TextAlignment extends ReflectableObject {
+    constructor(struct) {
+        super(null, struct)
     }
-    get alignment() {
-        return this.struct.alignment;
+    typeName() {
+        return "bevy_text::text::TextAlignment"
     }
-    set alignment(alignment) {
-        this.struct.alignment = alignment
+}
+export class TextSection extends ReflectableObject {
+    constructor(struct) {
+        super(null, struct)
+    }
+    typeName() {
+        return "bevy_text::text::TextSection"
+    }
+}
+export class TextStyle extends ReflectableObject {
+    constructor(struct) {
+        super(null, struct)
+    }
+    typeName() {
+        return "bevy_text::text::TextStyle"
+    }
+}
+export class VerticalAlignTop extends ReflectableUnit {
+    constructor() {
+        super("Top")
+    }
+    typeName() {
+        return "bevy_text::text::VerticalAlign"
+    }
+};
+export class VerticalAlignCenter extends ReflectableUnit {
+    constructor() {
+        super("Center")
+    }
+    typeName() {
+        return "bevy_text::text::VerticalAlign"
+    }
+};
+export class VerticalAlignBottom extends ReflectableUnit {
+    constructor() {
+        super("Bottom")
+    }
+    typeName() {
+        return "bevy_text::text::VerticalAlign"
     }
 };
 export class VerticalAlign extends ReflectableEnum {
-    static Top = () => new VerticalAlign("Top");
-    static Center = () => new VerticalAlign("Center");
-    static Bottom = () => new VerticalAlign("Bottom");
-    constructor(value) {
-        super("bevy_text::text::VerticalAlign", null, value)
+    static Top = () => new VerticalAlignTop();
+    static Center = () => new VerticalAlignCenter();
+    static Bottom = () => new VerticalAlignBottom();
+    constructor(type, value) {
+        super(type, value)
     }
-};
-export class TextSection extends ReflectableObject {
-    constructor(struct) {
-        super("bevy_text::text::TextSection", null, null, struct)
+    typeName() {
+        return "bevy_text::text::VerticalAlign"
     }
-    get value() {
-        return this.struct.value;
-    }
-    set value(value) {
-        this.struct.value = value
-    }
-    get style() {
-        return this.struct.style;
-    }
-    set style(style) {
-        this.struct.style = style
-    }
-};
+}

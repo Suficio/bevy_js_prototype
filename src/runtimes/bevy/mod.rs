@@ -18,8 +18,7 @@ impl BevyRuntime {
         let extension = bjs::Extension::builder()
             .js(bjs::include_js_files!(
                 prefix "bevy:core",
-                "03_reflect.js",
-                "04_ecs.js",
+                "03_ecs.js",
             ))
             .ops(vec![
                 op_request_system::decl(),
@@ -45,6 +44,7 @@ impl bjs::IntoRuntime for BevyRuntime {
 }
 
 #[op]
+#[allow(clippy::await_holding_refcell_ref)]
 async fn op_request_system(state: &mut OpState, rid: bjs::ResourceId) -> Result<(), AnyError> {
     bjs::runtimes::unwrap_world_resource(state, rid)
         .wait_for_world()

@@ -1,55 +1,49 @@
 "use strict";
 
-import { ReflectableObject } from "../../bevy.js";
+import { ReflectableArray } from "../../bevy.js";
 import { Vector4 } from "../../../node_modules/three/src/math/Vector4.js";
 
-export class Vec4 extends ReflectableObject {
+export class Vec4 extends ReflectableArray {
   constructor(struct) {
-    super(
-      "glam::vec4::Vec4",
-      null,
-      {
-        x: 0.0,
-        y: 0.0,
-        z: 0.0,
-        w: 0.0,
-      },
-      struct
-    );
+    super(null, struct);
+  }
+
+  typeName() {
+    return "glam::vec4::Vec4";
   }
 
   // Vector4 implementation expects to be able to evaluate [`x`, `y`, `z`, `w`]
 
   get x() {
-    return this.struct.x;
+    return this[0];
   }
 
   set x(x) {
-    this.struct.x = x;
+    this[0] = x;
   }
 
   get y() {
-    return this.struct.y;
+    return this[1];
   }
 
   set y(y) {
-    this.struct.y = y;
+    this[1] = y;
   }
 
   get z() {
-    return this.struct.z;
+    return this[2];
   }
 
   set z(z) {
-    this.struct.z = z;
+    this[2] = z;
   }
 
   get w() {
-    return this.struct.w;
+    return this[3];
   }
 
   set w(w) {
-    this.struct.w = w;
+    this[3] = w;
   }
 }
 

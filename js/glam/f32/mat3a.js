@@ -1,9 +1,9 @@
 "use strict";
 
-import { ReflectableObject } from "../../bevy.js";
+import { ReflectableArray } from "../../bevy.js";
 import { Vec3A } from "./vec3a.js";
 
-export class Mat3A extends ReflectableObject {
+export class Mat3A extends ReflectableArray {
   static Zero = () =>
     new Mat3A({
       x_axis: Vec3A.Zero(),
@@ -26,30 +26,34 @@ export class Mat3A extends ReflectableObject {
     });
 
   constructor(object) {
-    super("glam::f32::Mat3A", null, null, object);
+    super(null, object);
+  }
+
+  typeName() {
+    return "glam::f32::Mat3A";
   }
 
   get x_axis() {
-    return this.struct.x_axis;
+    return new Vec3A(this.slice(0, 3));
   }
 
   set x_axis(x_axis) {
-    this.struct.x_axis = x_axis;
+    this.splice(0, 3, ...x_axis);
   }
 
   get y_axis() {
-    return this.struct.y_axis;
+    return new Vec3A(this.slice(3, 6));
   }
 
   set y_axis(y_axis) {
-    this.struct.y_axis = y_axis;
+    this.splice(3, 3, ...y_axis);
   }
 
   get z_axis() {
-    return this.struct.z_axis;
+    return new Vec3A(this.slice(6, 9));
   }
 
   set z_axis(z_axis) {
-    this.struct.z_axis = z_axis;
+    this.splice(6, 3, ...z_axis);
   }
 }

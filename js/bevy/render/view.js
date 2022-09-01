@@ -4,12 +4,9 @@ import {
 } from "./../../bevy.js";
 export class Msaa extends ReflectableObject {
     constructor(struct) {
-        super("bevy_render::view::Msaa", null, null, struct)
+        super(null, struct)
     }
-    get samples() {
-        return this.struct.samples;
+    typeName() {
+        return "bevy_render::view::Msaa"
     }
-    set samples(samples) {
-        this.struct.samples = samples
-    }
-};
+}

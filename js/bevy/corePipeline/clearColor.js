@@ -1,24 +1,41 @@
 "use strict";
 import {
-    ReflectableValue,
     ReflectableArray,
     ReflectableEnum,
+    ReflectableUnit,
 } from "./../../bevy.js";
 export class ClearColor extends ReflectableArray {
     constructor(seq) {
-        super("bevy_core_pipeline::clear_color::ClearColor", null, null, seq)
+        super(null, seq)
+    }
+    typeName() {
+        return "bevy_core_pipeline::clear_color::ClearColor"
     }
 }
-export class ClearColorConfigCustom extends ReflectableValue {
-    constructor(value) {
-        super("Custom", null, value)
+export class ClearColorConfigDefault extends ReflectableUnit {
+    constructor() {
+        super("Default")
     }
-}
-export class ClearColorConfig extends ReflectableEnum {
-    static Default = () => new ClearColorConfig("Default");
-    static Custom = (...args) => new ClearColorConfig(new ClearColorConfigCustom(...args));
-    static None = () => new ClearColorConfig("None");
-    constructor(value) {
-        super("bevy_core_pipeline::clear_color::ClearColorConfig", null, value)
+    typeName() {
+        return "bevy_core_pipeline::clear_color::ClearColorConfig"
     }
 };
+export class ClearColorConfigNone extends ReflectableUnit {
+    constructor() {
+        super("None")
+    }
+    typeName() {
+        return "bevy_core_pipeline::clear_color::ClearColorConfig"
+    }
+};
+export class ClearColorConfig extends ReflectableEnum {
+    static Default = () => new ClearColorConfigDefault();
+    static Custom = (value) => new ClearColorConfig("Custom", value);
+    static None = () => new ClearColorConfigNone();
+    constructor(type, value) {
+        super(type, value)
+    }
+    typeName() {
+        return "bevy_core_pipeline::clear_color::ClearColorConfig"
+    }
+}

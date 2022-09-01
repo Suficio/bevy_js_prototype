@@ -3,13 +3,10 @@ import {
     ReflectableObject,
 } from "./../../bevy.js";
 export class Handle extends ReflectableObject {
-    constructor(generics, struct) {
-        super("bevy_asset::handle::Handle", generics, null, struct)
+    constructor(struct) {
+        super(null, struct)
     }
-    get id() {
-        return this.struct.id;
+    typeName() {
+        return "bevy_asset::handle::Handle"
     }
-    set id(id) {
-        this.struct.id = id
-    }
-};
+}

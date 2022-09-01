@@ -2,34 +2,31 @@
 import {
     ReflectableEnum,
     ReflectableObject,
-    ReflectableValue,
+    ReflectableUnit,
 } from "./../../../bevy.js";
-export class Camera3dDepthLoadOpClear extends ReflectableValue {
-    constructor(value) {
-        super("Clear", null, value)
-    }
-}
-export class Camera3dDepthLoadOp extends ReflectableEnum {
-    static Clear = (...args) => new Camera3dDepthLoadOp(new Camera3dDepthLoadOpClear(...args));
-    static Load = () => new Camera3dDepthLoadOp("Load");
-    constructor(value) {
-        super("bevy_core_pipeline::core_3d::camera_3d::Camera3dDepthLoadOp", null, value)
-    }
-};
 export class Camera3d extends ReflectableObject {
     constructor(struct) {
-        super("bevy_core_pipeline::core_3d::camera_3d::Camera3d", null, null, struct)
+        super(null, struct)
     }
-    get clearColor() {
-        return this.struct.clear_color;
+    typeName() {
+        return "bevy_core_pipeline::core_3d::camera_3d::Camera3d"
     }
-    set clearColor(clearColor) {
-        this.struct.clear_color = clearColor
+}
+export class Camera3dDepthLoadOpLoad extends ReflectableUnit {
+    constructor() {
+        super("Load")
     }
-    get depthLoadOp() {
-        return this.struct.depth_load_op;
-    }
-    set depthLoadOp(depthLoadOp) {
-        this.struct.depth_load_op = depthLoadOp
+    typeName() {
+        return "bevy_core_pipeline::core_3d::camera_3d::Camera3dDepthLoadOp"
     }
 };
+export class Camera3dDepthLoadOp extends ReflectableEnum {
+    static Clear = (value) => new Camera3dDepthLoadOp("Clear", value);
+    static Load = () => new Camera3dDepthLoadOpLoad();
+    constructor(type, value) {
+        super(type, value)
+    }
+    typeName() {
+        return "bevy_core_pipeline::core_3d::camera_3d::Camera3dDepthLoadOp"
+    }
+}

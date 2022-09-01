@@ -4,7 +4,7 @@ import {
 } from "./../../bevy.js";
 export class Stopwatch extends ReflectableObject {
     constructor(struct) {
-        super("bevy_time::stopwatch::Stopwatch", null, {
+        super({
             elapsed: {
                 "secs": 0,
                 "nanos": 0
@@ -12,16 +12,7 @@ export class Stopwatch extends ReflectableObject {
             paused: false,
         }, struct)
     }
-    get elapsed() {
-        return this.struct.elapsed;
+    typeName() {
+        return "bevy_time::stopwatch::Stopwatch"
     }
-    set elapsed(elapsed) {
-        this.struct.elapsed = elapsed
-    }
-    get paused() {
-        return this.struct.paused;
-    }
-    set paused(paused) {
-        this.struct.paused = paused
-    }
-};
+}

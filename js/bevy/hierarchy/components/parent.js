@@ -4,6 +4,9 @@ import {
 } from "./../../../bevy.js";
 export class Parent extends ReflectableArray {
     constructor(seq) {
-        super("bevy_hierarchy::components::parent::Parent", null, null, seq)
+        super(null, seq)
+    }
+    typeName() {
+        return "bevy_hierarchy::components::parent::Parent"
     }
 }
