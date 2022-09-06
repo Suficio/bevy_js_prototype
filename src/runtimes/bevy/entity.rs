@@ -42,7 +42,7 @@ pub fn op_entity_insert_component<'scope>(
     let type_name = component.type_name();
     let registration = type_registry.get_with_name(type_name).ok_or_else(|| {
         AnyError::msg(format!(
-            "Could not find type registration for {}",
+            "Could not find type registration for: {}",
             type_name
         ))
     })?;

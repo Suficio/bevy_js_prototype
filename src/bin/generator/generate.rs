@@ -1,56 +1,18 @@
 //! Generates JavaScript definition files for ECS Entities from Bevy TypeRegistry
 
+use crate::{
+    utils::{display_path, normalize_path, strip_generics},
+    Structure,
+};
 use bevy::{
     prelude::*,
     reflect::{
         serde::TypedReflectSerializer, Array, ReflectRef, TypeInfo, TypeRegistration,
         TypeRegistryInternal, VariantField, VariantInfo, VariantType,
     },
-    utils::HashMap,
 };
-use bevy_js::anyhow::Error as AnyError;
-use convert_case::{Case, Casing};
 use deno_core::serde::Serialize;
-use pathdiff::diff_paths;
-use proc_macro2::Ident;
-use std::{
-    collections::{BTreeMap, BTreeSet},
-    fmt::Write as _,
-    fs::{self, File},
-    io::Write as _,
-    path::{Path, PathBuf},
-    process::Command,
-};
-use syn::{
-    punctuated::Punctuated, token::Comma, GenericArgument, PathArguments, PathSegment, TypePath,
-    __private::ToTokens,
-};
-
-#[derive(Default)]
-struct Structure {
-    /// Type definitions indexed by generics stripped type name
-    //
-    // Use [BTreeMap] in order to preserve consistent ordering
-    pub types: BTreeMap<String, String>,
-    /// Imports indexed by file path
-    //
-    // Use [BTreeMap] in order to preserve consistent ordering
-    pub imports: BTreeMap<String, BTreeSet<String>>,
-}
-
-/// Holds the properties necessary to generate a file
-impl Structure {
-    pub fn insert_import(&mut self, path: &str, import: &str) {
-        self.imports
-            .entry(path.to_string())
-            .or_default()
-            .insert(import.to_string());
-    }
-
-    pub fn insert_type(&mut self, type_name: String, def: String) {
-        self.types.insert(type_name, def);
-    }
-}
+use std::fmt::Write as _;
 
 /// Shorthand to generate type initialization for array types
 fn generate_array_type_init<A>(
@@ -258,7 +220,7 @@ fn generate_default_type_init(
 }
 
 /// Generates a top-level type definition
-fn generate_type(
+pub fn generate_type(
     type_registry: &TypeRegistryInternal,
     structure: &mut Structure,
     registration: &TypeRegistration,
@@ -422,158 +384,4 @@ fn generate_type(
     }
 
     structure.insert_type(short_name, o);
-}
-
-/// Strip generic parameters from names
-fn strip_generics(name: &str) -> (String, Punctuated<GenericArgument, Comma>) {
-    let mut t: TypePath = syn::parse_str(name).unwrap();
-
-    let last = t.path.segments.last_mut().unwrap();
-    let arguments = match &last.arguments {
-        PathArguments::AngleBracketed(a) => a.args.clone(),
-        _ => Punctuated::new(),
-    };
-    last.arguments = PathArguments::None;
-
-    let mut stripped = format!("{}", t.into_token_stream());
-    stripped.retain(|c| !c.is_whitespace());
-
-    (stripped, arguments)
-}
-
-/// Convert `bevy_C::` crate types into `bevy/C/` paths
-fn normalize_path(type_name: &str) -> PathBuf {
-    let t: TypePath = syn::parse_str(type_name).unwrap();
-    let mut segments = t.path.segments;
-
-    // Extract type
-    let _type_def = segments.pop().unwrap().into_value();
-
-    // Normalize root segment
-    match segments.first_mut() {
-        Some(root_segment) => {
-            let span = root_segment.ident.span();
-            let ident = format!("{}", root_segment.ident);
-            match ident.split_once("_") {
-                Some((namespace, ident)) => {
-                    if namespace == "bevy" {
-                        *root_segment = Ident::new(ident, span).into();
-                        drop(root_segment);
-
-                        segments.insert(
-                            0,
-                            PathSegment {
-                                ident: Ident::new("bevy", span),
-                                arguments: syn::PathArguments::None,
-                            },
-                        );
-                    }
-                }
-                None => {}
-            };
-        }
-        // Exit early on primitives
-        None => return PathBuf::new(),
-    };
-
-    // Generate path
-    let mut path = PathBuf::from("js");
-    let iter = segments
-        .iter()
-        .map(|s| format!("{}", s.ident).to_case(Case::Camel));
-
-    for segment in iter {
-        path.push(segment);
-    }
-
-    path.set_extension("js");
-
-    path
-}
-
-fn generate(type_registry: &TypeRegistryInternal) -> Result<(), AnyError> {
-    let mut files = HashMap::<String, Structure>::default();
-
-    for registration in type_registry.iter() {
-        let path = normalize_path(registration.type_name());
-        if let Some(path) = path.to_str() {
-            // Filter out primitives and non-bevy types
-            if !path.contains("bevy") {
-                continue;
-            }
-
-            let structure = files
-                .entry(path.to_string())
-                .or_insert_with(Structure::default);
-
-            generate_type(type_registry, structure, registration);
-        }
-    }
-
-    let mut tasks = Vec::with_capacity(files.len());
-
-    for (path, structure) in files.into_iter() {
-        let p = Path::new(&path);
-        fs::create_dir_all(p.parent().unwrap()).unwrap();
-
-        let mut f = File::create(path.clone())?;
-        write!(&mut f, r#""use strict";"#).unwrap();
-        for (file, imports) in structure.imports.iter() {
-            // Need to filter out if attempting to import from the same file
-            let mut p = PathBuf::from(p);
-            if file == &display_path(&p) {
-                continue;
-            }
-
-            write!(&mut f, r#"import {{ "#).unwrap();
-            for import in imports.iter() {
-                write!(&mut f, r#"{}, "#, import).unwrap();
-            }
-
-            p.pop();
-            let path = diff_paths(&file, p).unwrap();
-            write!(&mut f, r#"}} from "./{}";"#, display_path(&path)).unwrap();
-        }
-
-        for def in structure.types.values() {
-            writeln!(&mut f, r#"{}"#, def).unwrap();
-        }
-
-        // For good measure, fire off a beautify command
-        tasks.push(
-            Command::new("npm.cmd")
-                .args(["exec", "--package=js-beautify", "--"])
-                .args(["js-beautify", "-rf"])
-                .arg(p)
-                .spawn()
-                .unwrap(),
-        );
-    }
-
-    for mut task in tasks.drain(..) {
-        task.wait().unwrap();
-    }
-
-    Ok(())
-}
-
-/// Force path to display with forward slash
-fn display_path(path: &PathBuf) -> String {
-    path.iter()
-        .map(|s| s.to_str().unwrap())
-        .collect::<Vec<&str>>()
-        .join("/")
-}
-
-fn main() -> Result<(), AnyError> {
-    let mut app = App::new();
-    app.add_plugins(DefaultPlugins);
-
-    let world = app.world;
-    let type_registry = world
-        .get_resource::<AppTypeRegistry>()
-        .expect("Type registry not registered by Bevy")
-        .read();
-
-    generate(&type_registry)
 }

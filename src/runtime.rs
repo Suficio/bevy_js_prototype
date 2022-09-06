@@ -57,9 +57,7 @@ impl JsRuntime {
                     Err(_) => {
                         let err = AnyError::msg("Could not borrow Deno runtime");
                         error!("{}", err);
-                        if sender.send(Err(err)).is_err() {
-                            error!("Module execution stopped due to receiving end dropped");
-                        }
+                        let _ = sender.send(Err(err));
                         return;
                     }
                 };
@@ -69,9 +67,7 @@ impl JsRuntime {
                     Err(err) => {
                         error!("Could not load module {}", &specifier);
                         error!("{}", err);
-                        if sender.send(Err(err)).is_err() {
-                            error!("Module execution stopped due to receiving end dropped");
-                        }
+                        let _ = sender.send(Err(err));
                         return;
                     }
                 };
@@ -90,12 +86,12 @@ impl JsRuntime {
                                 if let Err(err) = &res {
                                     error!("{}", err);
                                 }
-                                sender.send(res)
+                                let _ = sender.send(res);
                             }
                             Err(_canceled) => {
                                 let err = AnyError::msg("Module evaluation was cancelled");
                                 error!("{}", err);
-                                sender.send(Err(err))
+                                let _ = sender.send(Err(err));
                             }
                         };
                     })

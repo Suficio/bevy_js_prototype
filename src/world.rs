@@ -1,4 +1,4 @@
-use crate::{self as bjs, anyhow::Error as AnyError, futures::channel::oneshot, lend::RefLend};
+use crate::{self as bjs, futures::channel::oneshot, lend::RefLend};
 use bevy::prelude::*;
 use std::{cell::RefCell, rc::Rc};
 
@@ -32,14 +32,14 @@ impl WorldResource {
 }
 
 impl WorldResource {
-    pub async fn wait_for_world(&self) -> Result<(), AnyError> {
+    pub async fn wait_for_world(&self) {
         let (sender, receiver) = oneshot::channel();
 
         self.pending_requests.borrow_mut().push(sender);
 
-        receiver
-            .await
-            .map_err(|_| AnyError::msg("Evaluation request cancelled by Bevy sender"))
+        if let Err(_) = receiver.await {
+            warn!("Evaluation request cancelled by Bevy sender");
+        }
     }
 
     pub fn lend<'a, 'l, F>(&'l self, world: &'a mut World, f: F)
@@ -49,9 +49,9 @@ impl WorldResource {
         self.world.scope(world, || {
             // Signal to pending world requests that [World] has been lent
             for sender in self.pending_requests.borrow_mut().drain(..) {
-                sender
-                    .send(())
-                    .expect("Could not lend world due to receiver being dropped");
+                if let Err(_) = sender.send(()) {
+                    warn!("Could not lend world due to receiver being dropped");
+                }
             }
 
             f()

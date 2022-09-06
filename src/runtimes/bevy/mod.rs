@@ -1,6 +1,6 @@
 use crate as bjs;
 use bevy::prelude::*;
-use dc::{anyhow::Error as AnyError, op, OpState};
+use dc::{op, OpState};
 use deno_core as dc;
 use std::rc::Rc;
 
@@ -44,8 +44,7 @@ impl bjs::IntoRuntime for BevyRuntime {
 }
 
 #[op]
-#[allow(clippy::await_holding_refcell_ref)]
-async fn op_request_system(state: &mut OpState, rid: bjs::ResourceId) -> Result<(), AnyError> {
+async fn op_request_system(state: &mut OpState, rid: bjs::ResourceId) {
     bjs::runtimes::unwrap_world_resource(state, rid)
         .wait_for_world()
         .await
