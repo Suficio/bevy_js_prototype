@@ -1,7 +1,10 @@
 use bevy::ecs::schedule::GraphNode;
 use std::{
     borrow::Cow,
-    collections::{BTreeMap, BTreeSet},
+    collections::{
+        btree_map::{BTreeMap, Entry},
+        BTreeSet,
+    },
 };
 
 /// Holds the properties necessary to generate a file
@@ -17,7 +20,8 @@ pub struct Module {
     //
     // Use [BTreeMap] in order to preserve consistent ordering
     pub imports: BTreeMap<String, BTreeSet<String>>,
-    pub import_files: Vec<String>,
+    /// Used to expose dependencies to [GraphNode]
+    import_files: Vec<String>,
 }
 
 impl Module {
@@ -34,16 +38,20 @@ impl Module {
         self.types.is_empty()
     }
 
-    pub fn insert_import(&mut self, path: &str, import: &str) {
+    pub fn insert_import(&mut self, path: String, import: String) {
         // Do not import from the same file
-        if !self.path.ends_with(path) {
-            self.imports
-                .entry(path.to_string())
-                .or_default()
-                .insert(import.to_string());
-
-            if path != "bevyEcs.reflect" {
-                self.import_files.push(path.to_string());
+        if !self.path.ends_with(&path) {
+            match self.imports.entry(path.clone()) {
+                Entry::Vacant(v) => {
+                    v.insert(BTreeSet::default()).insert(import);
+                    // Insert to import_files only once
+                    if path != "bevyEcs.reflect" {
+                        self.import_files.push(path);
+                    }
+                }
+                Entry::Occupied(mut o) => {
+                    o.get_mut().insert(import);
+                }
             }
         }
     }

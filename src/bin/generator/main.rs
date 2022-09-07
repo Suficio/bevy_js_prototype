@@ -1,11 +1,6 @@
 //! Generates JavaScript definition files for ECS Entities from Bevy TypeRegistry
 
-use bevy::{
-    ecs::schedule::graph_utils::{build_dependency_graph, topological_order},
-    prelude::*,
-    reflect::TypeRegistryInternal,
-    utils::hashbrown::HashMap,
-};
+use bevy::{prelude::*, reflect::TypeRegistryInternal, utils::hashbrown::HashMap};
 use bevy_js::anyhow::Error as AnyError;
 use generate::generate_type;
 use gumdrop::Options;
@@ -16,7 +11,7 @@ use std::{
     path::{Path, PathBuf},
     process::Command,
 };
-use utils::{display_path, type_path};
+use utils::{display_path, evaluate_dependency_order, type_path};
 
 mod generate;
 mod module;
@@ -24,11 +19,21 @@ mod utils;
 
 #[derive(Debug, Options)]
 struct GeneratorOptions {
+    #[options(help = "print help message")]
+    help: bool,
     #[options(help = "target directory", default = "src/runtimes/bevy/ext")]
     target: PathBuf,
+    #[options(
+        help = "used to set the level that generated modules are loaded after",
+        default = "3"
+    )]
+    level: usize,
 }
 
-fn generate_modules(type_registry: &TypeRegistryInternal) -> Vec<Module> {
+fn generate_modules(
+    opts: &GeneratorOptions,
+    type_registry: &TypeRegistryInternal,
+) -> Vec<(String, Module)> {
     let mut modules = HashMap::<String, Module>::default();
 
     for registration in type_registry.iter() {
@@ -47,43 +52,15 @@ fn generate_modules(type_registry: &TypeRegistryInternal) -> Vec<Module> {
         .filter(|m| !m.is_empty())
         .collect::<Vec<Module>>();
 
-    let graph = build_dependency_graph(&modules);
-    let order = match topological_order(&graph) {
-        Ok(modules) => modules,
-        Err(_) => panic!("Graph cycles"),
-    };
-
-    order
-        .iter()
-        .map(move |i| modules[*i].clone())
-        .collect::<Vec<Module>>()
+    evaluate_dependency_order(modules, opts.level)
 }
 
 fn generate(opts: &GeneratorOptions, type_registry: &TypeRegistryInternal) -> Result<(), AnyError> {
     let mut tasks = Vec::default();
 
-    let dependencies = generate_modules(type_registry);
-
-    let iter = dependencies.into_iter().enumerate().map(|(i, module)| {
-        let mut path = module.path.split('.').collect::<Vec<&str>>();
-
-        match path.len() {
-            0 => unreachable!(),
-            1 => path.push(path[0].clone()),
-            _ => {}
-        }
-
-        let file = path.pop().unwrap();
-        let path = path.join("/");
-
-        let path = format!("{}/{:02}_{file}.js", path, i);
-        (path, module)
-    });
-
-    for (path, module) in iter {
-        dbg!(&path);
-
-        let mut p = opts.target.join(&path);
+    let dependencies = generate_modules(opts, type_registry);
+    for (path, module) in dependencies.iter() {
+        let mut p = opts.target.join(path);
         p.set_extension("js");
         let p = Path::new(&p);
 
