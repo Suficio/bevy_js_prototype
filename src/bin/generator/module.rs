@@ -70,23 +70,56 @@ impl Module {
         W: std::io::Write,
     {
         for (file, imports) in self.imports.iter() {
-            write!(f, r#"const {{ "#).unwrap();
+            write!(f, "const {{ ").unwrap();
             for import in imports.iter() {
-                write!(f, r#"{import}, "#).unwrap();
+                write!(f, "{import}, ").unwrap();
             }
-            writeln!(f, r#"}} = window.{file};"#).unwrap();
+            writeln!(f, "}} = window.{file};").unwrap();
         }
 
         for def in self.types.values() {
             writeln!(f, "{def}").unwrap();
         }
 
-        let path = &self.path;
-        write!(f, r#"window.{path} = Object.assign(window.{path}, {{ "#).unwrap();
+        let path = self.path.split(".").collect::<Vec<&str>>();
+        let len = path.len() - 1;
+
+        writeln!(
+            f,
+            "if (!window.hasOwnProperty('{p}')) {{ window.{p} = {{}} }}",
+            p = path[0]
+        )
+        .unwrap();
+
+        for i in 1..path.len() {
+            let item = path[i];
+            let preceeding = path[..i].join(".");
+            writeln!(f, "if (!window.{preceeding}.hasOwnProperty('{item}')) {{ window.{preceeding}.{item} = {{}} }}").unwrap();
+        }
+
+        write!(f, "Object.assign(window.{}, {{ ", path.join(".")).unwrap();
         for def in self.types.keys() {
             write!(f, "{def}, ").unwrap();
         }
-        writeln!(f, r#"}} );"#).unwrap();
+        writeln!(f, "}} )").unwrap();
+
+        // write!(f, "const {} = {{ ", path[len]).unwrap();
+        // for def in self.types.keys() {
+        //     write!(f, "{def}, ").unwrap();
+        // }
+        // writeln!(f, "}};").unwrap();
+
+        // if len == 0 {
+        //     writeln!(f, "Object.assign(window, {{ {} }});", path[0]).unwrap();
+        // } else {
+        //     writeln!(
+        //         f,
+        //         "Object.assign(window.{}, {{ {} }});",
+        //         path[..len].join("."),
+        //         path[len]
+        //     )
+        //     .unwrap();
+        // }
     }
 }
 

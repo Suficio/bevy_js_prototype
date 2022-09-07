@@ -3,44 +3,34 @@
 // It displays the current FPS in the top left corner, as well as text that changes color
 // in the bottom right. For text within a scene, please see the text2d example.
 
-import { Entity } from "../js/bevy.js";
-import {
-  Visibility,
-  ComputedVisibility,
-} from "../js/bevy/render/view/visibility.js";
-import { FocusPolicy } from "../js/bevy/ui/focus.js";
-import {
-  Node,
-  CalculatedSize,
-  Style,
-  AlignSelf,
-  PositionType,
-  Val,
-  Display,
-} from "../js/bevy/ui/uiNode.js";
-import { UiRect } from "../js/bevy/ui/geometry.js";
-import { Transform } from "../js/bevy/transform/components/transform.js";
-import { GlobalTransform } from "../js/bevy/transform/components/globalTransform.js";
-import { Affine3A } from "../js/glam/f32/affine3a.js";
-import {
+const { Entity } = bevyEcs;
+const { Visibility, ComputedVisibility } = bevyRender.view.visibility;
+const { FocusPolicy } = bevyUi.focus;
+const { Node, CalculatedSize, Style, AlignSelf, PositionType, Val } =
+  bevyUi.uiNode;
+const { UiRect } = bevyUi.geometry;
+const { Transform } = bevyTransform.components.transform;
+const { GlobalTransform } = bevyTransform.components.globalTransform;
+const { Affine3A } = glam.f32.affine3A;
+const {
   Text,
   HorizontalAlign,
   TextAlignment,
   TextSection,
   VerticalAlign,
   TextStyle,
-} from "../js/bevy/text/text.js";
-import { Color } from "../js/bevy/render/color.js";
-import { Vec } from "../js/alloc/vec.js";
+} = bevyText.text;
+const { Color } = bevyRender.color;
+const { Vec } = alloc.vec;
 
 (async () => {
   await setup();
 })();
 
 async function setup() {
-  await Bevy.system();
+  await bevyEcs.system();
 
-  let handle = Bevy.asset.AssetServer.load("fonts/FiraSans-Bold.ttf");
+  let handle = bevyAsset.AssetServer.load("fonts/FiraSans-Bold.ttf");
 
   let entity = new Entity(0);
   entity.insert(new Node());

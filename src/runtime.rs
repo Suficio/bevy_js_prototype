@@ -81,7 +81,7 @@ impl JsRuntime {
                     .spawn(async move {
                         // Receive socket may be dropped as user is not
                         // listening to the final result of the module.
-                        let _ = match recv.await {
+                        match recv.await {
                             Ok(res) => {
                                 if let Err(err) = &res {
                                     error!("{}", err);

@@ -14,11 +14,11 @@ repository = "https://github.com/Suficio/bevy_js_prototype"
 [features]
 default = ["generator"]
 inspector = ["tide", "tide-websockets"]
-generator = ["convert_case", "syn", "proc-macro2", "gumdrop"]
+generator = ["convert_case", "syn", "gumdrop"]
 
 [dependencies]
 bevy = { git = "https://github.com/Suficio/bevy.git", branch = "js-prototype" }
-deno_core = { git = "https://github.com/Suficio/deno.git", branch = "js-prototype" }
+deno_core = { git = "https://github.com/denoland/deno.git" }
 
 serde_json = "1.0.85"
 serde_path_to_error = "0.1.8"
@@ -31,7 +31,6 @@ tide-websockets = { version = "0.4.0", optional = true }
 gumdrop = { version = "0.8.1", optional = true }
 convert_case = { version = "0.5.0", optional = true }
 syn = { version = "1.0.98", features = ["extra-traits", "printing"], optional = true }
-proc-macro2 = { version = "1.0.40", optional = true }
 
 # Enable only a small amount of optimization in debug mode
 [profile.dev]
