@@ -5,6 +5,6 @@
     "three": "^0.142.0"
   },
   "devDependencies": {
-    "js-beautify": "^1.14.4"
+    "prettier": "2.7.1"
   }
 }

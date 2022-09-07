@@ -2,7 +2,7 @@
 
 ((window) => {
   const core = window.__bootstrap.core;
-  const { worldResourceId } = window.Bevy;
+  const { worldResourceId } = window.bevyEcs;
 
   class AssetServer {
     constructor() {}
@@ -14,5 +14,5 @@
     }
   }
 
-  window.Bevy.asset = Object.assign({ AssetServer }, window.Bevy.asset);
+  Object.assign(window.bevyAsset, { AssetServer });
 })(globalThis);

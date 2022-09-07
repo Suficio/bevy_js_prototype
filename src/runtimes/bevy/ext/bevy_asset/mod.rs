@@ -6,6 +6,7 @@ pub fn init() -> Extension {
     Extension::builder()
         .js(include_js_files!(
             prefix "bevy:ext/bevy_asset",
+            "04_handle.js",
             "05_server.js",
         ))
         .ops(vec![op_asset_server_load::decl()])

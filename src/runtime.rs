@@ -57,9 +57,7 @@ impl JsRuntime {
                     Err(_) => {
                         let err = AnyError::msg("Could not borrow Deno runtime");
                         error!("{}", err);
-                        if sender.send(Err(err)).is_err() {
-                            error!("Module execution stopped due to receiving end dropped");
-                        }
+                        let _ = sender.send(Err(err));
                         return;
                     }
                 };
@@ -69,9 +67,7 @@ impl JsRuntime {
                     Err(err) => {
                         error!("Could not load module {}", &specifier);
                         error!("{}", err);
-                        if sender.send(Err(err)).is_err() {
-                            error!("Module execution stopped due to receiving end dropped");
-                        }
+                        let _ = sender.send(Err(err));
                         return;
                     }
                 };
@@ -85,17 +81,17 @@ impl JsRuntime {
                     .spawn(async move {
                         // Receive socket may be dropped as user is not
                         // listening to the final result of the module.
-                        let _ = match recv.await {
+                        match recv.await {
                             Ok(res) => {
                                 if let Err(err) = &res {
                                     error!("{}", err);
                                 }
-                                sender.send(res)
+                                let _ = sender.send(res);
                             }
                             Err(_canceled) => {
                                 let err = AnyError::msg("Module evaluation was cancelled");
                                 error!("{}", err);
-                                sender.send(Err(err))
+                                let _ = sender.send(Err(err));
                             }
                         };
                     })
@@ -116,8 +112,8 @@ impl JsRuntime {
         name: String,
         host: std::net::SocketAddr,
     ) -> bjs::inspector::InspectorInfo {
-        let mut inspector = self.deno.borrow_mut();
-        let inspector = inspector.inspector();
+        let inspector = self.deno.borrow_mut().inspector();
+        let mut inspector = inspector.borrow_mut();
         crate::inspector::InspectorInfo::new(
             host,
             bevy::utils::Uuid::new_v4(),
