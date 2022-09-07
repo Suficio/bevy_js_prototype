@@ -112,8 +112,8 @@ impl JsRuntime {
         name: String,
         host: std::net::SocketAddr,
     ) -> bjs::inspector::InspectorInfo {
-        let mut inspector = self.deno.borrow_mut();
-        let inspector = inspector.inspector();
+        let inspector = self.deno.borrow_mut().inspector();
+        let mut inspector = inspector.borrow_mut();
         crate::inspector::InspectorInfo::new(
             host,
             bevy::utils::Uuid::new_v4(),

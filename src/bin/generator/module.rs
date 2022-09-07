@@ -82,7 +82,6 @@ impl Module {
         }
 
         let path = self.path.split(".").collect::<Vec<&str>>();
-        let len = path.len() - 1;
 
         writeln!(
             f,
@@ -102,24 +101,6 @@ impl Module {
             write!(f, "{def}, ").unwrap();
         }
         writeln!(f, "}} )").unwrap();
-
-        // write!(f, "const {} = {{ ", path[len]).unwrap();
-        // for def in self.types.keys() {
-        //     write!(f, "{def}, ").unwrap();
-        // }
-        // writeln!(f, "}};").unwrap();
-
-        // if len == 0 {
-        //     writeln!(f, "Object.assign(window, {{ {} }});", path[0]).unwrap();
-        // } else {
-        //     writeln!(
-        //         f,
-        //         "Object.assign(window.{}, {{ {} }});",
-        //         path[..len].join("."),
-        //         path[len]
-        //     )
-        //     .unwrap();
-        // }
     }
 }
 
