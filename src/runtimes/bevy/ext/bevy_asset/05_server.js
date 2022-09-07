@@ -14,5 +14,5 @@
     }
   }
 
-  window.Bevy.asset = Object.assign({ AssetServer }, window.Bevy.asset);
+  window.Bevy.asset = Object.assign(window.Bevy.asset, { AssetServer });
 })(globalThis);

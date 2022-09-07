@@ -1,8 +1,7 @@
 use convert_case::{Case, Casing};
-use proc_macro2::Ident;
 use std::path::PathBuf;
 use syn::{
-    punctuated::Punctuated, token::Comma, GenericArgument, PathArguments, PathSegment, TypePath,
+    punctuated::Punctuated, token::Comma, GenericArgument, PathArguments, TypePath,
     __private::ToTokens,
 };
 
@@ -23,43 +22,11 @@ pub fn strip_generics(name: &str) -> (String, Punctuated<GenericArgument, Comma>
     (stripped, arguments)
 }
 
-/// Convert `bevy_C::` crate types into `bevy/C/` paths
-pub fn normalize_path(type_name: &str) -> PathBuf {
+pub fn type_path(type_name: &str) -> PathBuf {
     let t: TypePath = syn::parse_str(type_name).unwrap();
-    let mut segments = t.path.segments;
+    let segments = t.path.segments;
 
-    // Extract type
-    let _type_def = segments.pop().unwrap().into_value();
-
-    // Normalize root segment
-    match segments.first_mut() {
-        Some(root_segment) => {
-            let span = root_segment.ident.span();
-            let ident = format!("{}", root_segment.ident);
-            match ident.split_once("_") {
-                Some((namespace, ident)) => {
-                    if namespace == "bevy" {
-                        *root_segment = Ident::new(ident, span).into();
-                        drop(root_segment);
-
-                        segments.insert(
-                            0,
-                            PathSegment {
-                                ident: Ident::new("bevy", span),
-                                arguments: syn::PathArguments::None,
-                            },
-                        );
-                    }
-                }
-                None => {}
-            };
-        }
-        // Exit early on primitives
-        None => return PathBuf::new(),
-    };
-
-    // Generate path
-    let mut path = PathBuf::from("js");
+    let mut path = PathBuf::default();
     let iter = segments
         .iter()
         .map(|s| format!("{}", s.ident).to_case(Case::Camel));
@@ -67,8 +34,7 @@ pub fn normalize_path(type_name: &str) -> PathBuf {
     for segment in iter {
         path.push(segment);
     }
-
-    path.set_extension("js");
+    path.pop();
 
     path
 }
@@ -78,5 +44,5 @@ pub fn display_path(path: &PathBuf) -> String {
     path.iter()
         .map(|s| s.to_str().unwrap())
         .collect::<Vec<&str>>()
-        .join("/")
+        .join(".")
 }

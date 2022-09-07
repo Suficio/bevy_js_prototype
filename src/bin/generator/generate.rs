@@ -1,8 +1,8 @@
 //! Generates JavaScript definition files for ECS Entities from Bevy TypeRegistry
 
 use crate::{
-    utils::{display_path, normalize_path, strip_generics},
-    Structure,
+    utils::{display_path, strip_generics, type_path},
+    Module,
 };
 use bevy::{
     prelude::*,
@@ -18,7 +18,7 @@ use std::fmt::Write as _;
 fn generate_array_type_init<A>(
     o: &mut String,
     type_registry: &TypeRegistryInternal,
-    structure: &mut Structure,
+    module: &mut Module,
     array: &A,
 ) where
     A: Array + ?Sized,
@@ -28,7 +28,7 @@ fn generate_array_type_init<A>(
         write!(
             o,
             r#"{},"#,
-            generate_type_init(type_registry, structure, e, true)
+            generate_type_init(type_registry, module, e, true)
         )
         .unwrap();
     }
@@ -38,7 +38,7 @@ fn generate_array_type_init<A>(
 /// Generate type initialization for reflected types
 fn generate_type_init(
     type_registry: &TypeRegistryInternal,
-    structure: &mut Structure,
+    module: &mut Module,
     reflect: &dyn Reflect,
     use_constructor: bool,
 ) -> String {
@@ -52,18 +52,15 @@ fn generate_type_init(
     let (short_name, _) = strip_generics(registration.short_name());
     let (type_name, _generics) = strip_generics(registration.type_name());
 
-    let path = normalize_path(&type_name);
-    // Check if path isn't a primitive
-    if !path.to_string_lossy().is_empty() {
-        // Do not generate imports for reflectable values
-        if !matches!(reflect.reflect_ref(), ReflectRef::Value(_)) {
-            structure.insert_import(&display_path(&path), &short_name);
-        }
+    // Do not generate imports for reflectable values
+    if !matches!(reflect.reflect_ref(), ReflectRef::Value(_)) {
+        let type_path = display_path(&type_path(&type_name));
+        module.insert_import(&type_path, &short_name);
     }
 
     match reflect.reflect_ref() {
         ReflectRef::Struct(s) => {
-            structure.insert_import("js/bevy.js", "ReflectableObject");
+            module.insert_import("bevyEcs.reflect", "ReflectableObject");
 
             if use_constructor {
                 write!(&mut o, r#"new {short_name}("#).unwrap();
@@ -77,7 +74,7 @@ fn generate_type_init(
                     &mut o,
                     r#"{}: {},"#,
                     name,
-                    generate_type_init(type_registry, structure, field, true)
+                    generate_type_init(type_registry, module, field, true)
                 )
                 .unwrap();
             }
@@ -93,7 +90,7 @@ fn generate_type_init(
                 write!(
                     &mut o,
                     r#"{},"#,
-                    generate_type_init(type_registry, structure, field, true)
+                    generate_type_init(type_registry, module, field, true)
                 )
                 .unwrap();
             }
@@ -101,10 +98,10 @@ fn generate_type_init(
         }
         ReflectRef::Tuple(_) => unimplemented!(),
         ReflectRef::List(l) => {
-            generate_array_type_init(&mut o, type_registry, structure, &*l);
+            generate_array_type_init(&mut o, type_registry, module, &*l);
         }
         ReflectRef::Array(a) => {
-            generate_array_type_init(&mut o, type_registry, structure, a);
+            generate_array_type_init(&mut o, type_registry, module, a);
         }
         ReflectRef::Map(_) => unimplemented!(),
         ReflectRef::Value(v) => {
@@ -130,7 +127,7 @@ fn generate_type_init(
                                     &mut o,
                                     r#"{}: {},"#,
                                     name,
-                                    generate_type_init(type_registry, structure, value, true)
+                                    generate_type_init(type_registry, module, value, true)
                                 )
                                 .unwrap();
                             }
@@ -149,7 +146,7 @@ fn generate_type_init(
                                 write!(
                                     &mut o,
                                     r#"{},"#,
-                                    generate_type_init(type_registry, structure, value, true)
+                                    generate_type_init(type_registry, module, value, true)
                                 )
                                 .unwrap();
                             }
@@ -171,7 +168,7 @@ fn generate_type_init(
 /// Generates type initialization for types with a default implementation
 fn generate_default_type_init(
     type_registry: &TypeRegistryInternal,
-    structure: &mut Structure,
+    module: &mut Module,
     registration: &TypeRegistration,
     use_constructor: bool,
 ) -> String {
@@ -187,7 +184,7 @@ fn generate_default_type_init(
                 r#"{}"#,
                 generate_type_init(
                     type_registry,
-                    structure,
+                    module,
                     default.default().as_ref(),
                     use_constructor,
                 )
@@ -219,10 +216,30 @@ fn generate_default_type_init(
     o
 }
 
+fn generate_array_type(
+    o: &mut String,
+    type_registry: &TypeRegistryInternal,
+    short_name: &str,
+    type_name: &str,
+    registration: &TypeRegistration,
+    module: &mut Module,
+) {
+    module.insert_import("bevyEcs.reflect", "ReflectableArray");
+
+    write!(o, r#"class {short_name} extends ReflectableArray {{"#,).unwrap();
+    write!(
+        o,
+        r#"constructor(seq) {{ super({}, seq) }}"#,
+        generate_default_type_init(type_registry, module, registration, false)
+    )
+    .unwrap();
+    write!(o, r#"typeName() {{ return "{type_name}" }} }}"#,).unwrap();
+}
+
 /// Generates a top-level type definition
 pub fn generate_type(
     type_registry: &TypeRegistryInternal,
-    structure: &mut Structure,
+    module: &mut Module,
     registration: &TypeRegistration,
 ) {
     let mut o = String::new();
@@ -232,39 +249,34 @@ pub fn generate_type(
 
     match registration.type_info() {
         TypeInfo::Struct(_) => {
-            structure.insert_import("js/bevy.js", "ReflectableObject");
+            module.insert_import("bevyEcs.reflect", "ReflectableObject");
 
-            write!(
-                &mut o,
-                r#"export class {short_name} extends ReflectableObject {{"#,
-            )
-            .unwrap();
+            write!(&mut o, r#"class {short_name} extends ReflectableObject {{"#,).unwrap();
             write!(
                 &mut o,
                 r#"constructor(struct) {{ super({}, struct) }}"#,
-                generate_default_type_init(type_registry, structure, registration, false)
+                generate_default_type_init(type_registry, module, registration, false)
             )
             .unwrap();
-            write!(&mut o, r#"typeName() {{ return "{type_name}" }}}}"#,).unwrap();
+            write!(&mut o, r#"typeName() {{ return "{type_name}" }} }}"#,).unwrap();
         }
-        TypeInfo::TupleStruct(_) => {
-            structure.insert_import("js/bevy.js", "ReflectableArray");
-
-            write!(
-                &mut o,
-                r#"export class {short_name} extends ReflectableArray {{"#,
-            )
-            .unwrap();
-            write!(
-                &mut o,
-                r#"constructor(seq) {{ super({}, seq) }}"#,
-                generate_default_type_init(type_registry, structure, registration, false)
-            )
-            .unwrap();
-            write!(&mut o, r#"typeName() {{ return "{type_name}" }}}}"#,).unwrap();
-        }
+        TypeInfo::TupleStruct(_) => generate_array_type(
+            &mut o,
+            type_registry,
+            &short_name,
+            &type_name,
+            registration,
+            module,
+        ),
         TypeInfo::Tuple(_) => unimplemented!(),
-        TypeInfo::List(_) => unimplemented!(),
+        TypeInfo::List(_) => generate_array_type(
+            &mut o,
+            type_registry,
+            &short_name,
+            &type_name,
+            registration,
+            module,
+        ),
         TypeInfo::Array(_) => unimplemented!(),
         TypeInfo::Map(_) => unimplemented!(),
         TypeInfo::Value(_) => {}
@@ -274,72 +286,52 @@ pub fn generate_type(
                 let name = variant.name();
                 match variant {
                     VariantInfo::Struct(_) => {
-                        structure.insert_import("js/bevy.js", "ReflectableObject");
+                        module.insert_import("bevyEcs.reflect", "ReflectableObject");
 
                         write!(
                             &mut o,
-                            r#"export class {short_name}{name} extends ReflectableObject {{"#,
+                            r#"class {short_name}{name} extends ReflectableObject {{"#,
                         )
                         .unwrap();
                         write!(
                             &mut o,
                             r#"constructor(struct) {{ super({}, struct) }}"#,
-                            generate_default_type_init(
-                                type_registry,
-                                structure,
-                                registration,
-                                false
-                            )
+                            generate_default_type_init(type_registry, module, registration, false)
                         )
                         .unwrap();
                         write!(&mut o, r#"typeName() {{ return "{type_name}" }} }}"#,).unwrap();
                     }
                     VariantInfo::Tuple(t) => {
                         if t.field_len() > 1 {
-                            structure.insert_import("js/bevy.js", "ReflectableArray");
-
-                            write!(
+                            generate_array_type(
                                 &mut o,
-                                r#"export class {short_name}{name} extends ReflectableArray {{"#,
-                            )
-                            .unwrap();
-                            write!(
-                                &mut o,
-                                r#"constructor(seq) {{ super(null, {}, seq) }}"#,
-                                generate_default_type_init(
-                                    type_registry,
-                                    structure,
-                                    registration,
-                                    false
-                                )
-                            )
-                            .unwrap();
-                            write!(&mut o, r#"typeName() {{ return "{type_name}" }} }}"#,).unwrap();
+                                type_registry,
+                                &format!("{short_name}{name}"),
+                                &type_name,
+                                registration,
+                                module,
+                            );
                         }
                     }
                     // Dont create type definitions for unit variants as
                     // these will be referenced by value
                     VariantInfo::Unit(_) => {
-                        structure.insert_import("js/bevy.js", "ReflectableUnit");
+                        module.insert_import("bevyEcs.reflect", "ReflectableUnit");
 
                         write!(
                             &mut o,
-                            r#"export class {short_name}{name} extends ReflectableUnit {{"#,
+                            r#"class {short_name}{name} extends ReflectableUnit {{"#,
                         )
                         .unwrap();
                         write!(&mut o, r#"constructor() {{ super("{name}") }}"#,).unwrap();
-                        write!(&mut o, r#"typeName() {{ return "{type_name}" }} }};"#,).unwrap();
+                        write!(&mut o, r#"typeName() {{ return "{type_name}" }} }}"#,).unwrap();
                     }
                 }
             }
 
-            structure.insert_import("js/bevy.js", "ReflectableEnum");
+            module.insert_import("bevyEcs.reflect", "ReflectableEnum");
 
-            write!(
-                &mut o,
-                r#"export class {short_name} extends ReflectableEnum {{ "#
-            )
-            .unwrap();
+            write!(&mut o, r#"class {short_name} extends ReflectableEnum {{ "#).unwrap();
 
             for variant in e.iter() {
                 let name = variant.name();
@@ -383,5 +375,5 @@ pub fn generate_type(
         }
     }
 
-    structure.insert_type(short_name, o);
+    module.insert_type(short_name, o);
 }

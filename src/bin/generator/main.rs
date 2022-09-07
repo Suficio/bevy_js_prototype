@@ -1,115 +1,106 @@
 //! Generates JavaScript definition files for ECS Entities from Bevy TypeRegistry
 
-use crate::utils::{display_path, normalize_path};
 use bevy::{
+    ecs::schedule::graph_utils::{build_dependency_graph, topological_order},
     prelude::*,
-    reflect::{
-        serde::TypedReflectSerializer, Array, ReflectRef, TypeInfo, TypeRegistration,
-        TypeRegistryInternal, VariantField, VariantInfo, VariantType,
-    },
-    utils::HashMap,
+    reflect::TypeRegistryInternal,
+    utils::hashbrown::HashMap,
 };
 use bevy_js::anyhow::Error as AnyError;
-use convert_case::{Case, Casing};
-use deno_core::serde::Serialize;
 use generate::generate_type;
-use pathdiff::diff_paths;
-use proc_macro2::Ident;
+use gumdrop::Options;
+use module::Module;
 use std::{
-    collections::{BTreeMap, BTreeSet},
-    fmt::Write as _,
     fs::{self, File},
     io::Write as _,
     path::{Path, PathBuf},
     process::Command,
 };
-use syn::{
-    punctuated::Punctuated, token::Comma, GenericArgument, PathArguments, PathSegment, TypePath,
-    __private::ToTokens,
-};
+use utils::{display_path, type_path};
 
 mod generate;
+mod module;
 mod utils;
 
-#[derive(Default)]
-pub struct Structure {
-    /// Type definitions indexed by generics stripped type name
-    //
-    // Use [BTreeMap] in order to preserve consistent ordering
-    pub types: BTreeMap<String, String>,
-    /// Imports indexed by file path
-    //
-    // Use [BTreeMap] in order to preserve consistent ordering
-    pub imports: BTreeMap<String, BTreeSet<String>>,
+#[derive(Debug, Options)]
+struct GeneratorOptions {
+    #[options(help = "target directory", default = "src/runtimes/bevy/ext")]
+    target: PathBuf,
 }
 
-/// Holds the properties necessary to generate a file
-impl Structure {
-    pub fn insert_import(&mut self, path: &str, import: &str) {
-        self.imports
-            .entry(path.to_string())
-            .or_default()
-            .insert(import.to_string());
-    }
-
-    pub fn insert_type(&mut self, type_name: String, def: String) {
-        self.types.insert(type_name, def);
-    }
-}
-
-fn generate(type_registry: &TypeRegistryInternal) -> Result<(), AnyError> {
-    let mut files = HashMap::<String, Structure>::default();
+fn generate_modules(type_registry: &TypeRegistryInternal) -> Vec<Module> {
+    let mut modules = HashMap::<String, Module>::default();
 
     for registration in type_registry.iter() {
-        let path = normalize_path(registration.type_name());
-        if let Some(path) = path.to_str() {
-            // Filter out primitives and non-bevy types
-            if !path.contains("bevy") {
-                continue;
-            }
+        let path = type_path(registration.type_name());
+        let path = display_path(&path);
 
-            let structure = files
-                .entry(path.to_string())
-                .or_insert_with(Structure::default);
+        let structure = modules
+            .entry(path)
+            .or_insert_with_key(|p| Module::new(p.clone()));
 
-            generate_type(type_registry, structure, registration);
-        }
+        generate_type(type_registry, structure, registration);
     }
 
-    let mut tasks = Vec::with_capacity(files.len());
+    let modules = modules
+        .into_values()
+        .filter(|m| !m.is_empty())
+        .collect::<Vec<Module>>();
 
-    for (path, structure) in files.into_iter() {
-        let p = Path::new(&path);
+    let graph = build_dependency_graph(&modules);
+    let order = match topological_order(&graph) {
+        Ok(modules) => modules,
+        Err(_) => panic!("Graph cycles"),
+    };
+
+    order
+        .iter()
+        .map(move |i| modules[*i].clone())
+        .collect::<Vec<Module>>()
+}
+
+fn generate(opts: &GeneratorOptions, type_registry: &TypeRegistryInternal) -> Result<(), AnyError> {
+    let mut tasks = Vec::default();
+
+    let dependencies = generate_modules(type_registry);
+
+    let iter = dependencies.into_iter().enumerate().map(|(i, module)| {
+        let mut path = module.path.split('.').collect::<Vec<&str>>();
+
+        match path.len() {
+            0 => unreachable!(),
+            1 => path.push(path[0].clone()),
+            _ => {}
+        }
+
+        let file = path.pop().unwrap();
+        let path = path.join("/");
+
+        let path = format!("{}/{:02}_{file}.js", path, i);
+        (path, module)
+    });
+
+    for (path, module) in iter {
+        dbg!(&path);
+
+        let mut p = opts.target.join(&path);
+        p.set_extension("js");
+        let p = Path::new(&p);
+
         fs::create_dir_all(p.parent().unwrap()).unwrap();
+        let mut f = File::create(p)?;
 
-        let mut f = File::create(path.clone())?;
-        write!(&mut f, r#""use strict";"#).unwrap();
-        for (file, imports) in structure.imports.iter() {
-            // Need to filter out if attempting to import from the same file
-            let mut p = PathBuf::from(p);
-            if file == &display_path(&p) {
-                continue;
-            }
+        writeln!(&mut f, r#""use strict";"#).unwrap();
+        writeln!(&mut f, r#"((window) => {{"#).unwrap();
 
-            write!(&mut f, r#"import {{ "#).unwrap();
-            for import in imports.iter() {
-                write!(&mut f, r#"{}, "#, import).unwrap();
-            }
+        module.write(&mut f);
 
-            p.pop();
-            let path = diff_paths(&file, p).unwrap();
-            write!(&mut f, r#"}} from "./{}";"#, display_path(&path)).unwrap();
-        }
-
-        for def in structure.types.values() {
-            writeln!(&mut f, r#"{}"#, def).unwrap();
-        }
+        writeln!(&mut f, r#"}})(globalThis)"#).unwrap();
 
         // For good measure, fire off a beautify command
         tasks.push(
-            Command::new("npm.cmd")
-                .args(["exec", "--package=js-beautify", "--"])
-                .args(["js-beautify", "-rf"])
+            Command::new("npx.cmd")
+                .args(["prettier", "--write"])
                 .arg(p)
                 .spawn()
                 .unwrap(),
@@ -124,6 +115,8 @@ fn generate(type_registry: &TypeRegistryInternal) -> Result<(), AnyError> {
 }
 
 fn main() -> Result<(), AnyError> {
+    let opts = GeneratorOptions::parse_args_default_or_exit();
+
     let mut app = App::new();
     app.add_plugins(DefaultPlugins);
 
@@ -133,5 +126,5 @@ fn main() -> Result<(), AnyError> {
         .expect("Type registry not registered by Bevy")
         .read();
 
-    generate(&type_registry)
+    generate(&opts, &type_registry)
 }
