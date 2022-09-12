@@ -30,17 +30,10 @@ pub fn op_type_registry_register<'scope>(
         .deserialize(tracked)
         .map_err(|err| AnyError::msg(format!("{}, occured at: {}", err, track.path())))?;
 
-    // let reflect = reflected.as_ref();
-    // let registration =
+    dbg!(&reflected);
+    dbg!(reflected.get_type_info());
 
-    // Register dynamic type with the type registry
-
-    // let type_registry = world.resource::<AppTypeRegistry>().clone();
-    // let mut type_registry = type_registry.write();
-
-    // type_registry.add_registration(registration);
-
-    dbg!(reflected);
+    // TODO: How to get [TypeRegistration] from [dyn Reflect]?
 
     Ok(())
 }

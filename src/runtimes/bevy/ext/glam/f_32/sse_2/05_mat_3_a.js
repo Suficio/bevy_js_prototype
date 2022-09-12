@@ -2,6 +2,7 @@
 ((window) => {
   const { ReflectableArray } = window.bevyEcs;
   const { Vec3A } = window.glam.f32.sse2.vec3A;
+
   class Mat3A extends ReflectableArray {
     static Zero = () =>
       new Mat3A({

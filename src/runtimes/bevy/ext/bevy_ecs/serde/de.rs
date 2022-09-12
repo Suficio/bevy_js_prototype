@@ -133,6 +133,7 @@ impl<'de> Visitor<'de> for TypedDynamicReflectDeserializerVisitor {
     {
         let mut list = DynamicList::default();
         list.set_name(self.type_name);
+
         while let Some(value) = seq.next_element_seed(DynamicReflectDeserializer)? {
             list.push_box(value);
         }
@@ -145,6 +146,7 @@ impl<'de> Visitor<'de> for TypedDynamicReflectDeserializerVisitor {
     {
         let mut dynamic_struct = DynamicStruct::default();
         dynamic_struct.set_name(self.type_name);
+
         while let Some(key) = map.next_key::<String>()? {
             let value = map.next_value_seed(DynamicReflectDeserializer)?;
             dynamic_struct.insert_boxed(&key, value);
