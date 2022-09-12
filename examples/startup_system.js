@@ -16,11 +16,11 @@
 })();
 
 async function startup_system() {
-  await bevyEcs.system();
+  await bevyEcs.waitForWorld();
   Deno.core.print("startup system ran first\n");
 }
 
 async function normal_system(i) {
-  await bevyEcs.system();
+  await bevyEcs.waitForWorld();
   Deno.core.print(`normal system ran for the ${i + 1} time\n`);
 }

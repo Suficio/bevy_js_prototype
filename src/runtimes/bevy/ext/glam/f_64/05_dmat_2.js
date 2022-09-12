@@ -1,6 +1,6 @@
 "use strict";
 ((window) => {
-  const { ReflectableObject } = window.bevyEcs.reflect;
+  const { ReflectableObject } = window.bevyEcs;
   const { DVec2 } = window.glam.f64.dvec2;
   class DMat2 extends ReflectableObject {
     constructor(struct) {

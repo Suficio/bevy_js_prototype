@@ -1,7 +1,6 @@
 "use strict";
 ((window) => {
-  const { ReflectableArray, ReflectableEnum, ReflectableUnit } =
-    window.bevyEcs.reflect;
+  const { ReflectableArray, ReflectableEnum, ReflectableUnit } = window.bevyEcs;
   class ClearColor extends ReflectableArray {
     constructor(seq) {
       super(null, seq);

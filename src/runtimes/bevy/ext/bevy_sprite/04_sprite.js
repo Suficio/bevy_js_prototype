@@ -1,7 +1,7 @@
 "use strict";
 ((window) => {
   const { ReflectableEnum, ReflectableObject, ReflectableUnit } =
-    window.bevyEcs.reflect;
+    window.bevyEcs;
   class AnchorCenter extends ReflectableUnit {
     constructor() {
       super("Center");

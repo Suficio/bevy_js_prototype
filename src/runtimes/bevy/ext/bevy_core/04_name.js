@@ -1,6 +1,6 @@
 "use strict";
 ((window) => {
-  const { ReflectableObject } = window.bevyEcs.reflect;
+  const { ReflectableObject } = window.bevyEcs;
   class Name extends ReflectableObject {
     constructor(struct) {
       super({ hash: 13963134382976710451, name: "" }, struct);

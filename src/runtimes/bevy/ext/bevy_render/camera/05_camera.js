@@ -1,6 +1,6 @@
 "use strict";
 ((window) => {
-  const { ReflectableArray, ReflectableObject } = window.bevyEcs.reflect;
+  const { ReflectableArray, ReflectableObject } = window.bevyEcs;
   const { UVec2 } = window.glam.u32.uvec2;
   class Camera extends ReflectableObject {
     constructor(struct) {

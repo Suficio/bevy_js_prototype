@@ -1,6 +1,6 @@
 "use strict";
 ((window) => {
-  const { ReflectableArray } = window.bevyEcs.reflect;
+  const { ReflectableArray } = window.bevyEcs;
   class Mesh2dHandle extends ReflectableArray {
     constructor(seq) {
       super(null, seq);

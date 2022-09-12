@@ -1,6 +1,6 @@
 "use strict";
 ((window) => {
-  const { ReflectableEnum, ReflectableUnit } = window.bevyEcs.reflect;
+  const { ReflectableEnum, ReflectableUnit } = window.bevyEcs;
   class FocusPolicyBlock extends ReflectableUnit {
     constructor() {
       super("Block");

@@ -1,6 +1,6 @@
 "use strict";
 ((window) => {
-  const { ReflectableObject } = window.bevyEcs.reflect;
+  const { ReflectableObject } = window.bevyEcs;
   class Stopwatch extends ReflectableObject {
     constructor(struct) {
       super({ elapsed: { secs: 0, nanos: 0 }, paused: false }, struct);

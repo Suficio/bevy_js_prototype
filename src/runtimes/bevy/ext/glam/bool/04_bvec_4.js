@@ -1,6 +1,6 @@
 "use strict";
 ((window) => {
-  const { ReflectableObject } = window.bevyEcs.reflect;
+  const { ReflectableObject } = window.bevyEcs;
   class BVec4 extends ReflectableObject {
     constructor(struct) {
       super({ x: false, y: false, z: false, w: false }, struct);

@@ -3,7 +3,7 @@
 // It displays the current FPS in the top left corner, as well as text that changes color
 // in the bottom right. For text within a scene, please see the text2d example.
 
-const { Entity } = bevyEcs;
+const { Entity, World } = bevyEcs;
 const { Visibility, ComputedVisibility } = bevyRender.view.visibility;
 const { FocusPolicy } = bevyUi.focus;
 const { Node, CalculatedSize, Style, AlignSelf, PositionType, Val } =
@@ -24,58 +24,58 @@ const { Color } = bevyRender.color;
 const { Vec } = alloc.vec;
 
 (async () => {
-  await setup();
+  await bevyEcs.waitForWorld();
+  setup();
 })();
 
-async function setup() {
-  await bevyEcs.system();
+function setup() {
+  const handle = bevyAsset.AssetServer.load("fonts/FiraSans-Bold.ttf");
 
-  let handle = bevyAsset.AssetServer.load("fonts/FiraSans-Bold.ttf");
-
-  let entity = new Entity(0);
-  entity.insert(new Node());
-  entity.insert(
-    new Style({
-      align_self: AlignSelf.FlexEnd(),
-      position_type: PositionType.Absolute(),
-      position: new UiRect({
-        bottom: Val.Px(5.0),
-        right: Val.Px(15.0),
-      }),
-    })
-  );
-  entity.insert(
-    new Text({
-      sections: new Vec([
-        new TextSection({
-          value: "hello\nbevy_js!",
-          style: new TextStyle({
-            font: handle,
-            font_size: 100.0,
-            color: Color.Rgba({
-              red: 1.0,
-              green: 1.0,
-              blue: 1.0,
-              alpha: 1.0,
+  const entity = World.spawn();
+  entity
+    .insert(new Node())
+    .insert(
+      new Style({
+        align_self: AlignSelf.FlexEnd(),
+        position_type: PositionType.Absolute(),
+        position: new UiRect({
+          bottom: Val.Px(5.0),
+          right: Val.Px(15.0),
+        }),
+      })
+    )
+    .insert(
+      new Text({
+        sections: new Vec([
+          new TextSection({
+            value: "hello\nbevy_js!",
+            style: new TextStyle({
+              font: handle,
+              font_size: 100.0,
+              color: Color.Rgba({
+                red: 1.0,
+                green: 1.0,
+                blue: 1.0,
+                alpha: 1.0,
+              }),
             }),
           }),
+        ]),
+        alignment: new TextAlignment({
+          vertical: VerticalAlign.Top(),
+          horizontal: HorizontalAlign.Center(),
         }),
-      ]),
-      alignment: new TextAlignment({
-        vertical: VerticalAlign.Top(),
-        horizontal: HorizontalAlign.Center(),
-      }),
-    })
-  );
-  entity.insert(new CalculatedSize());
-  entity.insert(FocusPolicy.Pass());
-  entity.insert(new Transform());
-  entity.insert(new GlobalTransform(Affine3A.Identity()));
-  entity.insert(new Visibility());
-  entity.insert(
-    new ComputedVisibility({
-      is_visible_in_hierarchy: false,
-      is_visible_in_view: false,
-    })
-  );
+      })
+    )
+    .insert(new CalculatedSize())
+    .insert(FocusPolicy.Pass())
+    .insert(new Transform())
+    .insert(new GlobalTransform(Affine3A.Identity()))
+    .insert(new Visibility())
+    .insert(
+      new ComputedVisibility({
+        is_visible_in_hierarchy: false,
+        is_visible_in_view: false,
+      })
+    );
 }
