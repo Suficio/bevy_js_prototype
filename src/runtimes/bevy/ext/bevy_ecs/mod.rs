@@ -2,6 +2,8 @@ use crate as bjs;
 use bjs::{include_js_files, op, Extension, OpState};
 
 mod entity;
+mod reflect;
+pub mod serde;
 
 pub fn init() -> Extension {
     Extension::builder()
@@ -14,6 +16,7 @@ pub fn init() -> Extension {
         ))
         .ops(vec![
             op_wait_for_world::decl(),
+            reflect::op_type_registry_register::decl(),
             entity::op_entity_spawn::decl(),
             entity::op_entity_insert_component::decl(),
         ])

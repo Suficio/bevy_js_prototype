@@ -3,7 +3,7 @@
 // It displays the current FPS in the top left corner, as well as text that changes color
 // in the bottom right. For text within a scene, please see the text2d example.
 
-const { Entity, World } = bevyEcs;
+const { Entity, World, TypeRegistry, ReflectableObject } = bevyEcs;
 const { Visibility, ComputedVisibility } = bevyRender.view.visibility;
 const { FocusPolicy } = bevyUi.focus;
 const { Node, CalculatedSize, Style, AlignSelf, PositionType, Val } =
@@ -23,8 +23,18 @@ const {
 const { Color } = bevyRender.color;
 const { Vec } = alloc.vec;
 
+class ColorText extends ReflectableObject {
+  constructor() {
+    super({});
+  }
+  typeName() {
+    return "bevy_js::text::ColorText";
+  }
+}
+
 (async () => {
   await bevyEcs.waitForWorld();
+  TypeRegistry.register(new ColorText());
   setup();
 })();
 
@@ -77,5 +87,6 @@ function setup() {
         is_visible_in_hierarchy: false,
         is_visible_in_view: false,
       })
-    );
+    )
+    .insert(new ColorText());
 }

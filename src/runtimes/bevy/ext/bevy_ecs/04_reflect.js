@@ -1,6 +1,9 @@
 "use strict";
 
 ((window) => {
+  const { core } = window.Deno;
+  const { worldResourceId, reflect } = window.bevyEcs;
+
   class Reflectable {
     constructor() {}
 
@@ -75,11 +78,28 @@
     }
   }
 
+  class TypeRegistry {
+    static register(reflectable) {
+      const reflected = reflect(reflectable);
+
+      try {
+        core.ops.op_type_registry_register(worldResourceId(), reflected);
+      } catch (err) {
+        throw new Error(
+          `Could not register type:
+${JSON.stringify(reflected)}
+${err}`
+        );
+      }
+    }
+  }
+
   Object.assign(window.bevyEcs, {
     Reflectable,
     ReflectableObject,
     ReflectableArray,
     ReflectableEnum,
     ReflectableUnit,
+    TypeRegistry,
   });
 })(globalThis);
