@@ -2,7 +2,7 @@
 ((window) => {
   const { Vec } = window.alloc.vec;
   const { ReflectableEnum, ReflectableObject, ReflectableUnit } =
-    window.bevyEcs.reflect;
+    window.bevyEcs;
   class HorizontalAlignLeft extends ReflectableUnit {
     constructor() {
       super("Left");

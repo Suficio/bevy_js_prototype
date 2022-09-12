@@ -1,6 +1,6 @@
 "use strict";
 ((window) => {
-  const { ReflectableArray } = window.bevyEcs.reflect;
+  const { ReflectableArray } = window.bevyEcs;
   class Vec3A extends ReflectableArray {
     static Zero = () => new Vec3A({ x: 0.0, y: 0.0, z: 0.0 });
     static One = () => new Vec3A({ x: 1.0, y: 1.0, z: 1.0 });

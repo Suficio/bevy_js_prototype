@@ -1,6 +1,6 @@
 "use strict";
 ((window) => {
-  const { ReflectableObject } = window.bevyEcs.reflect;
+  const { ReflectableObject } = window.bevyEcs;
   const { DMat3 } = window.glam.f64.dmat3;
   const { DVec3 } = window.glam.f64.dvec3;
   class DAffine3 extends ReflectableObject {

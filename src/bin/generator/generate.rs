@@ -60,10 +60,7 @@ fn generate_type_init(
 
     match reflect.reflect_ref() {
         ReflectRef::Struct(s) => {
-            module.insert_import(
-                "bevyEcs.reflect".to_string(),
-                "ReflectableObject".to_string(),
-            );
+            module.insert_import("bevyEcs".to_string(), "ReflectableObject".to_string());
 
             if use_constructor {
                 write!(&mut o, r#"new {short_name}("#).unwrap();
@@ -227,10 +224,7 @@ fn generate_array_type(
     registration: &TypeRegistration,
     module: &mut Module,
 ) {
-    module.insert_import(
-        "bevyEcs.reflect".to_string(),
-        "ReflectableArray".to_string(),
-    );
+    module.insert_import("bevyEcs".to_string(), "ReflectableArray".to_string());
 
     write!(o, r#"class {short_name} extends ReflectableArray {{"#,).unwrap();
     write!(
@@ -255,10 +249,7 @@ pub fn generate_type(
 
     match registration.type_info() {
         TypeInfo::Struct(_) => {
-            module.insert_import(
-                "bevyEcs.reflect".to_string(),
-                "ReflectableObject".to_string(),
-            );
+            module.insert_import("bevyEcs".to_string(), "ReflectableObject".to_string());
 
             write!(&mut o, r#"class {short_name} extends ReflectableObject {{"#,).unwrap();
             write!(
@@ -295,10 +286,8 @@ pub fn generate_type(
                 let name = variant.name();
                 match variant {
                     VariantInfo::Struct(_) => {
-                        module.insert_import(
-                            "bevyEcs.reflect".to_string(),
-                            "ReflectableObject".to_string(),
-                        );
+                        module
+                            .insert_import("bevyEcs".to_string(), "ReflectableObject".to_string());
 
                         write!(
                             &mut o,
@@ -328,10 +317,7 @@ pub fn generate_type(
                     // Dont create type definitions for unit variants as
                     // these will be referenced by value
                     VariantInfo::Unit(_) => {
-                        module.insert_import(
-                            "bevyEcs.reflect".to_string(),
-                            "ReflectableUnit".to_string(),
-                        );
+                        module.insert_import("bevyEcs".to_string(), "ReflectableUnit".to_string());
 
                         write!(
                             &mut o,
@@ -344,7 +330,7 @@ pub fn generate_type(
                 }
             }
 
-            module.insert_import("bevyEcs.reflect".to_string(), "ReflectableEnum".to_string());
+            module.insert_import("bevyEcs".to_string(), "ReflectableEnum".to_string());
 
             write!(&mut o, r#"class {short_name} extends ReflectableEnum {{ "#).unwrap();
 

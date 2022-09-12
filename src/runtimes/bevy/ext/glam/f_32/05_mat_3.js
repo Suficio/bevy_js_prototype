@@ -1,6 +1,6 @@
 "use strict";
 ((window) => {
-  const { ReflectableObject } = window.bevyEcs.reflect;
+  const { ReflectableObject } = window.bevyEcs;
   const { Vec3 } = window.glam.f32.vec3;
   class Mat3 extends ReflectableObject {
     constructor(struct) {

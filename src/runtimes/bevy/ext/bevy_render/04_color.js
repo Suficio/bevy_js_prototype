@@ -1,6 +1,6 @@
 "use strict";
 ((window) => {
-  const { ReflectableEnum, ReflectableObject } = window.bevyEcs.reflect;
+  const { ReflectableEnum, ReflectableObject } = window.bevyEcs;
   class ColorRgba extends ReflectableObject {
     constructor(struct) {
       super(null, struct);

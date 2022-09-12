@@ -1,7 +1,7 @@
 "use strict";
 ((window) => {
   const { ReflectableEnum, ReflectableObject, ReflectableUnit } =
-    window.bevyEcs.reflect;
+    window.bevyEcs;
   class Camera3d extends ReflectableObject {
     constructor(struct) {
       super(null, struct);

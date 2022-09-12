@@ -45,7 +45,7 @@ impl Module {
                 Entry::Vacant(v) => {
                     v.insert(BTreeSet::default()).insert(import);
                     // Insert to import_files only once
-                    if path != "bevyEcs.reflect" {
+                    if path != "bevyEcs" {
                         self.import_files.push(path);
                     }
                 }

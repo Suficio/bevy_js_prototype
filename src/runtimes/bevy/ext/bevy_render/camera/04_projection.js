@@ -1,7 +1,7 @@
 "use strict";
 ((window) => {
   const { ReflectableEnum, ReflectableObject, ReflectableUnit } =
-    window.bevyEcs.reflect;
+    window.bevyEcs;
   class OrthographicProjection extends ReflectableObject {
     constructor(struct) {
       super(

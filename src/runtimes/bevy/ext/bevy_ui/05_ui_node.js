@@ -6,7 +6,7 @@
     ReflectableEnum,
     ReflectableObject,
     ReflectableUnit,
-  } = window.bevyEcs.reflect;
+  } = window.bevyEcs;
   const { Color } = window.bevyRender.color;
   const { Size, UiRect } = window.bevyUi.geometry;
   const { Option } = window.core.option;

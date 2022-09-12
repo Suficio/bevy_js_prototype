@@ -9,9 +9,11 @@ pub fn init() -> Extension {
             prefix "bevy:ext/bevy_ecs",
             "03_ecs.js",
             "04_reflect.js",
+            "04_entity.js",
+            "05_world.js",
         ))
         .ops(vec![
-            op_request_system::decl(),
+            op_wait_for_world::decl(),
             entity::op_entity_spawn::decl(),
             entity::op_entity_insert_component::decl(),
         ])
@@ -19,7 +21,7 @@ pub fn init() -> Extension {
 }
 
 #[op]
-async fn op_request_system(state: &mut OpState, rid: bjs::ResourceId) {
+async fn op_wait_for_world(state: &mut OpState, rid: bjs::ResourceId) {
     bjs::runtimes::unwrap_world_resource(state, rid)
         .wait_for_world()
         .await

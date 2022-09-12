@@ -75,12 +75,11 @@
     }
   }
 
-  let reflect = {
+  Object.assign(window.bevyEcs, {
     Reflectable,
     ReflectableObject,
     ReflectableArray,
     ReflectableEnum,
     ReflectableUnit,
-  };
-  Object.assign(window.bevyEcs, { reflect });
+  });
 })(globalThis);

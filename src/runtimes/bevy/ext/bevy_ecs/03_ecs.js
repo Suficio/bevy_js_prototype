@@ -1,7 +1,7 @@
 "use strict";
 
 ((window) => {
-  const core = window.__bootstrap.core;
+  const { core } = window.Deno;
 
   // Need to instruct how to serialize BigInt
   BigInt.prototype.toJSON = function () {
@@ -29,60 +29,22 @@
     }
   }
 
-  class Entity {
-    constructor(eEntity) {
-      this.entity = eEntity;
-    }
-
-    id() {
-      return this.eEntity;
-    }
-
-    insert(component) {
-      let reflected = component.reflect();
-
-      try {
-        core.opSync(
-          "op_entity_insert_component",
-          component,
-          this.entity,
-          reflected
-        );
-      } catch (error) {
-        throw new Error(
-          `Could not insert component into entity: ${this.entity}
-${JSON.stringify(reflected)}
-${error}`
-        );
-      }
+  function reflect(reflectable) {
+    try {
+      return reflectable.reflect();
+    } catch (err) {
+      throw new Error(`Object must implement method "reflect" in order to be reflected:
+${err}`);
     }
   }
 
-  class World {
-    constructor() {
-      if (rWorld === worldResourceId()) {
-        throw new Error("World was not borrowed when constructing World in JS");
-      }
-    }
-
-    entity(eEntity) {
-      return new Entity(eEntity);
-    }
-
-    spawn() {
-      let eEntity = core.opSync("op_entity_spawn", worldResourceId());
-      return new Entity(eEntity);
-    }
-  }
-
-  async function system() {
-    await core.opAsync("op_request_system", worldResourceId());
+  async function waitForWorld() {
+    await core.opAsync("op_wait_for_world", worldResourceId());
   }
 
   let bevyEcs = {
-    system,
-    Entity,
-    World,
+    reflect,
+    waitForWorld,
     worldResourceId,
   };
   Object.assign(window, { bevyEcs });

@@ -1,6 +1,6 @@
 "use strict";
 ((window) => {
-  const { ReflectableEnum, ReflectableUnit } = window.bevyEcs.reflect;
+  const { ReflectableEnum, ReflectableUnit } = window.bevyEcs;
   class ImageModeKeepAspect extends ReflectableUnit {
     constructor() {
       super("KeepAspect");
