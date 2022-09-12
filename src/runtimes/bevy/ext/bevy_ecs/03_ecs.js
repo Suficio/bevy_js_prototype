@@ -33,7 +33,7 @@
     try {
       return reflectable.reflect();
     } catch (err) {
-      throw new Error(`Object must implement method "reflect" in order to be reflected:
+      throw new Error(`Object must implement method "reflect" in order to be registered:
 ${err}`);
     }
   }

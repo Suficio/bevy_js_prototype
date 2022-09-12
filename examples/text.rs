@@ -13,7 +13,12 @@ fn main() {
         .run();
 }
 
-fn setup_runtime(mut runtime: NonSendMut<bjs::JsRuntimeResource<BevyRuntime>>) {
+fn setup_runtime(
+    mut runtime: NonSendMut<bjs::JsRuntimeResource<BevyRuntime>>,
+    inspector: Res<bjs::inspector::JsInspector>,
+) {
+    runtime.register_inspector(inspector.meta());
+
     let specifier = bjs::resolve::path("./examples/text.js").unwrap();
     let _ = runtime.execute_module(specifier.clone(), None);
 }

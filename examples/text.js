@@ -4,6 +4,7 @@
 // in the bottom right. For text within a scene, please see the text2d example.
 
 const { Entity, World } = bevyEcs;
+const { ReflectableObject } = bevyEcs.reflect;
 const { Visibility, ComputedVisibility } = bevyRender.view.visibility;
 const { FocusPolicy } = bevyUi.focus;
 const { Node, CalculatedSize, Style, AlignSelf, PositionType, Val } =
@@ -22,6 +23,15 @@ const {
 } = bevyText.text;
 const { Color } = bevyRender.color;
 const { Vec } = alloc.vec;
+
+class ColorText extends ReflectableObject {
+  constructor() {
+    super({});
+  }
+  typeName() {
+    return "bevy_js::text::ColorText";
+  }
+}
 
 (async () => {
   await bevyEcs.waitForWorld();

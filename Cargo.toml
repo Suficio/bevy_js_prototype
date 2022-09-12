@@ -55,6 +55,7 @@ path = "examples/startup_system.rs"
 [[example]]
 name = "text"
 path = "examples/text.rs"
+required-features = ["inspector"]
 
 [[example]]
 name = "inspector"
