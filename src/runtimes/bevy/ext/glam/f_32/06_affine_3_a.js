@@ -3,7 +3,6 @@
   const { ReflectableArray } = window.bevyEcs;
   const { Mat3A } = window.glam.f32.sse2.mat3A;
   const { Vec3A } = window.glam.f32.sse2.vec3A;
-
   class Affine3A extends ReflectableArray {
     static Zero = () =>
       new Affine3A({

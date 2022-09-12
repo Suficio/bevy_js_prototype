@@ -78,7 +78,7 @@ pub struct TypedDynamicReflectDeserializer {
     type_name: String,
 }
 
-impl<'a, 'de> DeserializeSeed<'de> for TypedDynamicReflectDeserializer {
+impl<'de> DeserializeSeed<'de> for TypedDynamicReflectDeserializer {
     type Value = Box<dyn Reflect>;
 
     fn deserialize<D>(self, deserializer: D) -> Result<Self::Value, D::Error>

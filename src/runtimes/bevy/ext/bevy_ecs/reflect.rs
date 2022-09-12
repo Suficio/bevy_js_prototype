@@ -1,9 +1,4 @@
 use crate::{self as bjs};
-use bevy::{
-    prelude::*,
-    reflect::{DynamicInfo, GetTypeRegistration, TypeInfo, TypeRegistration},
-    utils::hashbrown::HashMap,
-};
 use dc::{anyhow::Error as AnyError, op, serde::de::DeserializeSeed, serde_v8, OpState};
 use deno_core as dc;
 
@@ -17,7 +12,7 @@ pub fn op_type_registry_register<'scope>(
     reflectable: serde_v8::Value,
 ) -> Result<(), AnyError> {
     let res = bjs::runtimes::unwrap_world_resource(state, r_world);
-    let world = res.borrow_world_mut();
+    let _world = res.borrow_world_mut();
 
     // Deserialize reflectable value into a dynamic type
 

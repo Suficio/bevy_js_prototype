@@ -34,16 +34,14 @@ class ColorText extends ReflectableObject {
 
 (async () => {
   await bevyEcs.waitForWorld();
-
   TypeRegistry.register(new ColorText());
-
   setup();
 })();
 
 function setup() {
-  let handle = bevyAsset.AssetServer.load("fonts/FiraSans-Bold.ttf");
+  const handle = bevyAsset.AssetServer.load("fonts/FiraSans-Bold.ttf");
 
-  let entity = World.spawn();
+  const entity = World.spawn();
   entity
     .insert(new Node())
     .insert(

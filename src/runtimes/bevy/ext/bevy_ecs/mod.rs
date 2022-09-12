@@ -1,6 +1,5 @@
 use crate as bjs;
-use dc::{include_js_files, op, Extension, OpState};
-use deno_core as dc;
+use bjs::{include_js_files, op, Extension, OpState};
 
 mod entity;
 mod reflect;
