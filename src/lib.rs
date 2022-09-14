@@ -15,12 +15,17 @@ pub use loader::FsModuleLoader;
 pub use runtime::{drive_runtime, IntoRuntime, JsRuntime, JsRuntimeResource};
 pub use world::{WorldResource, WorldResourceExt};
 
+// Re-export libraries
+pub use deno_core::{self, anyhow, error::*, futures, serde, serde_json, serde_v8, v8};
+
+// Export types
 pub use deno_core::{
-    self, anyhow, futures, include_js_files, op, v8, Extension, ExtensionBuilder, ModuleId,
-    ModuleLoader, ModuleSource, ModuleSourceFuture, ModuleSpecifier, ModuleType, OpState, Resource,
-    ResourceId, ResourceTable, RuntimeOptions,
+    Extension, ExtensionBuilder, ModuleId, ModuleLoader, ModuleSource, ModuleSourceFuture,
+    ModuleSpecifier, ModuleType, OpState, Resource, ResourceId, ResourceTable, RuntimeOptions,
 };
 
+// Export macros and functions
+pub use deno_core::{include_js_files, op};
 pub mod resolve {
     pub use deno_core::{
         resolve_import as import, resolve_path as path, resolve_url as url,

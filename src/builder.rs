@@ -1,5 +1,4 @@
 use crate as bjs;
-use deno_core as dc;
 use std::rc::Rc;
 
 /// A helper builder for `bevy_js` JavaScript
@@ -23,7 +22,7 @@ impl JsRuntimeBuilder {
     // }
 
     /// Sets the module loader to use to load `JavaScript`
-    pub fn with_module_loader(&mut self, loader: Rc<dyn dc::ModuleLoader>) -> &mut Self {
+    pub fn with_module_loader(&mut self, loader: Rc<dyn bjs::ModuleLoader>) -> &mut Self {
         self.options.module_loader.replace(loader);
         self
     }

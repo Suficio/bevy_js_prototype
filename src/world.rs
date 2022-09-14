@@ -1,5 +1,6 @@
-use crate::{self as bjs, futures::channel::oneshot, lend::RefLend};
+use crate as bjs;
 use bevy::prelude::*;
+use bjs::{futures::channel::oneshot, lend::RefLend};
 use std::{cell::RefCell, rc::Rc};
 
 /// Shared resource that gets passed to Deno ops
