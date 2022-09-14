@@ -14,7 +14,7 @@
         struct
       );
     }
-    typeName() {
+    static typeName() {
       return "glam::f64::dmat4::DMat4";
     }
   }

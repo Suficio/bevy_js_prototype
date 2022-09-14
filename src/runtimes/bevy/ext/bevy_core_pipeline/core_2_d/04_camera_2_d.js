@@ -5,7 +5,7 @@
     constructor(struct) {
       super(null, struct);
     }
-    typeName() {
+    static typeName() {
       return "bevy_core_pipeline::core_2d::camera_2d::Camera2d";
     }
   }

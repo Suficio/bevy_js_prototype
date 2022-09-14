@@ -22,11 +22,11 @@
         translation: Vec3A.Nan(),
       });
 
-    constructor(struct) {
-      super(null, struct);
+    constructor(seq) {
+      super([1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0], seq);
     }
 
-    typeName() {
+    static typeName() {
       return "glam::f32::affine3a::Affine3A";
     }
 

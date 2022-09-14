@@ -12,7 +12,7 @@
         struct
       );
     }
-    typeName() {
+    static typeName() {
       return "glam::f64::dmat2::DMat2";
     }
   }

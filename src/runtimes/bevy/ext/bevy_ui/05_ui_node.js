@@ -15,7 +15,7 @@
     constructor() {
       super("FlexStart");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::AlignContent";
     }
   }
@@ -23,7 +23,7 @@
     constructor() {
       super("FlexEnd");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::AlignContent";
     }
   }
@@ -31,7 +31,7 @@
     constructor() {
       super("Center");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::AlignContent";
     }
   }
@@ -39,7 +39,7 @@
     constructor() {
       super("Stretch");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::AlignContent";
     }
   }
@@ -47,7 +47,7 @@
     constructor() {
       super("SpaceBetween");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::AlignContent";
     }
   }
@@ -55,7 +55,7 @@
     constructor() {
       super("SpaceAround");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::AlignContent";
     }
   }
@@ -69,7 +69,7 @@
     constructor(type, value) {
       super(type, value);
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::AlignContent";
     }
   }
@@ -77,7 +77,7 @@
     constructor() {
       super("FlexStart");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::AlignItems";
     }
   }
@@ -85,7 +85,7 @@
     constructor() {
       super("FlexEnd");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::AlignItems";
     }
   }
@@ -93,7 +93,7 @@
     constructor() {
       super("Center");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::AlignItems";
     }
   }
@@ -101,7 +101,7 @@
     constructor() {
       super("Baseline");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::AlignItems";
     }
   }
@@ -109,7 +109,7 @@
     constructor() {
       super("Stretch");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::AlignItems";
     }
   }
@@ -122,7 +122,7 @@
     constructor(type, value) {
       super(type, value);
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::AlignItems";
     }
   }
@@ -130,7 +130,7 @@
     constructor() {
       super("Auto");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::AlignSelf";
     }
   }
@@ -138,7 +138,7 @@
     constructor() {
       super("FlexStart");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::AlignSelf";
     }
   }
@@ -146,7 +146,7 @@
     constructor() {
       super("FlexEnd");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::AlignSelf";
     }
   }
@@ -154,7 +154,7 @@
     constructor() {
       super("Center");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::AlignSelf";
     }
   }
@@ -162,7 +162,7 @@
     constructor() {
       super("Baseline");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::AlignSelf";
     }
   }
@@ -170,7 +170,7 @@
     constructor() {
       super("Stretch");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::AlignSelf";
     }
   }
@@ -184,7 +184,7 @@
     constructor(type, value) {
       super(type, value);
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::AlignSelf";
     }
   }
@@ -192,7 +192,7 @@
     constructor(struct) {
       super(null, struct);
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::CalculatedSize";
     }
   }
@@ -200,7 +200,7 @@
     constructor() {
       super("Inherit");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::Direction";
     }
   }
@@ -208,7 +208,7 @@
     constructor() {
       super("LeftToRight");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::Direction";
     }
   }
@@ -216,7 +216,7 @@
     constructor() {
       super("RightToLeft");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::Direction";
     }
   }
@@ -227,7 +227,7 @@
     constructor(type, value) {
       super(type, value);
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::Direction";
     }
   }
@@ -235,7 +235,7 @@
     constructor() {
       super("Flex");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::Display";
     }
   }
@@ -243,7 +243,7 @@
     constructor() {
       super("None");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::Display";
     }
   }
@@ -253,7 +253,7 @@
     constructor(type, value) {
       super(type, value);
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::Display";
     }
   }
@@ -261,7 +261,7 @@
     constructor() {
       super("Row");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::FlexDirection";
     }
   }
@@ -269,7 +269,7 @@
     constructor() {
       super("Column");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::FlexDirection";
     }
   }
@@ -277,7 +277,7 @@
     constructor() {
       super("RowReverse");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::FlexDirection";
     }
   }
@@ -285,7 +285,7 @@
     constructor() {
       super("ColumnReverse");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::FlexDirection";
     }
   }
@@ -297,7 +297,7 @@
     constructor(type, value) {
       super(type, value);
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::FlexDirection";
     }
   }
@@ -305,7 +305,7 @@
     constructor() {
       super("NoWrap");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::FlexWrap";
     }
   }
@@ -313,7 +313,7 @@
     constructor() {
       super("Wrap");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::FlexWrap";
     }
   }
@@ -321,7 +321,7 @@
     constructor() {
       super("WrapReverse");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::FlexWrap";
     }
   }
@@ -332,7 +332,7 @@
     constructor(type, value) {
       super(type, value);
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::FlexWrap";
     }
   }
@@ -340,7 +340,7 @@
     constructor() {
       super("FlexStart");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::JustifyContent";
     }
   }
@@ -348,7 +348,7 @@
     constructor() {
       super("FlexEnd");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::JustifyContent";
     }
   }
@@ -356,7 +356,7 @@
     constructor() {
       super("Center");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::JustifyContent";
     }
   }
@@ -364,7 +364,7 @@
     constructor() {
       super("SpaceBetween");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::JustifyContent";
     }
   }
@@ -372,7 +372,7 @@
     constructor() {
       super("SpaceAround");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::JustifyContent";
     }
   }
@@ -380,7 +380,7 @@
     constructor() {
       super("SpaceEvenly");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::JustifyContent";
     }
   }
@@ -394,7 +394,7 @@
     constructor(type, value) {
       super(type, value);
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::JustifyContent";
     }
   }
@@ -402,7 +402,7 @@
     constructor(struct) {
       super({ size: new Vec2({ x: 0.0, y: 0.0 }) }, struct);
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::Node";
     }
   }
@@ -410,7 +410,7 @@
     constructor() {
       super("Visible");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::Overflow";
     }
   }
@@ -418,7 +418,7 @@
     constructor() {
       super("Hidden");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::Overflow";
     }
   }
@@ -428,7 +428,7 @@
     constructor(type, value) {
       super(type, value);
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::Overflow";
     }
   }
@@ -436,7 +436,7 @@
     constructor() {
       super("Relative");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::PositionType";
     }
   }
@@ -444,7 +444,7 @@
     constructor() {
       super("Absolute");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::PositionType";
     }
   }
@@ -454,7 +454,7 @@
     constructor(type, value) {
       super(type, value);
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::PositionType";
     }
   }
@@ -507,7 +507,7 @@
         struct
       );
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::Style";
     }
   }
@@ -515,7 +515,7 @@
     constructor(seq) {
       super([Color.Rgba({ red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0 })], seq);
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::UiColor";
     }
   }
@@ -535,7 +535,7 @@
         seq
       );
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::UiImage";
     }
   }
@@ -543,7 +543,7 @@
     constructor() {
       super("Undefined");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::Val";
     }
   }
@@ -551,7 +551,7 @@
     constructor() {
       super("Auto");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::Val";
     }
   }
@@ -563,7 +563,7 @@
     constructor(type, value) {
       super(type, value);
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::ui_node::Val";
     }
   }

@@ -15,10 +15,10 @@
     static Axes = () => [Vec3A.X(), Vec3A.Y(), Vec3A.Z()];
 
     constructor(struct) {
-      super(null, struct);
+      super([0.0, 0.0, 0.0], struct);
     }
 
-    typeName() {
+    static typeName() {
       return "glam::f32::sse2::vec3a::Vec3A";
     }
 

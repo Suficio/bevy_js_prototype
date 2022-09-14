@@ -5,7 +5,7 @@
     constructor(struct) {
       super({ hash: 13963134382976710451, name: "" }, struct);
     }
-    typeName() {
+    static typeName() {
       return "bevy_core::name::Name";
     }
   }

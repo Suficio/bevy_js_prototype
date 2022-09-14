@@ -25,10 +25,10 @@
       });
 
     constructor(seq) {
-      super(null, seq);
+      super([1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0], seq);
     }
 
-    typeName() {
+    static typeName() {
       return "glam::f32::sse2::mat3a::Mat3A";
     }
 

@@ -5,7 +5,7 @@
     constructor(struct) {
       super(null, struct);
     }
-    typeName() {
+    static typeName() {
       return "bevy_render::primitives::Aabb";
     }
   }
@@ -13,7 +13,7 @@
     constructor(struct) {
       super(null, struct);
     }
-    typeName() {
+    static typeName() {
       return "bevy_render::primitives::CubemapFrusta";
     }
   }
@@ -21,7 +21,7 @@
     constructor(struct) {
       super(null, struct);
     }
-    typeName() {
+    static typeName() {
       return "bevy_render::primitives::Frustum";
     }
   }

@@ -5,7 +5,7 @@
     constructor(struct) {
       super(null, struct);
     }
-    typeName() {
+    static typeName() {
       return "bevy_asset::handle::Handle";
     }
   }

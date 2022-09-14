@@ -14,7 +14,7 @@
         struct
       );
     }
-    typeName() {
+    static typeName() {
       return "glam::f32::sse2::mat4::Mat4";
     }
   }

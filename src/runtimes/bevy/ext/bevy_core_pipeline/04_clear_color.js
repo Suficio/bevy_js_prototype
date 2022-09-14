@@ -5,7 +5,7 @@
     constructor(seq) {
       super(null, seq);
     }
-    typeName() {
+    static typeName() {
       return "bevy_core_pipeline::clear_color::ClearColor";
     }
   }
@@ -13,7 +13,7 @@
     constructor() {
       super("Default");
     }
-    typeName() {
+    static typeName() {
       return "bevy_core_pipeline::clear_color::ClearColorConfig";
     }
   }
@@ -21,7 +21,7 @@
     constructor() {
       super("None");
     }
-    typeName() {
+    static typeName() {
       return "bevy_core_pipeline::clear_color::ClearColorConfig";
     }
   }
@@ -32,7 +32,7 @@
     constructor(type, value) {
       super(type, value);
     }
-    typeName() {
+    static typeName() {
       return "bevy_core_pipeline::clear_color::ClearColorConfig";
     }
   }

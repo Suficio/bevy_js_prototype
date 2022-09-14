@@ -13,7 +13,7 @@
         struct
       );
     }
-    typeName() {
+    static typeName() {
       return "bevy_transform::components::transform::Transform";
     }
   }

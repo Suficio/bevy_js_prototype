@@ -13,7 +13,7 @@
         struct
       );
     }
-    typeName() {
+    static typeName() {
       return "glam::f32::mat3::Mat3";
     }
   }

@@ -8,7 +8,7 @@
     constructor(struct) {
       super(null, struct);
     }
-    typeName() {
+    static typeName() {
       return "bevy_pbr::light::AmbientLight";
     }
   }
@@ -36,7 +36,7 @@
         struct
       );
     }
-    typeName() {
+    static typeName() {
       return "bevy_pbr::light::DirectionalLight";
     }
   }
@@ -44,7 +44,7 @@
     constructor(struct) {
       super(null, struct);
     }
-    typeName() {
+    static typeName() {
       return "bevy_pbr::light::DirectionalLightShadowMap";
     }
   }
@@ -63,7 +63,7 @@
         struct
       );
     }
-    typeName() {
+    static typeName() {
       return "bevy_pbr::light::PointLight";
     }
   }
@@ -71,7 +71,7 @@
     constructor(struct) {
       super(null, struct);
     }
-    typeName() {
+    static typeName() {
       return "bevy_pbr::light::PointLightShadowMap";
     }
   }
@@ -92,7 +92,7 @@
         struct
       );
     }
-    typeName() {
+    static typeName() {
       return "bevy_pbr::light::SpotLight";
     }
   }

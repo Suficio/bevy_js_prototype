@@ -6,7 +6,7 @@
     constructor(struct) {
       super(null, struct);
     }
-    typeName() {
+    static typeName() {
       return "bevy_core_pipeline::core_3d::camera_3d::Camera3d";
     }
   }
@@ -14,7 +14,7 @@
     constructor() {
       super("Load");
     }
-    typeName() {
+    static typeName() {
       return "bevy_core_pipeline::core_3d::camera_3d::Camera3dDepthLoadOp";
     }
   }
@@ -24,7 +24,7 @@
     constructor(type, value) {
       super(type, value);
     }
-    typeName() {
+    static typeName() {
       return "bevy_core_pipeline::core_3d::camera_3d::Camera3dDepthLoadOp";
     }
   }

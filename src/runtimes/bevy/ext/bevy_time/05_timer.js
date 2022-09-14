@@ -18,7 +18,7 @@
         struct
       );
     }
-    typeName() {
+    static typeName() {
       return "bevy_time::timer::Timer";
     }
   }

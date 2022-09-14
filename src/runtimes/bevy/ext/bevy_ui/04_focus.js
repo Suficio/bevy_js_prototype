@@ -5,7 +5,7 @@
     constructor() {
       super("Block");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::focus::FocusPolicy";
     }
   }
@@ -13,7 +13,7 @@
     constructor() {
       super("Pass");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::focus::FocusPolicy";
     }
   }
@@ -23,7 +23,7 @@
     constructor(type, value) {
       super(type, value);
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::focus::FocusPolicy";
     }
   }
@@ -31,7 +31,7 @@
     constructor() {
       super("Clicked");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::focus::Interaction";
     }
   }
@@ -39,7 +39,7 @@
     constructor() {
       super("Hovered");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::focus::Interaction";
     }
   }
@@ -47,7 +47,7 @@
     constructor() {
       super("None");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::focus::Interaction";
     }
   }
@@ -58,7 +58,7 @@
     constructor(type, value) {
       super(type, value);
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::focus::Interaction";
     }
   }

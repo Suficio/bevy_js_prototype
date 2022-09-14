@@ -16,7 +16,7 @@
         struct
       );
     }
-    typeName() {
+    static typeName() {
       return "glam::f32::affine2::Affine2";
     }
   }

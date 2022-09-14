@@ -19,7 +19,7 @@
         struct
       );
     }
-    typeName() {
+    static typeName() {
       return "bevy_render::camera::projection::OrthographicProjection";
     }
   }
@@ -30,7 +30,7 @@
         struct
       );
     }
-    typeName() {
+    static typeName() {
       return "bevy_render::camera::projection::PerspectiveProjection";
     }
   }
@@ -40,7 +40,7 @@
     constructor(type, value) {
       super(type, value);
     }
-    typeName() {
+    static typeName() {
       return "bevy_render::camera::projection::Projection";
     }
   }
@@ -48,7 +48,7 @@
     constructor() {
       super("None");
     }
-    typeName() {
+    static typeName() {
       return "bevy_render::camera::projection::ScalingMode";
     }
   }
@@ -56,7 +56,7 @@
     constructor() {
       super("WindowSize");
     }
-    typeName() {
+    static typeName() {
       return "bevy_render::camera::projection::ScalingMode";
     }
   }
@@ -64,7 +64,7 @@
     constructor(struct) {
       super(null, struct);
     }
-    typeName() {
+    static typeName() {
       return "bevy_render::camera::projection::ScalingMode";
     }
   }
@@ -79,7 +79,7 @@
     constructor(type, value) {
       super(type, value);
     }
-    typeName() {
+    static typeName() {
       return "bevy_render::camera::projection::ScalingMode";
     }
   }
@@ -87,7 +87,7 @@
     constructor() {
       super("Center");
     }
-    typeName() {
+    static typeName() {
       return "bevy_render::camera::projection::WindowOrigin";
     }
   }
@@ -95,7 +95,7 @@
     constructor() {
       super("BottomLeft");
     }
-    typeName() {
+    static typeName() {
       return "bevy_render::camera::projection::WindowOrigin";
     }
   }
@@ -105,7 +105,7 @@
     constructor(type, value) {
       super(type, value);
     }
-    typeName() {
+    static typeName() {
       return "bevy_render::camera::projection::WindowOrigin";
     }
   }

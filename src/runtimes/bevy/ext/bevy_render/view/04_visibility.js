@@ -5,7 +5,7 @@
     constructor(struct) {
       super(null, struct);
     }
-    typeName() {
+    static typeName() {
       return "bevy_render::view::visibility::ComputedVisibility";
     }
   }
@@ -13,7 +13,7 @@
     constructor(struct) {
       super({ is_visible: true }, struct);
     }
-    typeName() {
+    static typeName() {
       return "bevy_render::view::visibility::Visibility";
     }
   }
@@ -21,7 +21,7 @@
     constructor(struct) {
       super(null, struct);
     }
-    typeName() {
+    static typeName() {
       return "bevy_render::view::visibility::VisibleEntities";
     }
   }
