@@ -6,7 +6,7 @@
     constructor() {
       super("Center");
     }
-    typeName() {
+    static typeName() {
       return "bevy_sprite::sprite::Anchor";
     }
   }
@@ -14,7 +14,7 @@
     constructor() {
       super("BottomLeft");
     }
-    typeName() {
+    static typeName() {
       return "bevy_sprite::sprite::Anchor";
     }
   }
@@ -22,7 +22,7 @@
     constructor() {
       super("BottomCenter");
     }
-    typeName() {
+    static typeName() {
       return "bevy_sprite::sprite::Anchor";
     }
   }
@@ -30,7 +30,7 @@
     constructor() {
       super("BottomRight");
     }
-    typeName() {
+    static typeName() {
       return "bevy_sprite::sprite::Anchor";
     }
   }
@@ -38,7 +38,7 @@
     constructor() {
       super("CenterLeft");
     }
-    typeName() {
+    static typeName() {
       return "bevy_sprite::sprite::Anchor";
     }
   }
@@ -46,7 +46,7 @@
     constructor() {
       super("CenterRight");
     }
-    typeName() {
+    static typeName() {
       return "bevy_sprite::sprite::Anchor";
     }
   }
@@ -54,7 +54,7 @@
     constructor() {
       super("TopLeft");
     }
-    typeName() {
+    static typeName() {
       return "bevy_sprite::sprite::Anchor";
     }
   }
@@ -62,7 +62,7 @@
     constructor() {
       super("TopCenter");
     }
-    typeName() {
+    static typeName() {
       return "bevy_sprite::sprite::Anchor";
     }
   }
@@ -70,7 +70,7 @@
     constructor() {
       super("TopRight");
     }
-    typeName() {
+    static typeName() {
       return "bevy_sprite::sprite::Anchor";
     }
   }
@@ -88,7 +88,7 @@
     constructor(type, value) {
       super(type, value);
     }
-    typeName() {
+    static typeName() {
       return "bevy_sprite::sprite::Anchor";
     }
   }
@@ -96,7 +96,7 @@
     constructor(struct) {
       super(null, struct);
     }
-    typeName() {
+    static typeName() {
       return "bevy_sprite::sprite::Sprite";
     }
   }

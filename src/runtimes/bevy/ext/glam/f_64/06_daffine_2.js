@@ -16,7 +16,7 @@
         struct
       );
     }
-    typeName() {
+    static typeName() {
       return "glam::f64::daffine2::DAffine2";
     }
   }

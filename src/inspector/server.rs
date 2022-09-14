@@ -2,7 +2,6 @@
 
 use crate::inspector::{websocket, InspectorInfo};
 use bevy::{prelude::*, tasks::IoTaskPool, utils::Uuid};
-use core::convert::Infallible as Never;
 use deno_core::{
     futures::{channel, future, pin_mut, select, stream::StreamExt, task::Poll, FutureExt},
     parking_lot::Mutex,
@@ -52,7 +51,7 @@ pub async fn initialize_inspector_server(
             .lock()
             .retain(|_, info| info.deregister_rx.poll_unpin(cx) == Poll::Pending);
 
-        Poll::<Never>::Pending
+        Poll::<core::convert::Infallible>::Pending
     })
     .fuse();
 

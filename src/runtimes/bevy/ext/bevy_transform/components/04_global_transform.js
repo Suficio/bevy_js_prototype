@@ -1,11 +1,14 @@
 "use strict";
 ((window) => {
   const { ReflectableArray } = window.bevyEcs;
+  const { Affine3A } = window.glam.f32.affine3A;
   class GlobalTransform extends ReflectableArray {
+    static Identity = () => new GlobalTransform(Affine3A.Identity());
     constructor(seq) {
-      super(null, seq);
+      super([Affine3A.Identity()], seq);
+      Deno.core.print(JSON.stringify(this));
     }
-    typeName() {
+    static typeName() {
       return "bevy_transform::components::global_transform::GlobalTransform";
     }
   }

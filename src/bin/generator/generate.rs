@@ -233,7 +233,7 @@ fn generate_array_type(
         generate_default_type_init(type_registry, module, registration, false)
     )
     .unwrap();
-    write!(o, r#"typeName() {{ return "{type_name}" }} }}"#,).unwrap();
+    write!(o, r#"static typeName() {{ return "{type_name}" }} }}"#,).unwrap();
 }
 
 /// Generates a top-level type definition
@@ -258,7 +258,7 @@ pub fn generate_type(
                 generate_default_type_init(type_registry, module, registration, false)
             )
             .unwrap();
-            write!(&mut o, r#"typeName() {{ return "{type_name}" }} }}"#,).unwrap();
+            write!(&mut o, r#"static typeName() {{ return "{type_name}" }} }}"#,).unwrap();
         }
         TypeInfo::TupleStruct(_) => generate_array_type(
             &mut o,
@@ -300,7 +300,8 @@ pub fn generate_type(
                             generate_default_type_init(type_registry, module, registration, false)
                         )
                         .unwrap();
-                        write!(&mut o, r#"typeName() {{ return "{type_name}" }} }}"#,).unwrap();
+                        write!(&mut o, r#"static typeName() {{ return "{type_name}" }} }}"#,)
+                            .unwrap();
                     }
                     VariantInfo::Tuple(t) => {
                         if t.field_len() > 1 {
@@ -325,7 +326,8 @@ pub fn generate_type(
                         )
                         .unwrap();
                         write!(&mut o, r#"constructor() {{ super("{name}") }}"#,).unwrap();
-                        write!(&mut o, r#"typeName() {{ return "{type_name}" }} }}"#,).unwrap();
+                        write!(&mut o, r#"static typeName() {{ return "{type_name}" }} }}"#,)
+                            .unwrap();
                     }
                 }
             }
@@ -372,7 +374,7 @@ pub fn generate_type(
             )
             .unwrap();
 
-            write!(&mut o, r#"typeName() {{ return "{type_name}" }} }}"#,).unwrap();
+            write!(&mut o, r#"static typeName() {{ return "{type_name}" }} }}"#,).unwrap();
         }
     }
 

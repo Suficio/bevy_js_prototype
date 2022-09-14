@@ -7,7 +7,7 @@
     constructor() {
       super("Left");
     }
-    typeName() {
+    static typeName() {
       return "bevy_text::text::HorizontalAlign";
     }
   }
@@ -15,7 +15,7 @@
     constructor() {
       super("Center");
     }
-    typeName() {
+    static typeName() {
       return "bevy_text::text::HorizontalAlign";
     }
   }
@@ -23,7 +23,7 @@
     constructor() {
       super("Right");
     }
-    typeName() {
+    static typeName() {
       return "bevy_text::text::HorizontalAlign";
     }
   }
@@ -34,7 +34,7 @@
     constructor(type, value) {
       super(type, value);
     }
-    typeName() {
+    static typeName() {
       return "bevy_text::text::HorizontalAlign";
     }
   }
@@ -51,7 +51,7 @@
         struct
       );
     }
-    typeName() {
+    static typeName() {
       return "bevy_text::text::Text";
     }
   }
@@ -59,7 +59,7 @@
     constructor(struct) {
       super(null, struct);
     }
-    typeName() {
+    static typeName() {
       return "bevy_text::text::TextAlignment";
     }
   }
@@ -67,7 +67,7 @@
     constructor(struct) {
       super(null, struct);
     }
-    typeName() {
+    static typeName() {
       return "bevy_text::text::TextSection";
     }
   }
@@ -75,7 +75,7 @@
     constructor(struct) {
       super(null, struct);
     }
-    typeName() {
+    static typeName() {
       return "bevy_text::text::TextStyle";
     }
   }
@@ -83,7 +83,7 @@
     constructor() {
       super("Top");
     }
-    typeName() {
+    static typeName() {
       return "bevy_text::text::VerticalAlign";
     }
   }
@@ -91,7 +91,7 @@
     constructor() {
       super("Center");
     }
-    typeName() {
+    static typeName() {
       return "bevy_text::text::VerticalAlign";
     }
   }
@@ -99,7 +99,7 @@
     constructor() {
       super("Bottom");
     }
-    typeName() {
+    static typeName() {
       return "bevy_text::text::VerticalAlign";
     }
   }
@@ -110,7 +110,7 @@
     constructor(type, value) {
       super(type, value);
     }
-    typeName() {
+    static typeName() {
       return "bevy_text::text::VerticalAlign";
     }
   }

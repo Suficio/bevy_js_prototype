@@ -5,7 +5,7 @@
     constructor(seq) {
       super(null, seq);
     }
-    typeName() {
+    static typeName() {
       return "bevy_hierarchy::components::children::Children";
     }
   }

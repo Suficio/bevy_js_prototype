@@ -5,7 +5,7 @@
     constructor() {
       super("KeepAspect");
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::widget::image::ImageMode";
     }
   }
@@ -14,7 +14,7 @@
     constructor(type, value) {
       super(type, value);
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::widget::image::ImageMode";
     }
   }

@@ -70,7 +70,7 @@ function setup() {
     .insert(new CalculatedSize())
     .insert(FocusPolicy.Pass())
     .insert(new Transform())
-    .insert(new GlobalTransform(Affine3A.Identity()))
+    .insert(new GlobalTransform())
     .insert(new Visibility())
     .insert(
       new ComputedVisibility({

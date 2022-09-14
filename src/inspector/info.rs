@@ -1,11 +1,11 @@
 // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
 
 use bevy::utils::Uuid;
-use dc::{
+use deno_core::{
+    self as dc,
     futures::channel,
     serde_json::{json, Value},
 };
-use deno_core as dc;
 use std::{net::SocketAddr, process};
 
 /// Information for inspector how to connect to a runtime

@@ -5,7 +5,7 @@
     constructor(struct) {
       super({ elapsed: { secs: 0, nanos: 0 }, paused: false }, struct);
     }
-    typeName() {
+    static typeName() {
       return "bevy_time::stopwatch::Stopwatch";
     }
   }

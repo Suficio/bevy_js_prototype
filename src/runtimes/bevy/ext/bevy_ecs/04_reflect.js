@@ -1,14 +1,10 @@
 "use strict";
 
 ((window) => {
-  class Reflectable {
-    constructor() {}
-
-    static reflect() {
-      const obj = {};
-      obj[this.typeName()] = this;
-      return obj;
-    }
+  function reflect() {
+    const obj = {};
+    obj[this.typeName()] = this;
+    return obj;
   }
 
   class ReflectableObject extends Object {
@@ -17,12 +13,16 @@
       Object.assign(this, defaults, struct);
     }
 
-    typeName() {
+    static typeName() {
       throw new Error("ReflectableObject must implement typeName");
     }
 
+    typeName() {
+      return this.constructor.typeName();
+    }
+
     reflect() {
-      return Reflectable.reflect.call(this);
+      return reflect.call(this);
     }
   }
 
@@ -37,12 +37,16 @@
       Object.assign(this, defaults, seq);
     }
 
-    typeName() {
+    static typeName() {
       throw new Error("ReflectableArray must implement typeName");
     }
 
+    typeName() {
+      return this.constructor.typeName();
+    }
+
     reflect() {
-      return Reflectable.reflect.call(this);
+      return reflect.call(this);
     }
   }
 
@@ -52,12 +56,16 @@
       this[type] = value;
     }
 
-    typeName() {
+    static typeName() {
       throw new Error("ReflectableEnum must implement typeName");
     }
 
+    typeName() {
+      return this.constructor.typeName();
+    }
+
     reflect() {
-      return Reflectable.reflect.call(this);
+      return reflect.call(this);
     }
   }
 
@@ -66,17 +74,20 @@
       super(value);
     }
 
-    typeName() {
+    static typeName() {
       throw new Error("ReflectableUnit must implement typeName");
     }
 
+    typeName() {
+      return this.constructor.typeName();
+    }
+
     reflect() {
-      return Reflectable.reflect.call(this);
+      return reflect.call(this);
     }
   }
 
   Object.assign(window.bevyEcs, {
-    Reflectable,
     ReflectableObject,
     ReflectableArray,
     ReflectableEnum,

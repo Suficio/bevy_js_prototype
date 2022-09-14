@@ -1,8 +1,5 @@
 use crate as bjs;
-use bjs::{
-    anyhow::{Context, Error as AnyError},
-    futures::FutureExt,
-};
+use bjs::{anyhow::Context, futures::FutureExt};
 use std::pin::Pin;
 
 /// Basic file system module loader.
@@ -18,7 +15,7 @@ impl bjs::ModuleLoader for FsModuleLoader {
         specifier: &str,
         referrer: &str,
         _is_main: bool,
-    ) -> Result<bjs::ModuleSpecifier, AnyError> {
+    ) -> Result<bjs::ModuleSpecifier, bjs::AnyError> {
         Ok(bjs::resolve::import(specifier, referrer)?)
     }
 
@@ -31,7 +28,7 @@ impl bjs::ModuleLoader for FsModuleLoader {
         let module_specifier = module_specifier.clone();
         async move {
             let mut path = module_specifier.to_file_path().map_err(|_| {
-                AnyError::msg(format!(
+                bjs::AnyError::msg(format!(
                     "Provided module specifier \"{}\" is not a file URL.",
                     module_specifier
                 ))

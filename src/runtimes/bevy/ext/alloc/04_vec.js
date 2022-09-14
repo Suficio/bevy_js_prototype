@@ -5,7 +5,7 @@
     constructor(seq) {
       super(null, seq);
     }
-    typeName() {
+    static typeName() {
       return "alloc::vec::Vec";
     }
   }

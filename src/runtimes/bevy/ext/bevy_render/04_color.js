@@ -5,7 +5,7 @@
     constructor(struct) {
       super(null, struct);
     }
-    typeName() {
+    static typeName() {
       return "bevy_render::color::Color";
     }
   }
@@ -13,7 +13,7 @@
     constructor(struct) {
       super(null, struct);
     }
-    typeName() {
+    static typeName() {
       return "bevy_render::color::Color";
     }
   }
@@ -21,7 +21,7 @@
     constructor(struct) {
       super(null, struct);
     }
-    typeName() {
+    static typeName() {
       return "bevy_render::color::Color";
     }
   }
@@ -35,7 +35,7 @@
     constructor(type, value) {
       super(type, value);
     }
-    typeName() {
+    static typeName() {
       return "bevy_render::color::Color";
     }
   }

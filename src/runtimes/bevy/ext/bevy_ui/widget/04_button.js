@@ -5,7 +5,7 @@
     constructor(struct) {
       super({}, struct);
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::widget::button::Button";
     }
   }

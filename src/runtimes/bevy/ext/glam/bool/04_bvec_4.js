@@ -5,7 +5,7 @@
     constructor(struct) {
       super({ x: false, y: false, z: false, w: false }, struct);
     }
-    typeName() {
+    static typeName() {
       return "glam::bool::bvec4::BVec4";
     }
   }

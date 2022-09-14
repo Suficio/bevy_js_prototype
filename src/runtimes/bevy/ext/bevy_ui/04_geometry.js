@@ -5,7 +5,7 @@
     constructor(struct) {
       super(null, struct);
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::geometry::Size";
     }
   }
@@ -13,7 +13,7 @@
     constructor(struct) {
       super(null, struct);
     }
-    typeName() {
+    static typeName() {
       return "bevy_ui::geometry::UiRect";
     }
   }

@@ -1,11 +1,10 @@
-use crate::{
-    self as bjs,
-    anyhow::Error as AnyError,
+use crate as bjs;
+use bevy::{prelude::*, tasks::IoTaskPool};
+use bjs::{
     deno_core as dc,
     futures::{channel::oneshot, executor, future},
     v8,
 };
-use bevy::{prelude::*, tasks::IoTaskPool};
 use std::{cell::RefCell, marker::PhantomData, rc::Rc, task::Poll};
 
 /// Trait used to construct [JsRuntimes](bjs::JsRuntime)
@@ -36,7 +35,7 @@ impl JsRuntime {
         &mut self,
         name: &str,
         source_code: &str,
-    ) -> Result<v8::Global<v8::Value>, AnyError> {
+    ) -> Result<v8::Global<v8::Value>, bjs::AnyError> {
         self.deno.borrow_mut().execute_script(name, source_code)
     }
 
@@ -45,7 +44,7 @@ impl JsRuntime {
         &self,
         specifier: bjs::ModuleSpecifier,
         source_code: Option<String>,
-    ) -> oneshot::Receiver<Result<(), AnyError>> {
+    ) -> oneshot::Receiver<Result<(), bjs::AnyError>> {
         let (sender, receiver) = oneshot::channel();
 
         let deno = self.deno.clone();
@@ -55,7 +54,7 @@ impl JsRuntime {
                 let mut deno = match deno.try_borrow_mut() {
                     Ok(deno) => deno,
                     Err(_) => {
-                        let err = AnyError::msg("Could not borrow Deno runtime");
+                        let err = bjs::AnyError::msg("Could not borrow Deno runtime");
                         error!("{}", err);
                         let _ = sender.send(Err(err));
                         return;
@@ -89,7 +88,7 @@ impl JsRuntime {
                                 let _ = sender.send(res);
                             }
                             Err(_canceled) => {
-                                let err = AnyError::msg("Module evaluation was cancelled");
+                                let err = bjs::AnyError::msg("Module evaluation was cancelled");
                                 error!("{}", err);
                                 let _ = sender.send(Err(err));
                             }
@@ -166,7 +165,7 @@ impl<R> JsRuntimeResource<R> {
         &mut self,
         name: &str,
         source_code: &str,
-    ) -> Result<v8::Global<v8::Value>, AnyError> {
+    ) -> Result<v8::Global<v8::Value>, bjs::AnyError> {
         self.runtime.execute_script(name, source_code)
     }
 
@@ -174,7 +173,7 @@ impl<R> JsRuntimeResource<R> {
         &mut self,
         specifier: bjs::ModuleSpecifier,
         source_code: Option<String>,
-    ) -> oneshot::Receiver<Result<(), AnyError>> {
+    ) -> oneshot::Receiver<Result<(), bjs::AnyError>> {
         self.runtime.execute_module(specifier, source_code)
     }
 }

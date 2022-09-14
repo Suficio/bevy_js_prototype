@@ -1,17 +1,16 @@
 // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
 
-use super::server::InspectorInfoMap;
 use bevy::{prelude::*, utils::Uuid};
-use dc::{
-    anyhow::Error as AnyError,
+use deno_core::{
+    self as dc,
     futures::{channel, pin_mut, select, stream::StreamExt, FutureExt},
 };
-use deno_core as dc;
-
 use tide_websockets::{
     tungstenite::protocol::{frame::coding::CloseCode, CloseFrame},
     Message, WebSocketConnection,
 };
+
+use super::server::InspectorInfoMap;
 
 pub async fn inspector_uuid(
     url: &dc::ModuleSpecifier,
@@ -120,7 +119,7 @@ pub async fn pump_websocket_messages(
         .map(|item| {
             inbound_tx
                 .unbounded_send(item?.into_text()?)
-                .map_err(|err| AnyError::new(err.into_send_error()))
+                .map_err(|err| dc::error::AnyError::new(err.into_send_error()))
         })
         .filter_map(|item| async {
             let _ = item.map_err(|err| error!("{}", err));

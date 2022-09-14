@@ -5,7 +5,7 @@
     constructor(struct) {
       super({ x: 0.0, y: 0.0, z: 0.0 }, struct);
     }
-    typeName() {
+    static typeName() {
       return "glam::f64::dvec3::DVec3";
     }
   }

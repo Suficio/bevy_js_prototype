@@ -6,7 +6,7 @@
     constructor(struct) {
       super(null, struct);
     }
-    typeName() {
+    static typeName() {
       return "bevy_render::camera::camera::Camera";
     }
   }
@@ -14,7 +14,7 @@
     constructor(seq) {
       super(null, seq);
     }
-    typeName() {
+    static typeName() {
       return "bevy_render::camera::camera::CameraRenderGraph";
     }
   }
@@ -29,7 +29,7 @@
         struct
       );
     }
-    typeName() {
+    static typeName() {
       return "bevy_render::camera::camera::Viewport";
     }
   }
