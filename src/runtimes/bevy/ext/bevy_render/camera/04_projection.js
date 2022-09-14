@@ -71,8 +71,8 @@
   class ScalingMode extends ReflectableEnum {
     static None = () => new ScalingModeNone();
     static WindowSize = () => new ScalingModeWindowSize();
-    static Auto = (defaults, struct) =>
-      new ScalingMode("Auto", new ScalingModeAuto(defaults, struct));
+    static Auto = (struct) =>
+      new ScalingMode("Auto", new ScalingModeAuto(struct));
     static FixedVertical = (value) => new ScalingMode("FixedVertical", value);
     static FixedHorizontal = (value) =>
       new ScalingMode("FixedHorizontal", value);
