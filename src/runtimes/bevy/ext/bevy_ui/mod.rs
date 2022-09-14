@@ -10,6 +10,7 @@ pub fn init() -> Extension {
             "04_focus.js",
             "04_geometry.js",
             "05_ui_node.js",
+            "06_entity.js",
         ))
         .build()
 }

@@ -22,8 +22,8 @@ impl BevyRuntime {
             .with_extension(ext::glam::init())
             .with_extension(ext::bevy_transform::init())
             .with_extension(ext::bevy_render::init())
-            .with_extension(ext::bevy_ui::init())
-            .with_extension(ext::bevy_text::init());
+            .with_extension(ext::bevy_text::init())
+            .with_extension(ext::bevy_ui::init());
 
         builder
     }

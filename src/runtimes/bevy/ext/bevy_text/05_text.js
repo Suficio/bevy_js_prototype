@@ -39,6 +39,9 @@
     }
   }
   class Text extends ReflectableObject {
+    static fromSection = (value, style) =>
+      new Text({ sections: [new TextSection({ value, style })] });
+    static fromSections = (sections) => new Text({ sections });
     constructor(struct) {
       super(
         {
@@ -54,8 +57,57 @@
     static typeName() {
       return "bevy_text::text::Text";
     }
+    withAlignment(alignment) {
+      this.alignment = alignment;
+      return this;
+    }
   }
   class TextAlignment extends ReflectableObject {
+    static TopLeft = () =>
+      new TextAlignment({
+        vertical: VerticalAlign.Top(),
+        horizontal: HorizontalAlign.Left(),
+      });
+    static TopCenter = () =>
+      new TextAlignment({
+        vertical: VerticalAlign.Top(),
+        horizontal: HorizontalAlign.Center(),
+      });
+    static TopRight = () =>
+      new TextAlignment({
+        vertical: VerticalAlign.Top(),
+        horizontal: HorizontalAlign.Right(),
+      });
+    static CenterLeft = () =>
+      new TextAlignment({
+        vertical: VerticalAlign.Center(),
+        horizontal: HorizontalAlign.Left(),
+      });
+    static Center = () =>
+      new TextAlignment({
+        vertical: VerticalAlign.Center(),
+        horizontal: HorizontalAlign.Center(),
+      });
+    static CenterRight = () =>
+      new TextAlignment({
+        vertical: VerticalAlign.Center(),
+        horizontal: HorizontalAlign.Right(),
+      });
+    static BottomLeft = () =>
+      new TextAlignment({
+        vertical: VerticalAlign.Bottom(),
+        horizontal: HorizontalAlign.Left(),
+      });
+    static BottomCenter = () =>
+      new TextAlignment({
+        vertical: VerticalAlign.Bottom(),
+        horizontal: HorizontalAlign.Center(),
+      });
+    static BottomRight = () =>
+      new TextAlignment({
+        vertical: VerticalAlign.Bottom(),
+        horizontal: HorizontalAlign.Right(),
+      });
     constructor(struct) {
       super(null, struct);
     }
@@ -64,8 +116,9 @@
     }
   }
   class TextSection extends ReflectableObject {
+    static fromStyle = (style) => new TextSection({ style });
     constructor(struct) {
-      super(null, struct);
+      super({ value: "", style: new TextStyle() }, struct);
     }
     static typeName() {
       return "bevy_text::text::TextSection";

@@ -342,7 +342,7 @@ pub fn generate_type(
                     VariantInfo::Struct(_) => {
                         write!(
                             &mut o,
-                            r#"static {name} = (defaults, struct) => new {short_name}("{name}", new {short_name}{name}(defaults, struct));"#,
+                            r#"static {name} = (struct) => new {short_name}("{name}", new {short_name}{name}(struct));"#,
                         )
                         .unwrap();
                     }

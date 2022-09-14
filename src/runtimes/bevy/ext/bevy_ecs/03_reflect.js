@@ -87,7 +87,19 @@
     }
   }
 
+  class Bundle extends Object {
+    constructor(defaults, struct) {
+      super();
+      Object.assign(this, defaults, struct);
+    }
+
+    bundleName() {
+      return this.constructor.name;
+    }
+  }
+
   Object.assign(window.bevyEcs, {
+    Bundle,
     ReflectableObject,
     ReflectableArray,
     ReflectableEnum,

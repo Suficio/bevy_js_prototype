@@ -8,7 +8,7 @@ pub fn init() -> Extension {
         .js(include_js_files!(
             prefix "bevy:ext/bevy_ecs",
             "03_ecs.js",
-            "04_reflect.js",
+            "03_reflect.js",
             "04_entity.js",
             "05_world.js",
         ))

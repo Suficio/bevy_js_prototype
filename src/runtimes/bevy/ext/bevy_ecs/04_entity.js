@@ -24,8 +24,26 @@
         );
       } catch (err) {
         throw new Error(
-          `Could not insert component into entity: ${this.entity}
-${JSON.stringify(reflected)}
+          `Could not insert component: ${reflected.typeName()} into entity: ${
+            this.entity
+          }
+${err}`
+        );
+      }
+
+      return this;
+    }
+
+    insertBundle(bundle) {
+      try {
+        for (const component of Object.values(bundle)) {
+          this.insert(component);
+        }
+      } catch (err) {
+        throw new Error(
+          `Could not insert bundle: ${bundle.bundleName()} into entity: ${
+            this.entity
+          }
 ${err}`
         );
       }
