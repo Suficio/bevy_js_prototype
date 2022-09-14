@@ -6,7 +6,6 @@
     static Identity = () => new GlobalTransform(Affine3A.Identity());
     constructor(seq) {
       super([Affine3A.Identity()], seq);
-      Deno.core.print(JSON.stringify(this));
     }
     static typeName() {
       return "bevy_transform::components::global_transform::GlobalTransform";

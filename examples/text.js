@@ -6,6 +6,7 @@
 const { Entity, World } = bevyEcs;
 const { Visibility, ComputedVisibility } = bevyRender.view.visibility;
 const { FocusPolicy } = bevyUi.focus;
+const { TextBundle } = bevyUi.entity;
 const { Node, CalculatedSize, Style, AlignSelf, PositionType, Val } =
   bevyUi.uiNode;
 const { UiRect } = bevyUi.geometry;
@@ -25,57 +26,60 @@ const { Vec } = alloc.vec;
 
 (async () => {
   await bevyEcs.waitForWorld();
-  setup();
+
+  /// Track texts by tracking entity ID
+  const colorText = World.spawn();
+  const fpsText = World.spawn();
+
+  setup(colorText, fpsText);
 })();
 
-function setup() {
-  const handle = bevyAsset.AssetServer.load("fonts/FiraSans-Bold.ttf");
+function setup(colorText, fpsText) {
+  // Text with one section
+  colorText.insertBundle(
+    TextBundle.fromSection(
+      "hello\nbevy_js!",
+      new TextStyle({
+        font: bevyAsset.AssetServer.load("fonts/FiraSans-Bold.ttf"),
+        font_size: 100.0,
+        color: Color.WHITE,
+      })
+    )
+      .withTextAlignment(TextAlignment.TopCenter())
+      .withStyle(
+        new Style({
+          align_self: AlignSelf.FlexEnd(),
+          position_type: PositionType.Absolute(),
+          position: new UiRect({
+            bottom: Val.Px(5.0),
+            right: Val.Px(15.0),
+          }),
+        })
+      )
+  );
 
-  const entity = World.spawn();
-  entity
-    .insert(new Node())
-    .insert(
+  // Text with multiple sections
+  fpsText.insertBundle(
+    TextBundle.fromSections([
+      new TextSection({
+        value: "FPS: ",
+        style: new TextStyle({
+          font: bevyAsset.AssetServer.load("fonts/FiraSans-Bold.ttf"),
+          font_size: 60.0,
+          color: Color.WHITE,
+        }),
+      }),
+      TextSection.fromStyle(
+        new TextStyle({
+          font: bevyAsset.AssetServer.load("fonts/FiraMono-Medium.ttf"),
+          font_size: 60.0,
+          color: Color.GOLD,
+        })
+      ),
+    ]).withStyle(
       new Style({
         align_self: AlignSelf.FlexEnd(),
-        position_type: PositionType.Absolute(),
-        position: new UiRect({
-          bottom: Val.Px(5.0),
-          right: Val.Px(15.0),
-        }),
       })
     )
-    .insert(
-      new Text({
-        sections: new Vec([
-          new TextSection({
-            value: "hello\nbevy_js!",
-            style: new TextStyle({
-              font: handle,
-              font_size: 100.0,
-              color: Color.Rgba({
-                red: 1.0,
-                green: 1.0,
-                blue: 1.0,
-                alpha: 1.0,
-              }),
-            }),
-          }),
-        ]),
-        alignment: new TextAlignment({
-          vertical: VerticalAlign.Top(),
-          horizontal: HorizontalAlign.Center(),
-        }),
-      })
-    )
-    .insert(new CalculatedSize())
-    .insert(FocusPolicy.Pass())
-    .insert(new Transform())
-    .insert(new GlobalTransform())
-    .insert(new Visibility())
-    .insert(
-      new ComputedVisibility({
-        is_visible_in_hierarchy: false,
-        is_visible_in_view: false,
-      })
-    );
+  );
 }

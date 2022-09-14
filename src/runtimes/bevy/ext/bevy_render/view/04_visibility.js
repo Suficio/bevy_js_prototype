@@ -3,7 +3,13 @@
   const { ReflectableObject } = window.bevyEcs;
   class ComputedVisibility extends ReflectableObject {
     constructor(struct) {
-      super(null, struct);
+      super(
+        {
+          is_visible_in_hierarchy: false,
+          is_visible_in_view: false,
+        },
+        struct
+      );
     }
     static typeName() {
       return "bevy_render::view::visibility::ComputedVisibility";
