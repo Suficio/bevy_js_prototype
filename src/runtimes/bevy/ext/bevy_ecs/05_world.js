@@ -10,9 +10,18 @@
     }
 
     static spawn() {
-      let eEntity = core.ops.op_entity_spawn(worldResourceId());
-      return new Entity(eEntity);
+      return new Entity();
     }
+
+    static getResource(constructor) {
+      let res = core.ops.op_world_get_resource(
+        worldResourceId(),
+        constructor.typeName()
+      );
+      Deno.core.print(JSON.stringify(res));
+    }
+
+    static insertResource() {}
   }
 
   Object.assign(window.bevyEcs, { World });

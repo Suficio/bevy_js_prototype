@@ -10,6 +10,9 @@ fn main() {
             commands.spawn_bundle(Camera2dBundle::default());
         })
         .add_startup_system(setup_runtime)
+        // Register missing reflectable types
+        .register_type::<Vec<TextSection>>()
+        .register_type::<TextStyle>()
         .run();
 }
 

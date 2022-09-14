@@ -23,6 +23,7 @@ const {
 } = bevyText.text;
 const { Color } = bevyRender.color;
 const { Vec } = alloc.vec;
+const { Time } = bevyTime.time;
 
 (async () => {
   await bevyEcs.waitForWorld();
@@ -32,6 +33,12 @@ const { Vec } = alloc.vec;
   const fpsText = World.spawn();
 
   setup(colorText, fpsText);
+
+  while (true) {
+    textColorSystem(colorText);
+    textUpdateSystem(fpsText);
+    await bevyEcs.waitForWorld();
+  }
 })();
 
 function setup(colorText, fpsText) {
@@ -42,7 +49,7 @@ function setup(colorText, fpsText) {
       new TextStyle({
         font: bevyAsset.AssetServer.load("fonts/FiraSans-Bold.ttf"),
         font_size: 100.0,
-        color: Color.WHITE,
+        color: Color.White(),
       })
     )
       .withTextAlignment(TextAlignment.TopCenter())
@@ -66,14 +73,14 @@ function setup(colorText, fpsText) {
         style: new TextStyle({
           font: bevyAsset.AssetServer.load("fonts/FiraSans-Bold.ttf"),
           font_size: 60.0,
-          color: Color.WHITE,
+          color: Color.White(),
         }),
       }),
       TextSection.fromStyle(
         new TextStyle({
           font: bevyAsset.AssetServer.load("fonts/FiraMono-Medium.ttf"),
           font_size: 60.0,
-          color: Color.GOLD,
+          color: Color.Gold(),
         })
       ),
     ]).withStyle(
@@ -83,3 +90,19 @@ function setup(colorText, fpsText) {
     )
   );
 }
+
+function textColorSystem(colorText) {
+  const seconds = Time.secondsSinceStartup();
+  let text = colorText.get(Text);
+
+  text.sections[0].style.color = Color.Rgba(
+    Math.sin(1.25 * seconds) / 2 + 0.5,
+    Math.sin(0.75 * seconds) / 2 + 0.5,
+    Math.sin(0.5 * seconds) / 2 + 0.5,
+    1.0
+  );
+
+  colorText.insert(text);
+}
+
+function textUpdateSystem(fpsText) {}

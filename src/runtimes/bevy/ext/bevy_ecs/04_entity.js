@@ -6,7 +6,11 @@
 
   class Entity {
     constructor(eEntity) {
-      this.entity = eEntity;
+      if (eEntity) {
+        this.entity = eEntity;
+      } else {
+        this.entity = core.ops.op_entity_spawn(worldResourceId());
+      }
     }
 
     id() {
@@ -24,7 +28,7 @@
         );
       } catch (err) {
         throw new Error(
-          `Could not insert component: ${reflected.typeName()} into entity: ${
+          `Could not insert component: ${component.typeName()} into entity: ${
             this.entity
           }
 ${err}`
@@ -49,6 +53,25 @@ ${err}`
       }
 
       return this;
+    }
+
+    get(component) {
+      try {
+        let res = core.ops.op_entity_get_component(
+          worldResourceId(),
+          this.entity,
+          component.typeName()
+        );
+
+        return new component(res);
+      } catch (err) {
+        throw new Error(
+          `Could not get component: ${component.typeName()} from entity: ${
+            this.entity
+          }
+${err}`
+        );
+      }
     }
   }
 

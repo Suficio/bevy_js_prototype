@@ -44,7 +44,8 @@ pub fn register_runtime<R: IntoRuntime + 'static>(app: &mut App) {
     }
 
     #[cfg(feature = "inspector")]
-    {
+    // [inspector::JsInspector] should be created only once
+    if app.world.get_resource::<inspector::JsInspector>().is_none() {
         let host = std::net::SocketAddr::new("127.0.0.1".parse().unwrap(), 9229);
         app.insert_resource(inspector::JsInspector::new(host));
     }
