@@ -13,15 +13,25 @@
       return new Entity();
     }
 
-    static getResource(constructor) {
-      let res = core.ops.op_world_get_resource(
-        worldResourceId(),
-        constructor.typeName()
-      );
-      Deno.core.print(JSON.stringify(res));
+    static getResource(resource) {
+      try {
+        let res = core.ops.op_world_get_resource(
+          worldResourceId(),
+          resource.typeName()
+        );
+
+        return new resource(res);
+      } catch (err) {
+        throw new Error(
+          `Could not get resource: ${resource.typeName()} from entity: ${
+            this.entity
+          }
+${err}`
+        );
+      }
     }
 
-    static insertResource() {}
+    // TODO: static insertResource() {}
   }
 
   Object.assign(window.bevyEcs, { World });
