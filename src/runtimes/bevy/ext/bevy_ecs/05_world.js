@@ -10,9 +10,28 @@
     }
 
     static spawn() {
-      let eEntity = core.ops.op_entity_spawn(worldResourceId());
-      return new Entity(eEntity);
+      return new Entity();
     }
+
+    static getResource(resource) {
+      try {
+        let res = core.ops.op_world_get_resource(
+          worldResourceId(),
+          resource.typeName()
+        );
+
+        return new resource(res);
+      } catch (err) {
+        throw new Error(
+          `Could not get resource: ${resource.typeName()} from entity: ${
+            this.entity
+          }
+${err}`
+        );
+      }
+    }
+
+    // TODO: static insertResource() {}
   }
 
   Object.assign(window.bevyEcs, { World });

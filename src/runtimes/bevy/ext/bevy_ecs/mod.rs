@@ -2,6 +2,7 @@ use crate as bjs;
 use bjs::{include_js_files, op, Extension, OpState};
 
 mod entity;
+mod world;
 
 pub fn init() -> Extension {
     Extension::builder()
@@ -16,6 +17,8 @@ pub fn init() -> Extension {
             op_wait_for_world::decl(),
             entity::op_entity_spawn::decl(),
             entity::op_entity_insert_component::decl(),
+            entity::op_entity_get_component::decl(),
+            world::op_world_get_resource::decl(),
         ])
         .build()
 }

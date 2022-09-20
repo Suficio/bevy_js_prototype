@@ -54,7 +54,48 @@ pub fn op_entity_insert_component<'scope>(
         })?;
 
     let e_entity = Entity::from_bits(e_entity);
-    component_impl.insert(world, e_entity, component.as_reflect());
+    component_impl.apply_or_insert(world, e_entity, component.as_reflect());
 
     Ok(())
+}
+
+#[op]
+pub fn op_entity_get_component(
+    state: &mut OpState,
+    r_world: bjs::ResourceId,
+    e_entity: u64,
+    type_name: String,
+) -> Result<serde_json::Value, bjs::AnyError> {
+    let res = bjs::runtimes::unwrap_world_resource(state, r_world);
+    let world = res.borrow_world_mut();
+
+    let type_registry = world.resource::<AppTypeRegistry>().clone();
+    let type_registry = type_registry.read();
+
+    let registration = type_registry.get_with_name(&type_name).ok_or_else(|| {
+        bjs::AnyError::msg(format!(
+            "Could not find type registration for: {}",
+            type_name
+        ))
+    })?;
+
+    let type_id = registration.type_id();
+    let component_impl = type_registry
+        .get_type_data::<ReflectComponent>(type_id)
+        .ok_or_else(|| {
+            bjs::AnyError::msg(format!(
+                "Component {} does not implement ReflectComponent",
+                type_name
+            ))
+        })?;
+
+    let e_entity = Entity::from_bits(e_entity);
+    let value = component_impl.reflect(world, e_entity).ok_or_else(|| {
+        bjs::AnyError::msg(format!(
+            "Could not get component {} as it does not exist",
+            type_name
+        ))
+    })?;
+
+    bjs::runtimes::bevy::ext::serialize(&type_registry, value)
 }
