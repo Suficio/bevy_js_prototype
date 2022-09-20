@@ -99,10 +99,7 @@ fn main() -> Result<(), bjs::AnyError> {
     let opts = GeneratorOptions::parse_args_default_or_exit();
 
     let mut app = App::new();
-    app.add_plugins(DefaultPlugins)
-        // Register missing reflectable types
-        .register_type::<Vec<TextSection>>()
-        .register_type::<TextStyle>();
+    app.add_plugins(DefaultPlugins);
 
     let world = app.world;
     let type_registry = world
