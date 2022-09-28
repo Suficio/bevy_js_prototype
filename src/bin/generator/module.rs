@@ -1,11 +1,4 @@
-use bevy::ecs::schedule::GraphNode;
-use std::{
-    borrow::Cow,
-    collections::{
-        btree_map::{BTreeMap, Entry},
-        BTreeSet,
-    },
-};
+use std::collections::{btree_map::BTreeMap, BTreeSet};
 
 /// Holds the properties necessary to generate a file
 #[derive(Clone, Debug)]
@@ -20,8 +13,6 @@ pub struct Module {
     //
     // Use [BTreeMap] in order to preserve consistent ordering
     pub imports: BTreeMap<String, BTreeSet<String>>,
-    /// Used to expose dependencies to [GraphNode]
-    import_files: Vec<String>,
 }
 
 impl Module {
@@ -30,7 +21,6 @@ impl Module {
             path,
             types: BTreeMap::default(),
             imports: BTreeMap::default(),
-            import_files: Vec::default(),
         }
     }
 
@@ -41,18 +31,7 @@ impl Module {
     pub fn insert_import(&mut self, path: String, import: String) {
         // Do not import from the same file
         if !self.path.ends_with(&path) {
-            match self.imports.entry(path.clone()) {
-                Entry::Vacant(v) => {
-                    v.insert(BTreeSet::default()).insert(import);
-                    // Insert to import_files only once
-                    if path != "bevyEcs" {
-                        self.import_files.push(path);
-                    }
-                }
-                Entry::Occupied(mut o) => {
-                    o.get_mut().insert(import);
-                }
-            }
+            self.imports.entry(path).or_default().insert(import);
         }
     }
 
@@ -101,25 +80,5 @@ impl Module {
             write!(f, "{def}, ").unwrap();
         }
         writeln!(f, "}} )").unwrap();
-    }
-}
-
-impl GraphNode for Module {
-    type Label = String;
-
-    fn name(&self) -> std::borrow::Cow<'static, str> {
-        Cow::Owned(self.path.clone())
-    }
-
-    fn labels(&self) -> &[Self::Label] {
-        std::slice::from_ref(&self.path)
-    }
-
-    fn before(&self) -> &[Self::Label] {
-        &[]
-    }
-
-    fn after(&self) -> &[Self::Label] {
-        &self.import_files
     }
 }

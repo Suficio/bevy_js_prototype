@@ -1,4 +1,4 @@
-use bevy::{ecs::schedule::graph_utils::build_dependency_graph, utils::hashbrown::HashMap};
+use bevy::utils::hashbrown::HashMap;
 use convert_case::{Case, Casing};
 use std::path::PathBuf;
 use syn::{
@@ -71,36 +71,38 @@ fn ordered_module_path(module: &Module, level: usize) -> String {
     format!("{}/{:02}_{file}.js", path, level)
 }
 
-pub fn evaluate_dependency_order(modules: Vec<Module>, base_level: usize) -> Vec<(String, Module)> {
-    let mut levels = HashMap::<usize, usize>::new();
+pub fn evaluate_dependency_order(
+    mut remaining_modules: Vec<Module>,
+    base_level: usize,
+) -> Vec<(String, Module)> {
+    let mut levels = HashMap::<String, usize>::new();
+    let modules = HashMap::<String, Module>::from_iter(
+        remaining_modules
+            .iter()
+            .map(|m| (m.path.clone(), m.clone())),
+    );
 
-    // Take advantage of Bevy tools to build our dependency graph then derive
-    // the dependency order by creating a layered DAG.
-    let mut graph = build_dependency_graph(&modules);
-    while !graph.is_empty() {
-        graph.retain(|key, deps| {
+    while !remaining_modules.is_empty() {
+        remaining_modules.retain(|module| {
             // Check if all dependencies have been assigned a level
             let mut max_level = 0;
-            for dep in deps.keys() {
+            for dep in module.imports.keys() {
                 match levels.get(dep) {
-                    Some(level) => {
-                        max_level = max_level.max(*level);
-                    }
+                    Some(level) => max_level = max_level.max(*level),
                     None => return true,
                 }
             }
 
             // All dependencies have been assigned a level
-            levels.insert(*key, max_level + 1);
+            levels.insert(module.path.clone(), max_level + 1);
             false
-        });
+        })
     }
 
     modules
-        .into_iter()
-        .enumerate()
-        .map(|(i, m)| {
-            let level = levels.get(&i).unwrap() + base_level;
+        .into_values()
+        .map(|m| {
+            let level = levels.get(&m.path).unwrap() + base_level;
             let path = ordered_module_path(&m, level);
             (path, m)
         })

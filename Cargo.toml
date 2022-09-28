@@ -12,7 +12,7 @@ repository = "https://github.com/Suficio/bevy_js_prototype"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [features]
-default = []
+default = ["generator"]
 inspector = ["tide", "tide-websockets"]
 generator = ["convert_case", "syn", "gumdrop"]
 
