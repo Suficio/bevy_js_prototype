@@ -17,8 +17,8 @@ inspector = ["tide", "tide-websockets"]
 generator = ["convert_case", "syn", "gumdrop"]
 
 [dependencies]
-bevy = { git = "https://github.com/Suficio/bevy.git", branch = "js-prototype" }
-deno_core = "0.151.0"
+bevy = { git = "https://github.com/hymm/bevy.git", branch = "tick-thread-local-executors" }
+deno_core = { git = "https://github.com/Suficio/deno.git", branch = "deserialize-struct" }
 
 serde_json = "1.0.85"
 serde_path_to_error = "0.1.8"

@@ -7,7 +7,7 @@ fn main() {
         .add_plugin(bjs::JsPlugin::<BevyRuntime>::default())
         .add_startup_system(|mut commands: Commands| {
             // UI camera
-            commands.spawn_bundle(Camera2dBundle::default());
+            commands.spawn(Camera2dBundle::default());
         })
         .add_startup_system(setup_runtime)
         .run();
