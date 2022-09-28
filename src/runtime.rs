@@ -48,9 +48,6 @@ impl JsRuntime {
         let (sender, receiver) = oneshot::channel();
 
         let deno = self.deno.clone();
-
-        println!("Execute module {}", &specifier);
-
         IoTaskPool::get()
             .spawn_local(async move {
                 let mut deno = match deno.try_borrow_mut() {
@@ -63,8 +60,6 @@ impl JsRuntime {
                     }
                 };
 
-                println!("Loading module {}", &specifier);
-
                 let module_id = match deno.load_main_module(&specifier, source_code).await {
                     Ok(mid) => mid,
                     Err(err) => {
@@ -75,7 +70,7 @@ impl JsRuntime {
                     }
                 };
 
-                println!("Loaded module {}", &specifier);
+                info!("Loaded module {}", &specifier);
 
                 // Spawn seperate task to pipe result so that we do not hold
                 // the borrow on `deno`.

@@ -1,5 +1,4 @@
 "use strict";
-
 ((window) => {
   function reflect() {
     const obj = {};
@@ -98,6 +97,9 @@
     }
   }
 
+  if (!window.hasOwnProperty("bevyEcs")) {
+    window.bevyEcs = {};
+  }
   Object.assign(window.bevyEcs, {
     Bundle,
     ReflectableObject,
