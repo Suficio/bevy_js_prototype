@@ -188,6 +188,14 @@
       return "bevy_ui::ui_node::AlignSelf";
     }
   }
+  class BackgroundColor extends ReflectableArray {
+    constructor(seq) {
+      super([Color.Rgba({ red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0 })], seq);
+    }
+    static typeName() {
+      return "bevy_ui::ui_node::BackgroundColor";
+    }
+  }
   class CalculatedSize extends ReflectableObject {
     constructor(struct) {
       super(null, struct);
@@ -511,14 +519,6 @@
       return "bevy_ui::ui_node::Style";
     }
   }
-  class UiColor extends ReflectableArray {
-    constructor(seq) {
-      super([Color.Rgba({ red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0 })], seq);
-    }
-    static typeName() {
-      return "bevy_ui::ui_node::UiColor";
-    }
-  }
   class UiImage extends ReflectableArray {
     constructor(seq) {
       super(
@@ -577,6 +577,7 @@
     AlignContent,
     AlignItems,
     AlignSelf,
+    BackgroundColor,
     CalculatedSize,
     Direction,
     Display,
@@ -587,7 +588,6 @@
     Overflow,
     PositionType,
     Style,
-    UiColor,
     UiImage,
     Val,
   });
