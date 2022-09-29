@@ -71,17 +71,10 @@ fn ordered_module_path(module: &Module, level: usize) -> String {
     format!("{}/{:02}_{file}.js", path, level)
 }
 
-pub fn evaluate_dependency_order(
-    mut remaining_modules: Vec<Module>,
-    base_level: usize,
-) -> Vec<(String, Module)> {
+pub fn evaluate_dependency_order(modules: Vec<Module>, base_level: usize) -> Vec<(String, Module)> {
     let mut levels = HashMap::<String, usize>::new();
-    let modules = HashMap::<String, Module>::from_iter(
-        remaining_modules
-            .iter()
-            .map(|m| (m.path.clone(), m.clone())),
-    );
 
+    let mut remaining_modules = modules.clone();
     while !remaining_modules.is_empty() {
         remaining_modules.retain(|module| {
             // Check if all dependencies have been assigned a level
@@ -100,7 +93,7 @@ pub fn evaluate_dependency_order(
     }
 
     modules
-        .into_values()
+        .into_iter()
         .map(|m| {
             let level = levels.get(&m.path).unwrap() + base_level;
             let path = ordered_module_path(&m, level);
