@@ -87,7 +87,7 @@ impl JsRuntime {
                                 let _ = sender.send(res);
                             }
                             Err(_canceled) => {
-                                let err = bjs::AnyError::msg("Module evaluation was cancelled");
+                                let err = bjs::AnyError::msg("Module evaluation was canceled");
                                 error!("{}", err);
                                 let _ = sender.send(Err(err));
                             }

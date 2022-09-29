@@ -15,5 +15,5 @@ fn main() {
 
 fn setup_runtime(mut runtime: NonSendMut<bjs::JsRuntimeResource<BevyRuntime>>) {
     let specifier = bjs::resolve::path("./examples/text.js").unwrap();
-    let _ = runtime.execute_module(specifier.clone(), None);
+    let _ = runtime.execute_module(specifier, None);
 }
