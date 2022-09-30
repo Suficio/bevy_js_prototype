@@ -48,7 +48,6 @@ impl JsRuntime {
         let (sender, receiver) = oneshot::channel();
 
         let deno = self.deno.clone();
-
         IoTaskPool::get()
             .spawn_local(async move {
                 let mut deno = match deno.try_borrow_mut() {
@@ -88,7 +87,7 @@ impl JsRuntime {
                                 let _ = sender.send(res);
                             }
                             Err(_canceled) => {
-                                let err = bjs::AnyError::msg("Module evaluation was cancelled");
+                                let err = bjs::AnyError::msg("Module evaluation was canceled");
                                 error!("{}", err);
                                 let _ = sender.send(Err(err));
                             }

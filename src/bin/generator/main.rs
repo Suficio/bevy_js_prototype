@@ -26,7 +26,7 @@ struct GeneratorOptions {
     target: PathBuf,
     #[options(
         help = "used to set the level that generated modules are loaded after",
-        default = "3"
+        default = "2"
     )]
     level: usize,
 }
@@ -48,10 +48,13 @@ fn generate_modules(
         generate_type(type_registry, structure, registration);
     }
 
-    let modules = modules
+    let mut modules = modules
         .into_values()
         .filter(|m| !m.is_empty())
         .collect::<Vec<Module>>();
+
+    // Registed additional dependencies
+    modules.push(Module::new("bevyEcs".to_string()));
 
     evaluate_dependency_order(modules, opts.level)
 }

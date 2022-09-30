@@ -7,7 +7,7 @@ pub fn op_entity_spawn(state: &mut OpState, r_world: bjs::ResourceId) -> u64 {
     let res = bjs::runtimes::unwrap_world_resource(state, r_world);
     let world = res.borrow_world_mut();
 
-    world.spawn().id().to_bits()
+    world.spawn_empty().id().to_bits()
 }
 
 #[op(v8)]

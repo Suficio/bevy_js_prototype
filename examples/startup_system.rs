@@ -1,11 +1,12 @@
 //! Demonstrates a startup system (one that runs once when the app starts up).
 
-use bevy::prelude::*;
+use bevy::{log::LogPlugin, prelude::*};
 use bevy_js::{self as bjs, runtimes::BevyRuntime};
 
 fn main() {
     App::new()
         .add_plugins(MinimalPlugins)
+        .add_plugin(LogPlugin)
         .add_plugin(bjs::JsPlugin::<BevyRuntime>::default())
         .add_startup_system(setup_runtime)
         .run();
