@@ -1,10 +1,14 @@
 "use strict";
 
 ((window) => {
-  const { core } = window.Deno;
-  const { Entity, worldResourceId } = window.bevyEcs;
+  const { ops } = window.Deno.core;
+  const { Entity } = window.bevyEcs;
 
   class World {
+    constructor(worldResourceId) {
+      this.worldResourceId = worldResourceId;
+    }
+
     static entity(eEntity) {
       return new Entity(eEntity);
     }
@@ -13,17 +17,17 @@
       return new Entity();
     }
 
-    static getResource(resource) {
+    static getResource(worldResourceId, resourceConstructor) {
       try {
-        let res = core.ops.op_world_get_resource(
-          worldResourceId(),
-          resource.typeName()
+        let res = ops.op_world_get_resource(
+          worldResourceId,
+          resourceConstructor.typeName()
         );
 
-        return new resource(res);
+        return new resourceConstructor(res);
       } catch (err) {
         throw new Error(
-          `Could not get resource: ${resource.typeName()} from entity: ${
+          `Could not get resource: ${resourceConstructor.typeName()} from entity: ${
             this.entity
           }
 ${err}`
@@ -31,7 +35,13 @@ ${err}`
       }
     }
 
-    // TODO: static insertResource() {}
+    typeRegistry() {
+      return new TypeRegistry(this.worldResourceId);
+    }
+
+    getResource(resourceConstructor) {
+      return World.getResource(this.worldResourceId, resourceConstructor);
+    }
   }
 
   Object.assign(window.bevyEcs, { World });

@@ -1,6 +1,12 @@
 use crate as bjs;
-use bevy::reflect::{serde::TypedReflectSerializer, Reflect, TypeRegistryInternal};
-use bjs::serde::Serialize;
+use bevy::reflect::{
+    serde::{TypedReflectSerializer, UntypedReflectDeserializer},
+    Reflect, TypeRegistryInternal,
+};
+use bjs::{
+    serde::{de::DeserializeSeed, Serialize},
+    v8,
+};
 
 pub mod alloc;
 pub mod bevy_asset;
@@ -29,5 +35,21 @@ pub fn serialize(
 
     reflect_serializer
         .serialize(tracked)
+        .map_err(|err| bjs::AnyError::msg(format!("{}, occured at: {}", err, track.path())))
+}
+
+pub fn deserialize<'scope>(
+    type_registry: &TypeRegistryInternal,
+    scope: &mut v8::HandleScope<'scope>,
+    value: bjs::serde_v8::Value,
+) -> Result<Box<dyn Reflect>, bjs::AnyError> {
+    let reflect_deserializer = UntypedReflectDeserializer::new(type_registry);
+    let mut value_deserializer = bjs::serde_v8::Deserializer::new(scope, value.v8_value, None);
+
+    let mut track = serde_path_to_error::Track::new();
+    let tracked = serde_path_to_error::Deserializer::new(&mut value_deserializer, &mut track);
+
+    reflect_deserializer
+        .deserialize(tracked)
         .map_err(|err| bjs::AnyError::msg(format!("{}, occured at: {}", err, track.path())))
 }

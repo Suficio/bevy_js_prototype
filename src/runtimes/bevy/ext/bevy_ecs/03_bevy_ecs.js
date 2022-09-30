@@ -1,9 +1,45 @@
 "use strict";
 ((window) => {
-  function reflect() {
-    const obj = {};
-    obj[this.typeName()] = this;
-    return obj;
+  const TYPEID = Symbol("TypeId");
+
+  class TypeRegistry {
+    constructor(worldResourceId) {
+      this.worldResourceId = worldResourceId;
+    }
+
+    // TODO: Could eventually return TypeRegistration but there is no need thus far
+    static getTypeIdWithName(worldResourceId, typeName) {
+      try {
+        const buffer = Uint8Array(8);
+        ops.op_type_registry_get_type_id_with_name(
+          worldResourceId,
+          typeName,
+          buffer
+        );
+        return buffer;
+      } catch (err) {
+        throw new Error(
+          `Could not get type ID for type name: ${typeName}
+${err}`
+        );
+      }
+    }
+
+    getTypeIdWithName(typeName) {
+      return TypeRegistry.getTypeIdWithName(this.worldResourceId, typeName);
+    }
+  }
+
+  class Reflect {
+    static typeId(worldResourceId, typeName) {
+      return TypeRegistry.getTypeIdWithName(worldResourceId, typeName);
+    }
+
+    static reflect(reflectable) {
+      const obj = {};
+      obj[reflectable.typeName()] = reflectable;
+      return obj;
+    }
   }
 
   class ReflectableObject extends Object {
@@ -20,8 +56,12 @@
       return this.constructor.typeName();
     }
 
+    typeId() {
+      return this.constructor.typeId;
+    }
+
     reflect() {
-      return reflect.call(this);
+      return Reflect.reflect(this);
     }
   }
 
@@ -44,8 +84,12 @@
       return this.constructor.typeName();
     }
 
+    typeId() {
+      return this.constructor.typeId;
+    }
+
     reflect() {
-      return reflect.call(this);
+      return Reflect.reflect(this);
     }
   }
 
@@ -63,8 +107,12 @@
       return this.constructor.typeName();
     }
 
+    typeId() {
+      return this.constructor.typeId;
+    }
+
     reflect() {
-      return reflect.call(this);
+      return Reflect.reflect(this);
     }
   }
 
@@ -77,12 +125,20 @@
       throw new Error("ReflectableUnit must implement typeName");
     }
 
+    static typeId() {
+      throw new Error("ReflectableObject must implement typeId");
+    }
+
     typeName() {
       return this.constructor.typeName();
     }
 
+    typeId() {
+      return this.constructor.typeId();
+    }
+
     reflect() {
-      return reflect.call(this);
+      return Reflect.reflect(this);
     }
   }
 
@@ -102,9 +158,11 @@
   }
   Object.assign(window.bevyEcs, {
     Bundle,
+    Reflect,
     ReflectableObject,
     ReflectableArray,
     ReflectableEnum,
     ReflectableUnit,
+    TypeRegistry,
   });
 })(globalThis);

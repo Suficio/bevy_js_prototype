@@ -1,7 +1,9 @@
 use crate as bjs;
 use bjs::{include_js_files, op, Extension, OpState};
 
+// mod component;
 mod entity;
+mod type_registry;
 mod world;
 
 pub fn init() -> Extension {
@@ -19,6 +21,7 @@ pub fn init() -> Extension {
             entity::op_entity_insert_component::decl(),
             entity::op_entity_get_component::decl(),
             world::op_world_get_resource::decl(),
+            type_registry::op_type_registry_get_type_id_with_name::decl(),
         ])
         .build()
 }
