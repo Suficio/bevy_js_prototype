@@ -4,6 +4,7 @@ use std::rc::Rc;
 
 // mod component;
 mod entity;
+mod query;
 mod type_registry;
 mod world;
 
@@ -14,7 +15,8 @@ pub fn init(resource: Rc<bjs::WorldResource>) -> bjs::Extension {
             "03_ecs.js",
             "03_bevy_ecs.js",
             "04_entity.js",
-            "05_world.js",
+            "05_query.js",
+            "06_world.js",
         ))
         .ops(vec![
             op_wait_for_frame::decl(),
