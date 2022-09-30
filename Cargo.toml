@@ -17,7 +17,8 @@ inspector = ["tide", "tide-websockets"]
 generator = ["convert_case", "syn", "gumdrop"]
 
 [dependencies]
-bevy = { git = "https://github.com/hymm/bevy.git", branch = "tick-thread-local-executors" }
+# TODO(#6120) Detached non-Send tasks don't run
+bevy = { git = "https://github.com/bevyengine/bevy.git", rev = "92c90a9bade54ecc5b26cad72d30683d7aebd654" }
 deno_core = { git = "https://github.com/Suficio/deno.git", branch = "deserialize-struct" }
 
 serde_json = "1.0.85"
