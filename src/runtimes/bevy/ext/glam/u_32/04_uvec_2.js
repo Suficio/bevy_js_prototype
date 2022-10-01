@@ -1,14 +1,19 @@
 "use strict";
 ((window) => {
-  const { ReflectableObject } = window.bevyEcs;
+  const { Reflect, ReflectableObject, waitForWorld, worldResourceId } =
+    window.bevyEcs;
   class UVec2 extends ReflectableObject {
+    static typeName = "glam::u32::uvec2::UVec2";
+    static typeId = new Uint8Array(8);
     constructor(struct) {
       super({ x: 0, y: 0 }, struct);
     }
-    static typeName() {
-      return "glam::u32::uvec2::UVec2";
-    }
   }
+  (() =>
+    waitForWorld().then(() =>
+      Reflect.assignTypeId(worldResourceId(), UVec2.prototype)
+    ))();
+
   if (!window.hasOwnProperty("glam")) {
     window.glam = {};
   }

@@ -1,14 +1,19 @@
 "use strict";
 ((window) => {
-  const { ReflectableObject } = window.bevyEcs;
+  const { Reflect, ReflectableObject, waitForWorld, worldResourceId } =
+    window.bevyEcs;
   class CubemapVisibleEntities extends ReflectableObject {
+    static typeName = "bevy_pbr::bundle::CubemapVisibleEntities";
+    static typeId = new Uint8Array(8);
     constructor(struct) {
       super(null, struct);
     }
-    static typeName() {
-      return "bevy_pbr::bundle::CubemapVisibleEntities";
-    }
   }
+  (() =>
+    waitForWorld().then(() =>
+      Reflect.assignTypeId(worldResourceId(), CubemapVisibleEntities.prototype)
+    ))();
+
   if (!window.hasOwnProperty("bevyPbr")) {
     window.bevyPbr = {};
   }

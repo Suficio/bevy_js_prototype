@@ -1,9 +1,12 @@
 "use strict";
 ((window) => {
-  const { ReflectableObject } = window.bevyEcs;
+  const { Reflect, ReflectableObject, waitForWorld, worldResourceId } =
+    window.bevyEcs;
   const { DMat3 } = window.glam.f64.dmat3;
   const { DVec3 } = window.glam.f64.dvec3;
   class DAffine3 extends ReflectableObject {
+    static typeName = "glam::f64::daffine3::DAffine3";
+    static typeId = new Uint8Array(8);
     constructor(struct) {
       super(
         {
@@ -17,10 +20,12 @@
         struct
       );
     }
-    static typeName() {
-      return "glam::f64::daffine3::DAffine3";
-    }
   }
+  (() =>
+    waitForWorld().then(() =>
+      Reflect.assignTypeId(worldResourceId(), DAffine3.prototype)
+    ))();
+
   if (!window.hasOwnProperty("glam")) {
     window.glam = {};
   }

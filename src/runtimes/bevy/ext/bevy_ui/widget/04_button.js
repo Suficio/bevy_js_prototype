@@ -1,14 +1,19 @@
 "use strict";
 ((window) => {
-  const { ReflectableObject } = window.bevyEcs;
+  const { Reflect, ReflectableObject, waitForWorld, worldResourceId } =
+    window.bevyEcs;
   class Button extends ReflectableObject {
+    static typeName = "bevy_ui::widget::button::Button";
+    static typeId = new Uint8Array(8);
     constructor(struct) {
       super({}, struct);
     }
-    static typeName() {
-      return "bevy_ui::widget::button::Button";
-    }
   }
+  (() =>
+    waitForWorld().then(() =>
+      Reflect.assignTypeId(worldResourceId(), Button.prototype)
+    ))();
+
   if (!window.hasOwnProperty("bevyUi")) {
     window.bevyUi = {};
   }

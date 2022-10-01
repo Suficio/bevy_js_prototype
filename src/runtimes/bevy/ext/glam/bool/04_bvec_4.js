@@ -1,14 +1,19 @@
 "use strict";
 ((window) => {
-  const { ReflectableObject } = window.bevyEcs;
+  const { Reflect, ReflectableObject, waitForWorld, worldResourceId } =
+    window.bevyEcs;
   class BVec4 extends ReflectableObject {
+    static typeName = "glam::bool::bvec4::BVec4";
+    static typeId = new Uint8Array(8);
     constructor(struct) {
       super({ x: false, y: false, z: false, w: false }, struct);
     }
-    static typeName() {
-      return "glam::bool::bvec4::BVec4";
-    }
   }
+  (() =>
+    waitForWorld().then(() =>
+      Reflect.assignTypeId(worldResourceId(), BVec4.prototype)
+    ))();
+
   if (!window.hasOwnProperty("glam")) {
     window.glam = {};
   }

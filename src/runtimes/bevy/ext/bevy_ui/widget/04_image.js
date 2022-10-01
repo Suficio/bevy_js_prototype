@@ -1,23 +1,36 @@
 "use strict";
 ((window) => {
-  const { ReflectableEnum, ReflectableUnit } = window.bevyEcs;
+  const {
+    Reflect,
+    ReflectableEnum,
+    ReflectableUnit,
+    waitForWorld,
+    worldResourceId,
+  } = window.bevyEcs;
   class ImageModeKeepAspect extends ReflectableUnit {
+    static typeName = "bevy_ui::widget::image::ImageMode";
+    static typeId = new Uint8Array(8);
     constructor() {
       super("KeepAspect");
     }
-    static typeName() {
-      return "bevy_ui::widget::image::ImageMode";
-    }
   }
+  (() =>
+    waitForWorld().then(() =>
+      Reflect.assignTypeId(worldResourceId(), ImageMode.prototype)
+    ))();
   class ImageMode extends ReflectableEnum {
     static KeepAspect = () => new ImageModeKeepAspect();
+    static typeName = "bevy_ui::widget::image::ImageMode";
+    static typeId = new Uint8Array(8);
     constructor(type, value) {
       super(type, value);
     }
-    static typeName() {
-      return "bevy_ui::widget::image::ImageMode";
-    }
   }
+  (() =>
+    waitForWorld().then(() =>
+      Reflect.assignTypeId(worldResourceId(), ImageMode.prototype)
+    ))();
+
   if (!window.hasOwnProperty("bevyUi")) {
     window.bevyUi = {};
   }

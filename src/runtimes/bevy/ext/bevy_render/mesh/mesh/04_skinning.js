@@ -1,14 +1,19 @@
 "use strict";
 ((window) => {
-  const { ReflectableObject } = window.bevyEcs;
+  const { Reflect, ReflectableObject, waitForWorld, worldResourceId } =
+    window.bevyEcs;
   class SkinnedMesh extends ReflectableObject {
+    static typeName = "bevy_render::mesh::mesh::skinning::SkinnedMesh";
+    static typeId = new Uint8Array(8);
     constructor(struct) {
       super(null, struct);
     }
-    static typeName() {
-      return "bevy_render::mesh::mesh::skinning::SkinnedMesh";
-    }
   }
+  (() =>
+    waitForWorld().then(() =>
+      Reflect.assignTypeId(worldResourceId(), SkinnedMesh.prototype)
+    ))();
+
   if (!window.hasOwnProperty("bevyRender")) {
     window.bevyRender = {};
   }

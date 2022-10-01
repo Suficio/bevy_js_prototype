@@ -1,30 +1,45 @@
 "use strict";
 ((window) => {
-  const { ReflectableEnum, ReflectableObject } = window.bevyEcs;
+  const {
+    Reflect,
+    ReflectableEnum,
+    ReflectableObject,
+    waitForWorld,
+    worldResourceId,
+  } = window.bevyEcs;
   class ColorRgba extends ReflectableObject {
+    static typeName = "bevy_render::color::Color";
+    static typeId = new Uint8Array(8);
     constructor(struct) {
       super(null, struct);
     }
-    static typeName() {
-      return "bevy_render::color::Color";
-    }
   }
+  (() =>
+    waitForWorld().then(() =>
+      Reflect.assignTypeId(worldResourceId(), Color.prototype)
+    ))();
   class ColorRgbaLinear extends ReflectableObject {
+    static typeName = "bevy_render::color::Color";
+    static typeId = new Uint8Array(8);
     constructor(struct) {
       super(null, struct);
     }
-    static typeName() {
-      return "bevy_render::color::Color";
-    }
   }
+  (() =>
+    waitForWorld().then(() =>
+      Reflect.assignTypeId(worldResourceId(), Color.prototype)
+    ))();
   class ColorHsla extends ReflectableObject {
+    static typeName = "bevy_render::color::Color";
+    static typeId = new Uint8Array(8);
     constructor(struct) {
       super(null, struct);
     }
-    static typeName() {
-      return "bevy_render::color::Color";
-    }
   }
+  (() =>
+    waitForWorld().then(() =>
+      Reflect.assignTypeId(worldResourceId(), Color.prototype)
+    ))();
   class Color extends ReflectableEnum {
     static Rgba = (red, green, blue, alpha) =>
       new Color("Rgba", new ColorRgba({ red, green, blue, alpha }));
@@ -77,14 +92,17 @@
     static White = () => Color.Rgb(1.0, 1.0, 1.0);
     static Yellow = () => Color.Rgb(1.0, 1.0, 0.0);
     static YellowGreen = () => Color.Rgb(0.6, 0.8, 0.2);
-
+    static typeName = "bevy_render::color::Color";
+    static typeId = new Uint8Array(8);
     constructor(type, value) {
       super(type, value);
     }
-    static typeName() {
-      return "bevy_render::color::Color";
-    }
   }
+  (() =>
+    waitForWorld().then(() =>
+      Reflect.assignTypeId(worldResourceId(), Color.prototype)
+    ))();
+
   if (!window.hasOwnProperty("bevyRender")) {
     window.bevyRender = {};
   }

@@ -1,7 +1,10 @@
 "use strict";
 ((window) => {
-  const { ReflectableObject } = window.bevyEcs;
+  const { Reflect, ReflectableObject, waitForWorld, worldResourceId } =
+    window.bevyEcs;
   class ComputedVisibility extends ReflectableObject {
+    static typeName = "bevy_render::view::visibility::ComputedVisibility";
+    static typeId = new Uint8Array(8);
     constructor(struct) {
       super(
         {
@@ -11,26 +14,36 @@
         struct
       );
     }
-    static typeName() {
-      return "bevy_render::view::visibility::ComputedVisibility";
-    }
   }
+  (() =>
+    waitForWorld().then(() =>
+      Reflect.assignTypeId(worldResourceId(), ComputedVisibility.prototype)
+    ))();
+
   class Visibility extends ReflectableObject {
+    static typeName = "bevy_render::view::visibility::Visibility";
+    static typeId = new Uint8Array(8);
     constructor(struct) {
       super({ is_visible: true }, struct);
     }
-    static typeName() {
-      return "bevy_render::view::visibility::Visibility";
-    }
   }
+  (() =>
+    waitForWorld().then(() =>
+      Reflect.assignTypeId(worldResourceId(), Visibility.prototype)
+    ))();
+
   class VisibleEntities extends ReflectableObject {
+    static typeName = "bevy_render::view::visibility::VisibleEntities";
+    static typeId = new Uint8Array(8);
     constructor(struct) {
       super(null, struct);
     }
-    static typeName() {
-      return "bevy_render::view::visibility::VisibleEntities";
-    }
   }
+  (() =>
+    waitForWorld().then(() =>
+      Reflect.assignTypeId(worldResourceId(), VisibleEntities.prototype)
+    ))();
+
   if (!window.hasOwnProperty("bevyRender")) {
     window.bevyRender = {};
   }

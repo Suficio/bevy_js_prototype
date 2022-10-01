@@ -1,47 +1,65 @@
 "use strict";
 ((window) => {
   const { Vec } = window.alloc.vec;
-  const { ReflectableEnum, ReflectableObject, ReflectableUnit } =
-    window.bevyEcs;
+  const {
+    Reflect,
+    ReflectableEnum,
+    ReflectableObject,
+    ReflectableUnit,
+    waitForWorld,
+    worldResourceId,
+  } = window.bevyEcs;
   class HorizontalAlignLeft extends ReflectableUnit {
+    static typeName = "bevy_text::text::HorizontalAlign";
+    static typeId = new Uint8Array(8);
     constructor() {
       super("Left");
     }
-    static typeName() {
-      return "bevy_text::text::HorizontalAlign";
-    }
   }
+  (() =>
+    waitForWorld().then(() =>
+      Reflect.assignTypeId(worldResourceId(), HorizontalAlign.prototype)
+    ))();
   class HorizontalAlignCenter extends ReflectableUnit {
+    static typeName = "bevy_text::text::HorizontalAlign";
+    static typeId = new Uint8Array(8);
     constructor() {
       super("Center");
     }
-    static typeName() {
-      return "bevy_text::text::HorizontalAlign";
-    }
   }
+  (() =>
+    waitForWorld().then(() =>
+      Reflect.assignTypeId(worldResourceId(), HorizontalAlign.prototype)
+    ))();
   class HorizontalAlignRight extends ReflectableUnit {
+    static typeName = "bevy_text::text::HorizontalAlign";
+    static typeId = new Uint8Array(8);
     constructor() {
       super("Right");
     }
-    static typeName() {
-      return "bevy_text::text::HorizontalAlign";
-    }
   }
+  (() =>
+    waitForWorld().then(() =>
+      Reflect.assignTypeId(worldResourceId(), HorizontalAlign.prototype)
+    ))();
   class HorizontalAlign extends ReflectableEnum {
     static Left = () => new HorizontalAlignLeft();
     static Center = () => new HorizontalAlignCenter();
     static Right = () => new HorizontalAlignRight();
+    static typeName = "bevy_text::text::HorizontalAlign";
+    static typeId = new Uint8Array(8);
     constructor(type, value) {
       super(type, value);
     }
-    static typeName() {
-      return "bevy_text::text::HorizontalAlign";
-    }
   }
+  (() =>
+    waitForWorld().then(() =>
+      Reflect.assignTypeId(worldResourceId(), HorizontalAlign.prototype)
+    ))();
+
   class Text extends ReflectableObject {
-    static fromSection = (value, style) =>
-      new Text({ sections: [new TextSection({ value, style })] });
-    static fromSections = (sections) => new Text({ sections });
+    static typeName = "bevy_text::text::Text";
+    static typeId = new Uint8Array(8);
     constructor(struct) {
       super(
         {
@@ -54,14 +72,12 @@
         struct
       );
     }
-    static typeName() {
-      return "bevy_text::text::Text";
-    }
-    withAlignment(alignment) {
-      this.alignment = alignment;
-      return this;
-    }
   }
+  (() =>
+    waitForWorld().then(() =>
+      Reflect.assignTypeId(worldResourceId(), Text.prototype)
+    ))();
+
   class TextAlignment extends ReflectableObject {
     static TopLeft = () =>
       new TextAlignment({
@@ -108,65 +124,89 @@
         vertical: VerticalAlign.Bottom(),
         horizontal: HorizontalAlign.Right(),
       });
+    static typeName = "bevy_text::text::TextAlignment";
+    static typeId = new Uint8Array(8);
     constructor(struct) {
       super(null, struct);
     }
-    static typeName() {
-      return "bevy_text::text::TextAlignment";
-    }
   }
+  (() =>
+    waitForWorld().then(() =>
+      Reflect.assignTypeId(worldResourceId(), TextAlignment.prototype)
+    ))();
+
   class TextSection extends ReflectableObject {
-    static fromStyle = (style) => new TextSection({ style });
-    constructor(struct) {
-      super({ value: "", style: new TextStyle() }, struct);
-    }
-    static typeName() {
-      return "bevy_text::text::TextSection";
-    }
-  }
-  class TextStyle extends ReflectableObject {
+    static typeName = "bevy_text::text::TextSection";
+    static typeId = new Uint8Array(8);
     constructor(struct) {
       super(null, struct);
     }
-    static typeName() {
-      return "bevy_text::text::TextStyle";
+  }
+  (() =>
+    waitForWorld().then(() =>
+      Reflect.assignTypeId(worldResourceId(), TextSection.prototype)
+    ))();
+
+  class TextStyle extends ReflectableObject {
+    static typeName = "bevy_text::text::TextStyle";
+    static typeId = new Uint8Array(8);
+    constructor(struct) {
+      super(null, struct);
     }
   }
+  (() =>
+    waitForWorld().then(() =>
+      Reflect.assignTypeId(worldResourceId(), TextStyle.prototype)
+    ))();
+
   class VerticalAlignTop extends ReflectableUnit {
+    static typeName = "bevy_text::text::VerticalAlign";
+    static typeId = new Uint8Array(8);
     constructor() {
       super("Top");
     }
-    static typeName() {
-      return "bevy_text::text::VerticalAlign";
-    }
   }
+  (() =>
+    waitForWorld().then(() =>
+      Reflect.assignTypeId(worldResourceId(), VerticalAlign.prototype)
+    ))();
   class VerticalAlignCenter extends ReflectableUnit {
+    static typeName = "bevy_text::text::VerticalAlign";
+    static typeId = new Uint8Array(8);
     constructor() {
       super("Center");
     }
-    static typeName() {
-      return "bevy_text::text::VerticalAlign";
-    }
   }
+  (() =>
+    waitForWorld().then(() =>
+      Reflect.assignTypeId(worldResourceId(), VerticalAlign.prototype)
+    ))();
   class VerticalAlignBottom extends ReflectableUnit {
+    static typeName = "bevy_text::text::VerticalAlign";
+    static typeId = new Uint8Array(8);
     constructor() {
       super("Bottom");
     }
-    static typeName() {
-      return "bevy_text::text::VerticalAlign";
-    }
   }
+  (() =>
+    waitForWorld().then(() =>
+      Reflect.assignTypeId(worldResourceId(), VerticalAlign.prototype)
+    ))();
   class VerticalAlign extends ReflectableEnum {
     static Top = () => new VerticalAlignTop();
     static Center = () => new VerticalAlignCenter();
     static Bottom = () => new VerticalAlignBottom();
+    static typeName = "bevy_text::text::VerticalAlign";
+    static typeId = new Uint8Array(8);
     constructor(type, value) {
       super(type, value);
     }
-    static typeName() {
-      return "bevy_text::text::VerticalAlign";
-    }
   }
+  (() =>
+    waitForWorld().then(() =>
+      Reflect.assignTypeId(worldResourceId(), VerticalAlign.prototype)
+    ))();
+
   if (!window.hasOwnProperty("bevyText")) {
     window.bevyText = {};
   }

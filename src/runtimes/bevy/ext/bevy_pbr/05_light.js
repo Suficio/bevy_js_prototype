@@ -1,18 +1,25 @@
 "use strict";
 ((window) => {
-  const { ReflectableObject } = window.bevyEcs;
+  const { Reflect, ReflectableObject, waitForWorld, worldResourceId } =
+    window.bevyEcs;
   const { OrthographicProjection, ScalingMode, WindowOrigin } =
     window.bevyRender.camera.projection;
   const { Color } = window.bevyRender.color;
   class AmbientLight extends ReflectableObject {
+    static typeName = "bevy_pbr::light::AmbientLight";
+    static typeId = new Uint8Array(8);
     constructor(struct) {
       super(null, struct);
     }
-    static typeName() {
-      return "bevy_pbr::light::AmbientLight";
-    }
   }
+  (() =>
+    waitForWorld().then(() =>
+      Reflect.assignTypeId(worldResourceId(), AmbientLight.prototype)
+    ))();
+
   class DirectionalLight extends ReflectableObject {
+    static typeName = "bevy_pbr::light::DirectionalLight";
+    static typeId = new Uint8Array(8);
     constructor(struct) {
       super(
         {
@@ -36,19 +43,30 @@
         struct
       );
     }
-    static typeName() {
-      return "bevy_pbr::light::DirectionalLight";
-    }
   }
+  (() =>
+    waitForWorld().then(() =>
+      Reflect.assignTypeId(worldResourceId(), DirectionalLight.prototype)
+    ))();
+
   class DirectionalLightShadowMap extends ReflectableObject {
+    static typeName = "bevy_pbr::light::DirectionalLightShadowMap";
+    static typeId = new Uint8Array(8);
     constructor(struct) {
       super(null, struct);
     }
-    static typeName() {
-      return "bevy_pbr::light::DirectionalLightShadowMap";
-    }
   }
+  (() =>
+    waitForWorld().then(() =>
+      Reflect.assignTypeId(
+        worldResourceId(),
+        DirectionalLightShadowMap.prototype
+      )
+    ))();
+
   class PointLight extends ReflectableObject {
+    static typeName = "bevy_pbr::light::PointLight";
+    static typeId = new Uint8Array(8);
     constructor(struct) {
       super(
         {
@@ -63,19 +81,27 @@
         struct
       );
     }
-    static typeName() {
-      return "bevy_pbr::light::PointLight";
-    }
   }
+  (() =>
+    waitForWorld().then(() =>
+      Reflect.assignTypeId(worldResourceId(), PointLight.prototype)
+    ))();
+
   class PointLightShadowMap extends ReflectableObject {
+    static typeName = "bevy_pbr::light::PointLightShadowMap";
+    static typeId = new Uint8Array(8);
     constructor(struct) {
       super(null, struct);
     }
-    static typeName() {
-      return "bevy_pbr::light::PointLightShadowMap";
-    }
   }
+  (() =>
+    waitForWorld().then(() =>
+      Reflect.assignTypeId(worldResourceId(), PointLightShadowMap.prototype)
+    ))();
+
   class SpotLight extends ReflectableObject {
+    static typeName = "bevy_pbr::light::SpotLight";
+    static typeId = new Uint8Array(8);
     constructor(struct) {
       super(
         {
@@ -92,10 +118,12 @@
         struct
       );
     }
-    static typeName() {
-      return "bevy_pbr::light::SpotLight";
-    }
   }
+  (() =>
+    waitForWorld().then(() =>
+      Reflect.assignTypeId(worldResourceId(), SpotLight.prototype)
+    ))();
+
   if (!window.hasOwnProperty("bevyPbr")) {
     window.bevyPbr = {};
   }

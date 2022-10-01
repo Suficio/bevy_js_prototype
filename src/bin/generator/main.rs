@@ -22,6 +22,8 @@ mod utils;
 struct GeneratorOptions {
     #[options(help = "print help message")]
     help: bool,
+    #[options(help = "prettify generated files")]
+    prettify: bool,
     #[options(help = "target directory", default = "src/runtimes/bevy/ext")]
     target: PathBuf,
     #[options(
@@ -82,13 +84,15 @@ fn generate(
         writeln!(&mut f, r#"}})(globalThis)"#).unwrap();
 
         // For good measure, fire off a beautify command
-        tasks.push(
-            Command::new("npx.cmd")
-                .args(["prettier", "--write"])
-                .arg(p)
-                .spawn()
-                .unwrap(),
-        );
+        if opts.prettify {
+            tasks.push(
+                Command::new("npx.cmd")
+                    .args(["prettier", "--write"])
+                    .arg(p)
+                    .spawn()
+                    .unwrap(),
+            );
+        }
     }
 
     for mut task in tasks.drain(..) {

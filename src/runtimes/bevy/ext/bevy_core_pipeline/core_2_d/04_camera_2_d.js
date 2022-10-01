@@ -1,14 +1,19 @@
 "use strict";
 ((window) => {
-  const { ReflectableObject } = window.bevyEcs;
+  const { Reflect, ReflectableObject, waitForWorld, worldResourceId } =
+    window.bevyEcs;
   class Camera2d extends ReflectableObject {
+    static typeName = "bevy_core_pipeline::core_2d::camera_2d::Camera2d";
+    static typeId = new Uint8Array(8);
     constructor(struct) {
       super(null, struct);
     }
-    static typeName() {
-      return "bevy_core_pipeline::core_2d::camera_2d::Camera2d";
-    }
   }
+  (() =>
+    waitForWorld().then(() =>
+      Reflect.assignTypeId(worldResourceId(), Camera2d.prototype)
+    ))();
+
   if (!window.hasOwnProperty("bevyCorePipeline")) {
     window.bevyCorePipeline = {};
   }

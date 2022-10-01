@@ -1,7 +1,5 @@
 "use strict";
 ((window) => {
-  const TYPEID = Symbol("TypeId");
-
   class TypeRegistry {
     constructor(worldResourceId) {
       this.worldResourceId = worldResourceId;
@@ -31,8 +29,11 @@ ${err}`
   }
 
   class Reflect {
-    static typeId(worldResourceId, typeName) {
-      return TypeRegistry.getTypeIdWithName(worldResourceId, typeName);
+    static assignTypeId(worldResourceId, prototype) {
+      prototype.typeId = TypeRegistry.getTypeIdWithName(
+        worldResourceId,
+        prototype.typeName
+      );
     }
 
     static reflect(reflectable) {
@@ -48,16 +49,12 @@ ${err}`
       Object.assign(this, defaults, struct);
     }
 
-    static typeName() {
-      throw new Error("ReflectableObject must implement typeName");
-    }
-
     typeName() {
-      return this.constructor.typeName();
+      return this.prototype.typeName;
     }
 
     typeId() {
-      return this.constructor.typeId;
+      return this.prototype.typeId;
     }
 
     reflect() {
@@ -76,16 +73,12 @@ ${err}`
       Object.assign(this, defaults, seq);
     }
 
-    static typeName() {
-      throw new Error("ReflectableArray must implement typeName");
-    }
-
     typeName() {
-      return this.constructor.typeName();
+      return this.prototype.typeName;
     }
 
     typeId() {
-      return this.constructor.typeId;
+      return this.prototype.typeId;
     }
 
     reflect() {
@@ -99,16 +92,12 @@ ${err}`
       this[type] = value;
     }
 
-    static typeName() {
-      throw new Error("ReflectableEnum must implement typeName");
-    }
-
     typeName() {
-      return this.constructor.typeName();
+      return this.prototype.typeName;
     }
 
     typeId() {
-      return this.constructor.typeId;
+      return this.prototype.typeId;
     }
 
     reflect() {
@@ -121,20 +110,12 @@ ${err}`
       super(value);
     }
 
-    static typeName() {
-      throw new Error("ReflectableUnit must implement typeName");
-    }
-
-    static typeId() {
-      throw new Error("ReflectableObject must implement typeId");
-    }
-
     typeName() {
-      return this.constructor.typeName();
+      return this.prototype.typeName;
     }
 
     typeId() {
-      return this.constructor.typeId();
+      return this.prototype.typeId;
     }
 
     reflect() {
