@@ -3,6 +3,7 @@ mod builder;
 pub mod inspector;
 pub mod lend;
 mod loader;
+mod resource;
 mod runtime;
 pub mod runtimes;
 mod world;
@@ -12,7 +13,8 @@ use std::marker::PhantomData;
 
 pub use builder::JsRuntimeBuilder;
 pub use loader::FsModuleLoader;
-pub use runtime::{drive_runtime, IntoRuntime, JsRuntime, JsRuntimeResource};
+pub use resource::{drive_runtime, JsRuntimeResource};
+pub use runtime::{IntoRuntime, JsRuntime};
 pub use world::{WorldResource, WorldResourceExt};
 
 // Re-export libraries

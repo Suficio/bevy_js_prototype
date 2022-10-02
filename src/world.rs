@@ -8,8 +8,8 @@ use std::{cell::RefCell, rc::Rc};
 pub struct WorldResource {
     /// World reference
     world: RefLend<World>,
-    /// Requests pending for world to be lent
-    pending_requests: RefCell<Vec<oneshot::Sender<()>>>,
+    /// Pending awaits for next frame
+    pending_frame_awaits: RefCell<Vec<oneshot::Sender<()>>>,
 }
 
 impl WorldResource {
@@ -33,30 +33,28 @@ impl WorldResource {
 }
 
 impl WorldResource {
-    pub async fn wait_for_world(&self) {
+    pub async fn wait_for_frame(&self) {
         let (sender, receiver) = oneshot::channel();
-
-        self.pending_requests.borrow_mut().push(sender);
-
+        self.pending_frame_awaits.borrow_mut().push(sender);
         if let Err(_) = receiver.await {
             warn!("Evaluation request cancelled by Bevy sender");
         }
     }
 
-    pub fn lend<'a, 'l, F>(&'l self, world: &'a mut World, f: F)
+    pub fn lend<'a, 'l, F, R>(&'l self, world: &'a mut World, f: F) -> R
     where
-        F: FnOnce() + 'l,
+        F: FnOnce() -> R + 'l,
     {
         self.world.scope(world, || {
-            // Signal to pending world requests that [World] has been lent
-            for sender in self.pending_requests.borrow_mut().drain(..) {
+            // Signal to pending next frame awaits
+            for sender in self.pending_frame_awaits.borrow_mut().drain(..) {
                 if let Err(_) = sender.send(()) {
                     warn!("Could not lend world due to receiver being dropped");
                 }
             }
 
             f()
-        });
+        })
     }
 }
 

@@ -12,8 +12,7 @@ impl BevyRuntime {
     /// Provides a reference to the builder before it was used to construct
     /// [BevyRuntime]. Useful for extending the runtime to your needs.
     pub fn builder() -> bjs::JsRuntimeBuilder {
-        let mut builder = bjs::JsRuntime::builder();
-        builder
+        bjs::JsRuntime::builder()
             .with_module_loader(Rc::new(bjs::FsModuleLoader))
             .with_extension(ext::bevy_ecs::init())
             .with_extension(ext::core::init())
@@ -24,14 +23,17 @@ impl BevyRuntime {
             .with_extension(ext::bevy_render::init())
             .with_extension(ext::bevy_text::init())
             .with_extension(ext::bevy_ui::init())
-            .with_extension(ext::bevy_time::init());
-
-        builder
+            .with_extension(ext::bevy_time::init())
     }
 }
 
 impl bjs::IntoRuntime for BevyRuntime {
-    fn into_runtime(_world: &mut World) -> bjs::JsRuntime {
-        Self::builder().build()
+    fn into_runtime(resource: Rc<bjs::WorldResource>) -> bjs::JsRuntime {
+        // Register [JsRuntimeWorld] with the runtime so Bevy specific ops can
+        // have access to the [World].
+        warn!("bye");
+        let g = Self::builder().with_resource(resource).build();
+        warn!("bye");
+        g
     }
 }

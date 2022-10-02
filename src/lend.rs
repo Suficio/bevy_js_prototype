@@ -11,13 +11,14 @@ impl<T> Default for RefLend<T> {
 
 impl<T> RefLend<T> {
     /// Lends reference to object for the provided scope
-    pub fn scope<'a, 'l, E, F>(&'l self, lend: &'a mut E, f: F)
+    pub fn scope<'a, 'l, E, F, R>(&'l self, lend: &'a mut E, f: F) -> R
     where
-        F: FnOnce() + 'l,
+        F: FnOnce() -> R + 'l,
     {
         self.0.replace(Some(lend as *mut E as *mut T));
-        f();
+        let r = f();
         self.0.replace(None);
+        r
     }
 
     /// Borrows lent reference if one exists
