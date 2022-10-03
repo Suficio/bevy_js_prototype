@@ -23,8 +23,6 @@ impl<R: bjs::IntoRuntime> FromWorld for JsRuntimeResource<R> {
         // Runtime must be initialized in a Bevy context
         let runtime = resource.lend(world, || R::into_runtime(r));
 
-        warn!("inserted");
-
         Self {
             runtime,
             _phantom: PhantomData::default(),

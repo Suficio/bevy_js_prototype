@@ -1,5 +1,7 @@
 "use strict";
 ((window) => {
+  const { ops } = window.Deno.core;
+
   class TypeRegistry {
     constructor(worldResourceId) {
       this.worldResourceId = worldResourceId;
@@ -8,13 +10,17 @@
     // TODO: Could eventually return TypeRegistration but there is no need thus far
     static getTypeIdWithName(worldResourceId, typeName) {
       try {
-        const buffer = Uint8Array(8);
-        ops.op_type_registry_get_type_id_with_name(
-          worldResourceId,
-          typeName,
-          buffer
-        );
-        return buffer;
+        const buffer = new Uint8Array(8);
+        // Check if type registration exists
+        if (
+          ops.op_type_registry_get_type_id_with_name(
+            worldResourceId,
+            typeName,
+            buffer
+          )
+        ) {
+          return buffer;
+        }
       } catch (err) {
         throw new Error(
           `Could not get type ID for type name: ${typeName}
@@ -29,13 +35,6 @@ ${err}`
   }
 
   class Reflect {
-    static assignTypeId(worldResourceId, prototype) {
-      prototype.typeId = TypeRegistry.getTypeIdWithName(
-        worldResourceId,
-        prototype.typeName
-      );
-    }
-
     static reflect(reflectable) {
       const obj = {};
       obj[reflectable.typeName()] = reflectable;
@@ -50,11 +49,11 @@ ${err}`
     }
 
     typeName() {
-      return this.prototype.typeName;
+      return this.constructor.typeName;
     }
 
     typeId() {
-      return this.prototype.typeId;
+      return this.constructor.typeId;
     }
 
     reflect() {
@@ -74,11 +73,11 @@ ${err}`
     }
 
     typeName() {
-      return this.prototype.typeName;
+      return this.constructor.typeName;
     }
 
     typeId() {
-      return this.prototype.typeId;
+      return this.constructor.typeId;
     }
 
     reflect() {
@@ -93,11 +92,11 @@ ${err}`
     }
 
     typeName() {
-      return this.prototype.typeName;
+      return this.constructor.typeName;
     }
 
     typeId() {
-      return this.prototype.typeId;
+      return this.constructor.typeId;
     }
 
     reflect() {
@@ -111,11 +110,11 @@ ${err}`
     }
 
     typeName() {
-      return this.prototype.typeName;
+      return this.constructor.typeName;
     }
 
     typeId() {
-      return this.prototype.typeId;
+      return this.constructor.typeId;
     }
 
     reflect() {

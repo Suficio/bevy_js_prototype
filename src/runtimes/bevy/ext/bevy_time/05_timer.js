@@ -1,11 +1,13 @@
 "use strict";
 ((window) => {
-  const { Reflect, ReflectableObject, waitForWorld, worldResourceId } =
-    window.bevyEcs;
+  const { ReflectableObject, TypeRegistry, worldResourceId } = window.bevyEcs;
   const { Stopwatch } = window.bevyTime.stopwatch;
   class Timer extends ReflectableObject {
     static typeName = "bevy_time::timer::Timer";
-    static typeId = new Uint8Array(8);
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(struct) {
       super(
         {
@@ -22,10 +24,6 @@
       );
     }
   }
-  (() =>
-    waitForWorld().then(() =>
-      Reflect.assignTypeId(worldResourceId(), Timer.prototype)
-    ))();
 
   if (!window.hasOwnProperty("bevyTime")) {
     window.bevyTime = {};

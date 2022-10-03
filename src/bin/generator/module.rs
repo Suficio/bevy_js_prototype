@@ -60,7 +60,7 @@ impl Module {
             writeln!(f, "{def}").unwrap();
         }
 
-        let path = self.path.split(".").collect::<Vec<&str>>();
+        let path = self.path.split('.').collect::<Vec<&str>>();
 
         writeln!(
             f,

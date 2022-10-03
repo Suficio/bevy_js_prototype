@@ -1,10 +1,12 @@
 "use strict";
 ((window) => {
-  const { Reflect, ReflectableObject, waitForWorld, worldResourceId } =
-    window.bevyEcs;
+  const { ReflectableObject, TypeRegistry, worldResourceId } = window.bevyEcs;
   class Time extends ReflectableObject {
     static typeName = "bevy_time::time::Time";
-    static typeId = new Uint8Array(8);
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(struct) {
       super(null, struct);
     }
@@ -21,10 +23,6 @@
       return core.ops.op_time_since_startup();
     }
   }
-  (() =>
-    waitForWorld().then(() =>
-      Reflect.assignTypeId(worldResourceId(), Time.prototype)
-    ))();
   if (!window.hasOwnProperty("bevyTime")) {
     window.bevyTime = {};
   }

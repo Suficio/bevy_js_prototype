@@ -98,7 +98,7 @@ fn generate_type_init(
         }
         ReflectRef::Tuple(_) => unimplemented!(),
         ReflectRef::List(l) => {
-            generate_array_type_init(&mut o, type_registry, module, &*l);
+            generate_array_type_init(&mut o, type_registry, module, l);
         }
         ReflectRef::Array(a) => {
             generate_array_type_init(&mut o, type_registry, module, a);
@@ -216,20 +216,14 @@ fn generate_default_type_init(
     o
 }
 
-fn generate_type_info(o: &mut String, type_name: &str) {
-    writeln!(o, r#"static typeName = "{type_name}""#,).unwrap();
-    writeln!(o, r#"static typeId = new Uint8Array(8)"#,).unwrap();
-}
-
-// TypeId is lazily initialized
-fn lazily_initialize_type_id(o: &mut String, short_name: &str, module: &mut Module) {
-    module.insert_import("bevyEcs".to_string(), "Reflect".to_string());
+fn generate_type_info(o: &mut String, type_name: &str, module: &mut Module) {
+    module.insert_import("bevyEcs".to_string(), "TypeRegistry".to_string());
     module.insert_import("bevyEcs".to_string(), "worldResourceId".to_string());
-    module.insert_import("bevyEcs".to_string(), "waitForWorld".to_string());
 
+    writeln!(o, r#"static typeName = "{type_name}""#,).unwrap();
     writeln!(
         o,
-        r#"(() => waitForWorld().then(() => Reflect.assignTypeId(worldResourceId(),{short_name}.prototype)))()"#
+        r#"static typeId = TypeRegistry.getTypeIdWithName(worldResourceId, this.typeName);"#,
     )
     .unwrap();
 }
@@ -245,7 +239,7 @@ fn generate_array_type(
     module.insert_import("bevyEcs".to_string(), "ReflectableArray".to_string());
 
     writeln!(o, r#"class {short_name} extends ReflectableArray {{"#,).unwrap();
-    generate_type_info(o, &type_name);
+    generate_type_info(o, type_name, module);
     writeln!(
         o,
         r#"constructor(seq) {{ super({}, seq) }}"#,
@@ -253,7 +247,6 @@ fn generate_array_type(
     )
     .unwrap();
     writeln!(o, r#"}}"#,).unwrap();
-    lazily_initialize_type_id(o, short_name, module);
 }
 
 /// Generates a top-level type definition
@@ -272,7 +265,7 @@ pub fn generate_type(
             module.insert_import("bevyEcs".to_string(), "ReflectableObject".to_string());
 
             writeln!(&mut o, r#"class {short_name} extends ReflectableObject {{"#,).unwrap();
-            generate_type_info(&mut o, &type_name);
+            generate_type_info(&mut o, &type_name, module);
             writeln!(
                 &mut o,
                 r#"constructor(struct) {{ super({}, struct) }}"#,
@@ -280,7 +273,6 @@ pub fn generate_type(
             )
             .unwrap();
             writeln!(&mut o, r#"}}"#,).unwrap();
-            lazily_initialize_type_id(&mut o, &short_name, module);
         }
         TypeInfo::TupleStruct(_) => generate_array_type(
             &mut o,
@@ -316,7 +308,7 @@ pub fn generate_type(
                             r#"class {short_name}{name} extends ReflectableObject {{"#,
                         )
                         .unwrap();
-                        generate_type_info(&mut o, &type_name);
+                        generate_type_info(&mut o, &type_name, module);
                         writeln!(
                             &mut o,
                             r#"constructor(struct) {{ super({}, struct) }}"#,
@@ -324,7 +316,6 @@ pub fn generate_type(
                         )
                         .unwrap();
                         writeln!(&mut o, r#"}}"#,).unwrap();
-                        lazily_initialize_type_id(&mut o, &short_name, module);
                     }
                     VariantInfo::Tuple(t) => {
                         if t.field_len() > 1 {
@@ -348,10 +339,9 @@ pub fn generate_type(
                             r#"class {short_name}{name} extends ReflectableUnit {{"#,
                         )
                         .unwrap();
-                        generate_type_info(&mut o, &type_name);
+                        generate_type_info(&mut o, &type_name, module);
                         writeln!(&mut o, r#"constructor() {{ super("{name}") }}"#,).unwrap();
                         writeln!(&mut o, r#"}}"#,).unwrap();
-                        lazily_initialize_type_id(&mut o, &short_name, module);
                     }
                 }
             }
@@ -392,14 +382,13 @@ pub fn generate_type(
                 }
             }
 
-            generate_type_info(&mut o, &type_name);
+            generate_type_info(&mut o, &type_name, module);
             writeln!(
                 &mut o,
                 r#"constructor(type, value) {{ super(type, value) }}"#,
             )
             .unwrap();
             writeln!(&mut o, r#"}}"#,).unwrap();
-            lazily_initialize_type_id(&mut o, &short_name, module);
         }
     }
 

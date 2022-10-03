@@ -16,20 +16,17 @@ fn op_type_registry_get_type_id_with_name(
     world_resource_id: u32,
     type_name: String,
     out: &mut [u8],
-) -> Result<(), bjs::AnyError> {
+) -> bool {
     let res = bjs::runtimes::unwrap_world_resource(state, world_resource_id);
     let world = res.borrow_world();
 
     let type_registry = world.resource::<AppTypeRegistry>().clone();
     let type_registry = type_registry.read();
 
-    let type_id = type_registry
-        .get_with_name(&type_name)
-        .ok_or(bjs::AnyError::msg(format!(
-            "Could not find type registration for: {}",
-            type_name
-        )))?
-        .type_id();
+    let type_id = match type_registry.get_with_name(&type_name) {
+        Some(registration) => registration.type_id(),
+        None => return false,
+    };
 
     let slice = unsafe {
         std::slice::from_raw_parts(
@@ -37,8 +34,7 @@ fn op_type_registry_get_type_id_with_name(
             std::mem::size_of::<TypeId>(),
         )
     };
-
     out.copy_from_slice(slice);
 
-    Ok(())
+    true
 }

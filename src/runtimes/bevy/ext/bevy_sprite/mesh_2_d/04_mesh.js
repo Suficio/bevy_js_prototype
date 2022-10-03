@@ -1,18 +1,16 @@
 "use strict";
 ((window) => {
-  const { Reflect, ReflectableArray, waitForWorld, worldResourceId } =
-    window.bevyEcs;
+  const { ReflectableArray, TypeRegistry, worldResourceId } = window.bevyEcs;
   class Mesh2dHandle extends ReflectableArray {
     static typeName = "bevy_sprite::mesh2d::mesh::Mesh2dHandle";
-    static typeId = new Uint8Array(8);
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(seq) {
       super(null, seq);
     }
   }
-  (() =>
-    waitForWorld().then(() =>
-      Reflect.assignTypeId(worldResourceId(), Mesh2dHandle.prototype)
-    ))();
 
   if (!window.hasOwnProperty("bevySprite")) {
     window.bevySprite = {};

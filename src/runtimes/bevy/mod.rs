@@ -1,5 +1,4 @@
 use crate as bjs;
-use bevy::prelude::*;
 use std::rc::Rc;
 
 pub mod ext;
@@ -31,9 +30,6 @@ impl bjs::IntoRuntime for BevyRuntime {
     fn into_runtime(resource: Rc<bjs::WorldResource>) -> bjs::JsRuntime {
         // Register [JsRuntimeWorld] with the runtime so Bevy specific ops can
         // have access to the [World].
-        warn!("bye");
-        let g = Self::builder().with_resource(resource).build();
-        warn!("bye");
-        g
+        Self::builder().with_resource(resource).build()
     }
 }

@@ -8,26 +8,19 @@
     return this.toString();
   };
 
-  // Cache global reference to the `World` resource
-  let rWorld = undefined;
-
-  function worldResourceId() {
-    if (rWorld) {
-      return rWorld;
-    } else {
-      let res = core.resources();
-      let rid = Object.keys(res).find(
-        (rid) => res[rid] === "bevy_js::world::WorldResource"
+  const worldResourceId = (() => {
+    let res = core.resources();
+    let rid = Object.keys(res).find(
+      (rid) => res[rid] === "bevy_js::world::WorldResource"
+    );
+    if (rid === undefined) {
+      throw new Error(
+        "Could not find Bevy world resource id. Ensure that you are running within a Bevy context."
       );
-      if (rid === undefined) {
-        throw new Error(
-          "Could not find Bevy world resource id. Ensure that you are running within a Bevy context."
-        );
-      }
-
-      return rWorld;
     }
-  }
+
+    return rid;
+  })();
 
   function reflect(reflectable) {
     try {
@@ -38,13 +31,13 @@ ${err}`);
     }
   }
 
-  async function waitForWorld() {
-    await core.opAsync("op_wait_for_world", worldResourceId());
+  async function nextFrame() {
+    await core.opAsync("op_wait_for_frame", worldResourceId);
   }
 
   let bevyEcs = {
     reflect,
-    waitForWorld,
+    nextFrame,
     worldResourceId,
   };
   Object.assign(window, { bevyEcs });

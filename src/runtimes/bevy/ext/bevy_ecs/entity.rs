@@ -45,6 +45,8 @@ pub fn op_entity_insert_component<'scope>(
             ))
         })?;
 
+    dbg!(&component);
+
     let e_entity = Entity::from_bits(e_entity);
     component_impl.apply_or_insert(world, e_entity, component.as_reflect());
 

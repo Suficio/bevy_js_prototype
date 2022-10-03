@@ -1,7 +1,6 @@
 "use strict";
 ((window) => {
-  const { Reflect, ReflectableArray, waitForWorld, worldResourceId } =
-    window.bevyEcs;
+  const { ReflectableArray, worldResourceId, TypeRegistry } = window.bevyEcs;
   class Vec3A extends ReflectableArray {
     static Zero = () => new Vec3A({ x: 0.0, y: 0.0, z: 0.0 });
     static One = () => new Vec3A({ x: 1.0, y: 1.0, z: 1.0 });
@@ -15,7 +14,10 @@
     static NegZ = () => new Vec3A({ x: 0.0, y: 0.0, z: -1.0 });
     static Axes = () => [Vec3A.X(), Vec3A.Y(), Vec3A.Z()];
     static typeName = "glam::f32::sse2::vec3a::Vec3A";
-    static typeId = new Uint8Array(8);
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(struct) {
       super([0.0, 0.0, 0.0], struct);
     }
@@ -38,10 +40,6 @@
       this[2] = z;
     }
   }
-  (() =>
-    waitForWorld().then(() =>
-      Reflect.assignTypeId(worldResourceId(), Vec3A.prototype)
-    ))();
   if (!window.hasOwnProperty("glam")) {
     window.glam = {};
   }

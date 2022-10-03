@@ -3,8 +3,7 @@ use bevy::{prelude::*, reflect::ReflectFromPtr};
 use bjs::{op, OpState};
 
 #[op(v8)]
-pub fn op_world_get_resource<'scope>(
-    // scope: &mut deno_core::v8::HandleScope<'scope>,
+pub fn op_world_get_resource(
     state: &mut OpState,
     r_world: bjs::ResourceId,
     type_name: String,

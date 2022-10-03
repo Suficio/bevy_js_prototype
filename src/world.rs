@@ -36,7 +36,7 @@ impl WorldResource {
     pub async fn wait_for_frame(&self) {
         let (sender, receiver) = oneshot::channel();
         self.pending_frame_awaits.borrow_mut().push(sender);
-        if let Err(_) = receiver.await {
+        if receiver.await.is_err() {
             warn!("Evaluation request cancelled by Bevy sender");
         }
     }
@@ -48,7 +48,7 @@ impl WorldResource {
         self.world.scope(world, || {
             // Signal to pending next frame awaits
             for sender in self.pending_frame_awaits.borrow_mut().drain(..) {
-                if let Err(_) = sender.send(()) {
+                if sender.send(()).is_err() {
                     warn!("Could not lend world due to receiver being dropped");
                 }
             }

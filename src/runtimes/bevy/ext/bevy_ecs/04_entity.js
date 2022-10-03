@@ -2,14 +2,14 @@
 
 ((window) => {
   const { core } = window.Deno;
-  const { reflect, worldResourceId } = window.bevyEcs;
+  const { reflect, worldResourceId, Bundle } = window.bevyEcs;
 
   class Entity {
     constructor(eEntity) {
       if (eEntity) {
         this.entity = eEntity;
       } else {
-        this.entity = core.ops.op_entity_spawn(worldResourceId());
+        this.entity = core.ops.op_entity_spawn(worldResourceId);
       }
     }
 
@@ -17,39 +17,39 @@
       return this.eEntity;
     }
 
-    insert(component) {
-      let reflected = reflect(component);
-
-      try {
-        core.ops.op_entity_insert_component(
-          worldResourceId(),
-          this.entity,
-          reflected
-        );
-      } catch (err) {
-        throw new Error(
-          `Could not insert component: ${component.typeName()} into entity: ${
-            this.entity
+    insert(maybeComponent) {
+      if (maybeComponent instanceof Bundle) {
+        try {
+          for (const component of Object.values(maybeComponent)) {
+            this.insert(component);
           }
+        } catch (err) {
+          throw new Error(
+            `Could not insert bundle: ${maybeComponent.bundleName()} into entity: ${
+              this.entity
+            }
 ${err}`
-        );
-      }
-
-      return this;
-    }
-
-    insertBundle(bundle) {
-      try {
-        for (const component of Object.values(bundle)) {
-          this.insert(component);
+          );
         }
-      } catch (err) {
-        throw new Error(
-          `Could not insert bundle: ${bundle.bundleName()} into entity: ${
-            this.entity
-          }
+      } else {
+        Deno.core.print(JSON.stringify(maybeComponent) + "\n");
+        let reflected = reflect(maybeComponent);
+        Deno.core.print(JSON.stringify(reflected) + "\n");
+
+        try {
+          core.ops.op_entity_insert_component(
+            worldResourceId,
+            this.entity,
+            reflected
+          );
+        } catch (err) {
+          throw new Error(
+            `Could not insert component: ${component.typeName()} into entity: ${
+              this.entity
+            }
 ${err}`
-        );
+          );
+        }
       }
 
       return this;
@@ -58,7 +58,7 @@ ${err}`
     get(component) {
       try {
         let res = core.ops.op_entity_get_component(
-          worldResourceId(),
+          worldResourceId,
           this.entity,
           component.typeName()
         );

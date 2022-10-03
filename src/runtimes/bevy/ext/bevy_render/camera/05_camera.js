@@ -1,40 +1,36 @@
 "use strict";
 ((window) => {
-  const {
-    Reflect,
-    ReflectableArray,
-    ReflectableObject,
-    waitForWorld,
-    worldResourceId,
-  } = window.bevyEcs;
+  const { ReflectableArray, ReflectableObject, TypeRegistry, worldResourceId } =
+    window.bevyEcs;
   const { UVec2 } = window.glam.u32.uvec2;
   class Camera extends ReflectableObject {
     static typeName = "bevy_render::camera::camera::Camera";
-    static typeId = new Uint8Array(8);
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(struct) {
       super(null, struct);
     }
   }
-  (() =>
-    waitForWorld().then(() =>
-      Reflect.assignTypeId(worldResourceId(), Camera.prototype)
-    ))();
 
   class CameraRenderGraph extends ReflectableArray {
     static typeName = "bevy_render::camera::camera::CameraRenderGraph";
-    static typeId = new Uint8Array(8);
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(seq) {
       super(null, seq);
     }
   }
-  (() =>
-    waitForWorld().then(() =>
-      Reflect.assignTypeId(worldResourceId(), CameraRenderGraph.prototype)
-    ))();
 
   class Viewport extends ReflectableObject {
     static typeName = "bevy_render::camera::camera::Viewport";
-    static typeId = new Uint8Array(8);
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(struct) {
       super(
         {
@@ -46,10 +42,6 @@
       );
     }
   }
-  (() =>
-    waitForWorld().then(() =>
-      Reflect.assignTypeId(worldResourceId(), Viewport.prototype)
-    ))();
 
   if (!window.hasOwnProperty("bevyRender")) {
     window.bevyRender = {};

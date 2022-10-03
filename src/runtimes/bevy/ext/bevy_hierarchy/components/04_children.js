@@ -1,18 +1,16 @@
 "use strict";
 ((window) => {
-  const { Reflect, ReflectableArray, waitForWorld, worldResourceId } =
-    window.bevyEcs;
+  const { ReflectableArray, TypeRegistry, worldResourceId } = window.bevyEcs;
   class Children extends ReflectableArray {
     static typeName = "bevy_hierarchy::components::children::Children";
-    static typeId = new Uint8Array(8);
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(seq) {
       super(null, seq);
     }
   }
-  (() =>
-    waitForWorld().then(() =>
-      Reflect.assignTypeId(worldResourceId(), Children.prototype)
-    ))();
 
   if (!window.hasOwnProperty("bevyHierarchy")) {
     window.bevyHierarchy = {};

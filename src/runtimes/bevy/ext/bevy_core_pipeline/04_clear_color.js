@@ -1,61 +1,56 @@
 "use strict";
 ((window) => {
   const {
-    Reflect,
     ReflectableArray,
     ReflectableEnum,
     ReflectableUnit,
-    waitForWorld,
+    TypeRegistry,
     worldResourceId,
   } = window.bevyEcs;
   class ClearColor extends ReflectableArray {
     static typeName = "bevy_core_pipeline::clear_color::ClearColor";
-    static typeId = new Uint8Array(8);
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(seq) {
       super(null, seq);
     }
   }
-  (() =>
-    waitForWorld().then(() =>
-      Reflect.assignTypeId(worldResourceId(), ClearColor.prototype)
-    ))();
 
   class ClearColorConfigDefault extends ReflectableUnit {
     static typeName = "bevy_core_pipeline::clear_color::ClearColorConfig";
-    static typeId = new Uint8Array(8);
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("Default");
     }
   }
-  (() =>
-    waitForWorld().then(() =>
-      Reflect.assignTypeId(worldResourceId(), ClearColorConfig.prototype)
-    ))();
   class ClearColorConfigNone extends ReflectableUnit {
     static typeName = "bevy_core_pipeline::clear_color::ClearColorConfig";
-    static typeId = new Uint8Array(8);
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("None");
     }
   }
-  (() =>
-    waitForWorld().then(() =>
-      Reflect.assignTypeId(worldResourceId(), ClearColorConfig.prototype)
-    ))();
   class ClearColorConfig extends ReflectableEnum {
     static Default = () => new ClearColorConfigDefault();
     static Custom = (value) => new ClearColorConfig("Custom", value);
     static None = () => new ClearColorConfigNone();
     static typeName = "bevy_core_pipeline::clear_color::ClearColorConfig";
-    static typeId = new Uint8Array(8);
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(type, value) {
       super(type, value);
     }
   }
-  (() =>
-    waitForWorld().then(() =>
-      Reflect.assignTypeId(worldResourceId(), ClearColorConfig.prototype)
-    ))();
 
   if (!window.hasOwnProperty("bevyCorePipeline")) {
     window.bevyCorePipeline = {};

@@ -1,11 +1,13 @@
 "use strict";
 ((window) => {
-  const { Reflect, ReflectableObject, waitForWorld, worldResourceId } =
-    window.bevyEcs;
+  const { ReflectableObject, TypeRegistry, worldResourceId } = window.bevyEcs;
   const { Vec3 } = window.glam.f32.vec3;
   class Transform extends ReflectableObject {
     static typeName = "bevy_transform::components::transform::Transform";
-    static typeId = new Uint8Array(8);
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(struct) {
       super(
         {
@@ -17,10 +19,6 @@
       );
     }
   }
-  (() =>
-    waitForWorld().then(() =>
-      Reflect.assignTypeId(worldResourceId(), Transform.prototype)
-    ))();
 
   if (!window.hasOwnProperty("bevyTransform")) {
     window.bevyTransform = {};
