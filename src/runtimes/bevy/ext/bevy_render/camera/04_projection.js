@@ -1,8 +1,18 @@
 "use strict";
 ((window) => {
-  const { ReflectableEnum, ReflectableObject, ReflectableUnit } =
-    window.bevyEcs;
+  const {
+    ReflectableEnum,
+    ReflectableObject,
+    ReflectableUnit,
+    TypeRegistry,
+    worldResourceId,
+  } = window.bevyEcs;
   class OrthographicProjection extends ReflectableObject {
+    static typeName = "bevy_render::camera::projection::OrthographicProjection";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(struct) {
       super(
         {
@@ -19,53 +29,63 @@
         struct
       );
     }
-    static typeName() {
-      return "bevy_render::camera::projection::OrthographicProjection";
-    }
   }
+
   class PerspectiveProjection extends ReflectableObject {
+    static typeName = "bevy_render::camera::projection::PerspectiveProjection";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(struct) {
       super(
         { fov: 0.7853982, aspect_ratio: 1.0, near: 0.1, far: 1000.0 },
         struct
       );
     }
-    static typeName() {
-      return "bevy_render::camera::projection::PerspectiveProjection";
-    }
   }
+
   class Projection extends ReflectableEnum {
     static Perspective = (value) => new Projection("Perspective", value);
     static Orthographic = (value) => new Projection("Orthographic", value);
+    static typeName = "bevy_render::camera::projection::Projection";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(type, value) {
       super(type, value);
     }
-    static typeName() {
-      return "bevy_render::camera::projection::Projection";
-    }
   }
+
   class ScalingModeNone extends ReflectableUnit {
+    static typeName = "bevy_render::camera::projection::ScalingMode";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("None");
     }
-    static typeName() {
-      return "bevy_render::camera::projection::ScalingMode";
-    }
   }
   class ScalingModeWindowSize extends ReflectableUnit {
+    static typeName = "bevy_render::camera::projection::ScalingMode";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("WindowSize");
     }
-    static typeName() {
-      return "bevy_render::camera::projection::ScalingMode";
-    }
   }
   class ScalingModeAuto extends ReflectableObject {
+    static typeName = "bevy_render::camera::projection::ScalingMode";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(struct) {
       super(null, struct);
-    }
-    static typeName() {
-      return "bevy_render::camera::projection::ScalingMode";
     }
   }
   class ScalingMode extends ReflectableEnum {
@@ -76,39 +96,49 @@
     static FixedVertical = (value) => new ScalingMode("FixedVertical", value);
     static FixedHorizontal = (value) =>
       new ScalingMode("FixedHorizontal", value);
+    static typeName = "bevy_render::camera::projection::ScalingMode";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(type, value) {
       super(type, value);
     }
-    static typeName() {
-      return "bevy_render::camera::projection::ScalingMode";
-    }
   }
+
   class WindowOriginCenter extends ReflectableUnit {
+    static typeName = "bevy_render::camera::projection::WindowOrigin";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("Center");
     }
-    static typeName() {
-      return "bevy_render::camera::projection::WindowOrigin";
-    }
   }
   class WindowOriginBottomLeft extends ReflectableUnit {
+    static typeName = "bevy_render::camera::projection::WindowOrigin";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("BottomLeft");
-    }
-    static typeName() {
-      return "bevy_render::camera::projection::WindowOrigin";
     }
   }
   class WindowOrigin extends ReflectableEnum {
     static Center = () => new WindowOriginCenter();
     static BottomLeft = () => new WindowOriginBottomLeft();
+    static typeName = "bevy_render::camera::projection::WindowOrigin";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(type, value) {
       super(type, value);
     }
-    static typeName() {
-      return "bevy_render::camera::projection::WindowOrigin";
-    }
   }
+
   if (!window.hasOwnProperty("bevyRender")) {
     window.bevyRender = {};
   }

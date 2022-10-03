@@ -1,14 +1,14 @@
 "use strict";
 ((window) => {
-  const { ReflectableObject } = window.bevyEcs;
+  const { ReflectableObject, TypeRegistry, worldResourceId } = window.bevyEcs;
   class Handle extends ReflectableObject {
+    static typeName = "bevy_asset::handle::Handle";
+
     constructor(struct) {
       super(null, struct);
     }
-    static typeName() {
-      return "bevy_asset::handle::Handle";
-    }
   }
+
   if (!window.hasOwnProperty("bevyAsset")) {
     window.bevyAsset = {};
   }

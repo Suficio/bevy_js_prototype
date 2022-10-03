@@ -1,16 +1,19 @@
 "use strict";
 ((window) => {
-  const { ReflectableArray } = window.bevyEcs;
+  const { ReflectableArray, TypeRegistry, worldResourceId } = window.bevyEcs;
   const { Affine3A } = window.glam.f32.affine3A;
   class GlobalTransform extends ReflectableArray {
-    static Identity = () => new GlobalTransform(Affine3A.Identity());
+    static typeName =
+      "bevy_transform::components::global_transform::GlobalTransform";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(seq) {
       super([Affine3A.Identity()], seq);
     }
-    static typeName() {
-      return "bevy_transform::components::global_transform::GlobalTransform";
-    }
   }
+
   if (!window.hasOwnProperty("bevyTransform")) {
     window.bevyTransform = {};
   }

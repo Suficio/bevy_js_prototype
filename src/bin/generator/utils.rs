@@ -1,6 +1,6 @@
 use bevy::utils::hashbrown::HashMap;
 use convert_case::{Case, Casing};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use syn::{
     punctuated::Punctuated, token::Comma, GenericArgument, PathArguments, TypePath,
     __private::ToTokens,
@@ -44,7 +44,7 @@ pub fn type_path(type_name: &str) -> PathBuf {
 }
 
 /// Force path to display with forward slash
-pub fn display_path(path: &PathBuf) -> String {
+pub fn display_path(path: &Path) -> String {
     path.iter()
         .map(|s| s.to_str().unwrap())
         .collect::<Vec<&str>>()

@@ -1,14 +1,14 @@
 "use strict";
 ((window) => {
-  const { ReflectableArray } = window.bevyEcs;
+  const { ReflectableArray, TypeRegistry, worldResourceId } = window.bevyEcs;
   class Vec extends ReflectableArray {
+    static typeName = "alloc::vec::Vec";
+
     constructor(seq) {
       super(null, seq);
     }
-    static typeName() {
-      return "alloc::vec::Vec";
-    }
   }
+
   if (!window.hasOwnProperty("alloc")) {
     window.alloc = {};
   }

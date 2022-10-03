@@ -1,14 +1,17 @@
 "use strict";
 ((window) => {
-  const { ReflectableObject } = window.bevyEcs;
+  const { ReflectableObject, TypeRegistry, worldResourceId } = window.bevyEcs;
   class GltfExtras extends ReflectableObject {
+    static typeName = "bevy_gltf::GltfExtras";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(struct) {
       super(null, struct);
     }
-    static typeName() {
-      return "bevy_gltf::GltfExtras";
-    }
   }
+
   if (!window.hasOwnProperty("bevyGltf")) {
     window.bevyGltf = {};
   }

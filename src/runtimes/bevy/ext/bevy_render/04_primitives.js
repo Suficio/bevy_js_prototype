@@ -1,30 +1,39 @@
 "use strict";
 ((window) => {
-  const { ReflectableObject } = window.bevyEcs;
+  const { ReflectableObject, TypeRegistry, worldResourceId } = window.bevyEcs;
   class Aabb extends ReflectableObject {
+    static typeName = "bevy_render::primitives::Aabb";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(struct) {
       super(null, struct);
     }
-    static typeName() {
-      return "bevy_render::primitives::Aabb";
-    }
   }
+
   class CubemapFrusta extends ReflectableObject {
+    static typeName = "bevy_render::primitives::CubemapFrusta";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(struct) {
       super(null, struct);
     }
-    static typeName() {
-      return "bevy_render::primitives::CubemapFrusta";
-    }
   }
+
   class Frustum extends ReflectableObject {
+    static typeName = "bevy_render::primitives::Frustum";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(struct) {
       super(null, struct);
     }
-    static typeName() {
-      return "bevy_render::primitives::Frustum";
-    }
   }
+
   if (!window.hasOwnProperty("bevyRender")) {
     window.bevyRender = {};
   }

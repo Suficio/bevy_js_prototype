@@ -1,22 +1,28 @@
 "use strict";
 ((window) => {
-  const { ReflectableObject } = window.bevyEcs;
+  const { ReflectableObject, TypeRegistry, worldResourceId } = window.bevyEcs;
   class Size extends ReflectableObject {
+    static typeName = "bevy_ui::geometry::Size";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(struct) {
       super(null, struct);
     }
-    static typeName() {
-      return "bevy_ui::geometry::Size";
-    }
   }
+
   class UiRect extends ReflectableObject {
+    static typeName = "bevy_ui::geometry::UiRect";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(struct) {
       super(null, struct);
     }
-    static typeName() {
-      return "bevy_ui::geometry::UiRect";
-    }
   }
+
   if (!window.hasOwnProperty("bevyUi")) {
     window.bevyUi = {};
   }

@@ -98,7 +98,7 @@ fn generate_type_init(
         }
         ReflectRef::Tuple(_) => unimplemented!(),
         ReflectRef::List(l) => {
-            generate_array_type_init(&mut o, type_registry, module, &*l);
+            generate_array_type_init(&mut o, type_registry, module, l);
         }
         ReflectRef::Array(a) => {
             generate_array_type_init(&mut o, type_registry, module, a);
@@ -216,6 +216,18 @@ fn generate_default_type_init(
     o
 }
 
+fn generate_type_info(o: &mut String, type_name: &str, module: &mut Module) {
+    module.insert_import("bevyEcs".to_string(), "TypeRegistry".to_string());
+    module.insert_import("bevyEcs".to_string(), "worldResourceId".to_string());
+
+    writeln!(o, r#"static typeName = "{type_name}""#,).unwrap();
+    writeln!(
+        o,
+        r#"static typeId = TypeRegistry.getTypeIdWithName(worldResourceId, this.typeName);"#,
+    )
+    .unwrap();
+}
+
 fn generate_array_type(
     o: &mut String,
     type_registry: &TypeRegistryInternal,
@@ -226,14 +238,15 @@ fn generate_array_type(
 ) {
     module.insert_import("bevyEcs".to_string(), "ReflectableArray".to_string());
 
-    write!(o, r#"class {short_name} extends ReflectableArray {{"#,).unwrap();
-    write!(
+    writeln!(o, r#"class {short_name} extends ReflectableArray {{"#,).unwrap();
+    generate_type_info(o, type_name, module);
+    writeln!(
         o,
         r#"constructor(seq) {{ super({}, seq) }}"#,
         generate_default_type_init(type_registry, module, registration, false)
     )
     .unwrap();
-    write!(o, r#"static typeName() {{ return "{type_name}" }} }}"#,).unwrap();
+    writeln!(o, r#"}}"#,).unwrap();
 }
 
 /// Generates a top-level type definition
@@ -251,14 +264,15 @@ pub fn generate_type(
         TypeInfo::Struct(_) => {
             module.insert_import("bevyEcs".to_string(), "ReflectableObject".to_string());
 
-            write!(&mut o, r#"class {short_name} extends ReflectableObject {{"#,).unwrap();
-            write!(
+            writeln!(&mut o, r#"class {short_name} extends ReflectableObject {{"#,).unwrap();
+            generate_type_info(&mut o, &type_name, module);
+            writeln!(
                 &mut o,
                 r#"constructor(struct) {{ super({}, struct) }}"#,
                 generate_default_type_init(type_registry, module, registration, false)
             )
             .unwrap();
-            write!(&mut o, r#"static typeName() {{ return "{type_name}" }} }}"#,).unwrap();
+            writeln!(&mut o, r#"}}"#,).unwrap();
         }
         TypeInfo::TupleStruct(_) => generate_array_type(
             &mut o,
@@ -289,19 +303,19 @@ pub fn generate_type(
                         module
                             .insert_import("bevyEcs".to_string(), "ReflectableObject".to_string());
 
-                        write!(
+                        writeln!(
                             &mut o,
                             r#"class {short_name}{name} extends ReflectableObject {{"#,
                         )
                         .unwrap();
-                        write!(
+                        generate_type_info(&mut o, &type_name, module);
+                        writeln!(
                             &mut o,
                             r#"constructor(struct) {{ super({}, struct) }}"#,
                             generate_default_type_init(type_registry, module, registration, false)
                         )
                         .unwrap();
-                        write!(&mut o, r#"static typeName() {{ return "{type_name}" }} }}"#,)
-                            .unwrap();
+                        writeln!(&mut o, r#"}}"#,).unwrap();
                     }
                     VariantInfo::Tuple(t) => {
                         if t.field_len() > 1 {
@@ -320,27 +334,27 @@ pub fn generate_type(
                     VariantInfo::Unit(_) => {
                         module.insert_import("bevyEcs".to_string(), "ReflectableUnit".to_string());
 
-                        write!(
+                        writeln!(
                             &mut o,
                             r#"class {short_name}{name} extends ReflectableUnit {{"#,
                         )
                         .unwrap();
-                        write!(&mut o, r#"constructor() {{ super("{name}") }}"#,).unwrap();
-                        write!(&mut o, r#"static typeName() {{ return "{type_name}" }} }}"#,)
-                            .unwrap();
+                        generate_type_info(&mut o, &type_name, module);
+                        writeln!(&mut o, r#"constructor() {{ super("{name}") }}"#,).unwrap();
+                        writeln!(&mut o, r#"}}"#,).unwrap();
                     }
                 }
             }
 
             module.insert_import("bevyEcs".to_string(), "ReflectableEnum".to_string());
 
-            write!(&mut o, r#"class {short_name} extends ReflectableEnum {{ "#).unwrap();
+            writeln!(&mut o, r#"class {short_name} extends ReflectableEnum {{ "#).unwrap();
 
             for variant in e.iter() {
                 let name = variant.name();
                 match variant {
                     VariantInfo::Struct(_) => {
-                        write!(
+                        writeln!(
                             &mut o,
                             r#"static {name} = (struct) => new {short_name}("{name}", new {short_name}{name}(struct));"#,
                         )
@@ -348,13 +362,13 @@ pub fn generate_type(
                     }
                     VariantInfo::Tuple(t) => {
                         if t.field_len() == 1 {
-                            write!(
+                            writeln!(
                                 &mut o,
                                 r#"static {name} = (value) => new {short_name}("{name}", value);"#,
                             )
                             .unwrap();
                         } else {
-                            write!(
+                            writeln!(
                                 &mut o,
                                 r#"static {name} = (value) => new {short_name}("{name}", new {short_name}{name}(value));"#,
                             )
@@ -362,19 +376,19 @@ pub fn generate_type(
                         }
                     }
                     VariantInfo::Unit(_) => {
-                        write!(&mut o, r#"static {name} = () => new {short_name}{name}();"#,)
+                        writeln!(&mut o, r#"static {name} = () => new {short_name}{name}();"#,)
                             .unwrap();
                     }
                 }
             }
 
-            write!(
+            generate_type_info(&mut o, &type_name, module);
+            writeln!(
                 &mut o,
                 r#"constructor(type, value) {{ super(type, value) }}"#,
             )
             .unwrap();
-
-            write!(&mut o, r#"static typeName() {{ return "{type_name}" }} }}"#,).unwrap();
+            writeln!(&mut o, r#"}}"#,).unwrap();
         }
     }
 

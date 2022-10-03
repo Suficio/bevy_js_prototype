@@ -1,14 +1,17 @@
 "use strict";
 ((window) => {
-  const { ReflectableObject } = window.bevyEcs;
+  const { ReflectableObject, TypeRegistry, worldResourceId } = window.bevyEcs;
   class CubemapVisibleEntities extends ReflectableObject {
+    static typeName = "bevy_pbr::bundle::CubemapVisibleEntities";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(struct) {
       super(null, struct);
     }
-    static typeName() {
-      return "bevy_pbr::bundle::CubemapVisibleEntities";
-    }
   }
+
   if (!window.hasOwnProperty("bevyPbr")) {
     window.bevyPbr = {};
   }

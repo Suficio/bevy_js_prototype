@@ -1,23 +1,29 @@
 "use strict";
 ((window) => {
-  const { ReflectableEnum, ReflectableUnit } = window.bevyEcs;
+  const { ReflectableEnum, ReflectableUnit, TypeRegistry, worldResourceId } =
+    window.bevyEcs;
   class ImageModeKeepAspect extends ReflectableUnit {
+    static typeName = "bevy_ui::widget::image::ImageMode";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("KeepAspect");
-    }
-    static typeName() {
-      return "bevy_ui::widget::image::ImageMode";
     }
   }
   class ImageMode extends ReflectableEnum {
     static KeepAspect = () => new ImageModeKeepAspect();
+    static typeName = "bevy_ui::widget::image::ImageMode";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(type, value) {
       super(type, value);
     }
-    static typeName() {
-      return "bevy_ui::widget::image::ImageMode";
-    }
   }
+
   if (!window.hasOwnProperty("bevyUi")) {
     window.bevyUi = {};
   }

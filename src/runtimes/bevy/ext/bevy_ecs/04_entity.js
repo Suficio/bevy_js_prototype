@@ -2,14 +2,14 @@
 
 ((window) => {
   const { core } = window.Deno;
-  const { reflect, worldResourceId } = window.bevyEcs;
+  const { reflect, worldResourceId, Bundle } = window.bevyEcs;
 
   class Entity {
     constructor(eEntity) {
       if (eEntity) {
         this.entity = eEntity;
       } else {
-        this.entity = core.ops.op_entity_spawn(worldResourceId());
+        this.entity = core.ops.op_entity_spawn(worldResourceId);
       }
     }
 
@@ -17,58 +17,54 @@
       return this.eEntity;
     }
 
-    insert(component) {
-      let reflected = reflect(component);
-
-      try {
-        core.ops.op_entity_insert_component(
-          worldResourceId(),
-          this.entity,
-          reflected
-        );
-      } catch (err) {
-        throw new Error(
-          `Could not insert component: ${component.typeName()} into entity: ${
-            this.entity
+    insert(maybeComponent) {
+      if (maybeComponent instanceof Bundle) {
+        try {
+          for (const component of Object.values(maybeComponent)) {
+            this.insert(component);
           }
+        } catch (err) {
+          throw new Error(
+            `Could not insert bundle: ${maybeComponent.bundleName()} into entity: ${
+              this.entity
+            }
 ${err}`
-        );
-      }
-
-      return this;
-    }
-
-    insertBundle(bundle) {
-      try {
-        for (const component of Object.values(bundle)) {
-          this.insert(component);
+          );
         }
-      } catch (err) {
-        throw new Error(
-          `Could not insert bundle: ${bundle.bundleName()} into entity: ${
-            this.entity
-          }
+      } else {
+        let reflected = reflect(maybeComponent);
+
+        try {
+          core.ops.op_entity_insert_component(
+            worldResourceId,
+            this.entity,
+            reflected
+          );
+        } catch (err) {
+          throw new Error(
+            `Could not insert component: ${component.typeName()} into entity: ${
+              this.entity
+            }
 ${err}`
-        );
+          );
+        }
       }
 
       return this;
     }
 
-    get(component) {
+    get(constructor) {
       try {
         let res = core.ops.op_entity_get_component(
-          worldResourceId(),
+          worldResourceId,
           this.entity,
-          component.typeName()
+          constructor.typeName
         );
 
-        return new component(res);
+        return new constructor(res);
       } catch (err) {
         throw new Error(
-          `Could not get component: ${component.typeName()} from entity: ${
-            this.entity
-          }
+          `Could not get component: ${constructor.typeName} from entity: ${this.entity}
 ${err}`
         );
       }

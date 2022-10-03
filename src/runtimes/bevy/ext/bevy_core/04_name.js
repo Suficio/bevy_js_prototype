@@ -1,14 +1,17 @@
 "use strict";
 ((window) => {
-  const { ReflectableObject } = window.bevyEcs;
+  const { ReflectableObject, TypeRegistry, worldResourceId } = window.bevyEcs;
   class Name extends ReflectableObject {
+    static typeName = "bevy_core::name::Name";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(struct) {
       super({ hash: 13963134382976710451, name: "" }, struct);
     }
-    static typeName() {
-      return "bevy_core::name::Name";
-    }
   }
+
   if (!window.hasOwnProperty("bevyCore")) {
     window.bevyCore = {};
   }

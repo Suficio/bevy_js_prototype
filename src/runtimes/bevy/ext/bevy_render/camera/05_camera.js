@@ -1,24 +1,36 @@
 "use strict";
 ((window) => {
-  const { ReflectableArray, ReflectableObject } = window.bevyEcs;
+  const { ReflectableArray, ReflectableObject, TypeRegistry, worldResourceId } =
+    window.bevyEcs;
   const { UVec2 } = window.glam.u32.uvec2;
   class Camera extends ReflectableObject {
+    static typeName = "bevy_render::camera::camera::Camera";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(struct) {
       super(null, struct);
     }
-    static typeName() {
-      return "bevy_render::camera::camera::Camera";
-    }
   }
+
   class CameraRenderGraph extends ReflectableArray {
+    static typeName = "bevy_render::camera::camera::CameraRenderGraph";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(seq) {
       super(null, seq);
     }
-    static typeName() {
-      return "bevy_render::camera::camera::CameraRenderGraph";
-    }
   }
+
   class Viewport extends ReflectableObject {
+    static typeName = "bevy_render::camera::camera::Viewport";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(struct) {
       super(
         {
@@ -29,10 +41,8 @@
         struct
       );
     }
-    static typeName() {
-      return "bevy_render::camera::camera::Viewport";
-    }
   }
+
   if (!window.hasOwnProperty("bevyRender")) {
     window.bevyRender = {};
   }

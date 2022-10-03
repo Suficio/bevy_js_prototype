@@ -6,57 +6,71 @@
     ReflectableEnum,
     ReflectableObject,
     ReflectableUnit,
+    TypeRegistry,
+    worldResourceId,
   } = window.bevyEcs;
   const { Color } = window.bevyRender.color;
   const { Size, UiRect } = window.bevyUi.geometry;
   const { Option } = window.core.option;
   const { Vec2 } = window.glam.f32.vec2;
   class AlignContentFlexStart extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::AlignContent";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("FlexStart");
     }
-    static typeName() {
-      return "bevy_ui::ui_node::AlignContent";
-    }
   }
   class AlignContentFlexEnd extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::AlignContent";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("FlexEnd");
     }
-    static typeName() {
-      return "bevy_ui::ui_node::AlignContent";
-    }
   }
   class AlignContentCenter extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::AlignContent";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("Center");
     }
-    static typeName() {
-      return "bevy_ui::ui_node::AlignContent";
-    }
   }
   class AlignContentStretch extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::AlignContent";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("Stretch");
     }
-    static typeName() {
-      return "bevy_ui::ui_node::AlignContent";
-    }
   }
   class AlignContentSpaceBetween extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::AlignContent";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("SpaceBetween");
     }
-    static typeName() {
-      return "bevy_ui::ui_node::AlignContent";
-    }
   }
   class AlignContentSpaceAround extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::AlignContent";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("SpaceAround");
-    }
-    static typeName() {
-      return "bevy_ui::ui_node::AlignContent";
     }
   }
   class AlignContent extends ReflectableEnum {
@@ -66,51 +80,64 @@
     static Stretch = () => new AlignContentStretch();
     static SpaceBetween = () => new AlignContentSpaceBetween();
     static SpaceAround = () => new AlignContentSpaceAround();
+    static typeName = "bevy_ui::ui_node::AlignContent";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(type, value) {
       super(type, value);
     }
-    static typeName() {
-      return "bevy_ui::ui_node::AlignContent";
-    }
   }
+
   class AlignItemsFlexStart extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::AlignItems";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("FlexStart");
     }
-    static typeName() {
-      return "bevy_ui::ui_node::AlignItems";
-    }
   }
   class AlignItemsFlexEnd extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::AlignItems";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("FlexEnd");
     }
-    static typeName() {
-      return "bevy_ui::ui_node::AlignItems";
-    }
   }
   class AlignItemsCenter extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::AlignItems";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("Center");
     }
-    static typeName() {
-      return "bevy_ui::ui_node::AlignItems";
-    }
   }
   class AlignItemsBaseline extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::AlignItems";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("Baseline");
     }
-    static typeName() {
-      return "bevy_ui::ui_node::AlignItems";
-    }
   }
   class AlignItemsStretch extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::AlignItems";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("Stretch");
-    }
-    static typeName() {
-      return "bevy_ui::ui_node::AlignItems";
     }
   }
   class AlignItems extends ReflectableEnum {
@@ -119,59 +146,74 @@
     static Center = () => new AlignItemsCenter();
     static Baseline = () => new AlignItemsBaseline();
     static Stretch = () => new AlignItemsStretch();
+    static typeName = "bevy_ui::ui_node::AlignItems";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(type, value) {
       super(type, value);
     }
-    static typeName() {
-      return "bevy_ui::ui_node::AlignItems";
-    }
   }
+
   class AlignSelfAuto extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::AlignSelf";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("Auto");
     }
-    static typeName() {
-      return "bevy_ui::ui_node::AlignSelf";
-    }
   }
   class AlignSelfFlexStart extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::AlignSelf";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("FlexStart");
     }
-    static typeName() {
-      return "bevy_ui::ui_node::AlignSelf";
-    }
   }
   class AlignSelfFlexEnd extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::AlignSelf";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("FlexEnd");
     }
-    static typeName() {
-      return "bevy_ui::ui_node::AlignSelf";
-    }
   }
   class AlignSelfCenter extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::AlignSelf";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("Center");
     }
-    static typeName() {
-      return "bevy_ui::ui_node::AlignSelf";
-    }
   }
   class AlignSelfBaseline extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::AlignSelf";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("Baseline");
     }
-    static typeName() {
-      return "bevy_ui::ui_node::AlignSelf";
-    }
   }
   class AlignSelfStretch extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::AlignSelf";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("Stretch");
-    }
-    static typeName() {
-      return "bevy_ui::ui_node::AlignSelf";
     }
   }
   class AlignSelf extends ReflectableEnum {
@@ -181,120 +223,153 @@
     static Center = () => new AlignSelfCenter();
     static Baseline = () => new AlignSelfBaseline();
     static Stretch = () => new AlignSelfStretch();
+    static typeName = "bevy_ui::ui_node::AlignSelf";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(type, value) {
       super(type, value);
     }
-    static typeName() {
-      return "bevy_ui::ui_node::AlignSelf";
-    }
   }
+
   class BackgroundColor extends ReflectableArray {
+    static typeName = "bevy_ui::ui_node::BackgroundColor";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(seq) {
       super([Color.Rgba({ red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0 })], seq);
     }
-    static typeName() {
-      return "bevy_ui::ui_node::BackgroundColor";
-    }
   }
+
   class CalculatedSize extends ReflectableObject {
+    static typeName = "bevy_ui::ui_node::CalculatedSize";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(struct) {
       super(null, struct);
     }
-    static typeName() {
-      return "bevy_ui::ui_node::CalculatedSize";
-    }
   }
+
   class DirectionInherit extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::Direction";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("Inherit");
     }
-    static typeName() {
-      return "bevy_ui::ui_node::Direction";
-    }
   }
   class DirectionLeftToRight extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::Direction";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("LeftToRight");
     }
-    static typeName() {
-      return "bevy_ui::ui_node::Direction";
-    }
   }
   class DirectionRightToLeft extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::Direction";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("RightToLeft");
-    }
-    static typeName() {
-      return "bevy_ui::ui_node::Direction";
     }
   }
   class Direction extends ReflectableEnum {
     static Inherit = () => new DirectionInherit();
     static LeftToRight = () => new DirectionLeftToRight();
     static RightToLeft = () => new DirectionRightToLeft();
+    static typeName = "bevy_ui::ui_node::Direction";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(type, value) {
       super(type, value);
     }
-    static typeName() {
-      return "bevy_ui::ui_node::Direction";
-    }
   }
+
   class DisplayFlex extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::Display";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("Flex");
     }
-    static typeName() {
-      return "bevy_ui::ui_node::Display";
-    }
   }
   class DisplayNone extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::Display";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("None");
-    }
-    static typeName() {
-      return "bevy_ui::ui_node::Display";
     }
   }
   class Display extends ReflectableEnum {
     static Flex = () => new DisplayFlex();
     static None = () => new DisplayNone();
+    static typeName = "bevy_ui::ui_node::Display";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(type, value) {
       super(type, value);
     }
-    static typeName() {
-      return "bevy_ui::ui_node::Display";
-    }
   }
+
   class FlexDirectionRow extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::FlexDirection";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("Row");
     }
-    static typeName() {
-      return "bevy_ui::ui_node::FlexDirection";
-    }
   }
   class FlexDirectionColumn extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::FlexDirection";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("Column");
     }
-    static typeName() {
-      return "bevy_ui::ui_node::FlexDirection";
-    }
   }
   class FlexDirectionRowReverse extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::FlexDirection";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("RowReverse");
     }
-    static typeName() {
-      return "bevy_ui::ui_node::FlexDirection";
-    }
   }
   class FlexDirectionColumnReverse extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::FlexDirection";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("ColumnReverse");
-    }
-    static typeName() {
-      return "bevy_ui::ui_node::FlexDirection";
     }
   }
   class FlexDirection extends ReflectableEnum {
@@ -302,94 +377,118 @@
     static Column = () => new FlexDirectionColumn();
     static RowReverse = () => new FlexDirectionRowReverse();
     static ColumnReverse = () => new FlexDirectionColumnReverse();
+    static typeName = "bevy_ui::ui_node::FlexDirection";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(type, value) {
       super(type, value);
     }
-    static typeName() {
-      return "bevy_ui::ui_node::FlexDirection";
-    }
   }
+
   class FlexWrapNoWrap extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::FlexWrap";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("NoWrap");
     }
-    static typeName() {
-      return "bevy_ui::ui_node::FlexWrap";
-    }
   }
   class FlexWrapWrap extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::FlexWrap";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("Wrap");
     }
-    static typeName() {
-      return "bevy_ui::ui_node::FlexWrap";
-    }
   }
   class FlexWrapWrapReverse extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::FlexWrap";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("WrapReverse");
-    }
-    static typeName() {
-      return "bevy_ui::ui_node::FlexWrap";
     }
   }
   class FlexWrap extends ReflectableEnum {
     static NoWrap = () => new FlexWrapNoWrap();
     static Wrap = () => new FlexWrapWrap();
     static WrapReverse = () => new FlexWrapWrapReverse();
+    static typeName = "bevy_ui::ui_node::FlexWrap";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(type, value) {
       super(type, value);
     }
-    static typeName() {
-      return "bevy_ui::ui_node::FlexWrap";
-    }
   }
+
   class JustifyContentFlexStart extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::JustifyContent";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("FlexStart");
     }
-    static typeName() {
-      return "bevy_ui::ui_node::JustifyContent";
-    }
   }
   class JustifyContentFlexEnd extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::JustifyContent";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("FlexEnd");
     }
-    static typeName() {
-      return "bevy_ui::ui_node::JustifyContent";
-    }
   }
   class JustifyContentCenter extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::JustifyContent";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("Center");
     }
-    static typeName() {
-      return "bevy_ui::ui_node::JustifyContent";
-    }
   }
   class JustifyContentSpaceBetween extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::JustifyContent";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("SpaceBetween");
     }
-    static typeName() {
-      return "bevy_ui::ui_node::JustifyContent";
-    }
   }
   class JustifyContentSpaceAround extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::JustifyContent";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("SpaceAround");
     }
-    static typeName() {
-      return "bevy_ui::ui_node::JustifyContent";
-    }
   }
   class JustifyContentSpaceEvenly extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::JustifyContent";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("SpaceEvenly");
-    }
-    static typeName() {
-      return "bevy_ui::ui_node::JustifyContent";
     }
   }
   class JustifyContent extends ReflectableEnum {
@@ -399,74 +498,99 @@
     static SpaceBetween = () => new JustifyContentSpaceBetween();
     static SpaceAround = () => new JustifyContentSpaceAround();
     static SpaceEvenly = () => new JustifyContentSpaceEvenly();
+    static typeName = "bevy_ui::ui_node::JustifyContent";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(type, value) {
       super(type, value);
     }
-    static typeName() {
-      return "bevy_ui::ui_node::JustifyContent";
-    }
   }
+
   class Node extends ReflectableObject {
+    static typeName = "bevy_ui::ui_node::Node";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(struct) {
       super({ size: new Vec2({ x: 0.0, y: 0.0 }) }, struct);
     }
-    static typeName() {
-      return "bevy_ui::ui_node::Node";
-    }
   }
+
   class OverflowVisible extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::Overflow";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("Visible");
     }
-    static typeName() {
-      return "bevy_ui::ui_node::Overflow";
-    }
   }
   class OverflowHidden extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::Overflow";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("Hidden");
-    }
-    static typeName() {
-      return "bevy_ui::ui_node::Overflow";
     }
   }
   class Overflow extends ReflectableEnum {
     static Visible = () => new OverflowVisible();
     static Hidden = () => new OverflowHidden();
+    static typeName = "bevy_ui::ui_node::Overflow";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(type, value) {
       super(type, value);
     }
-    static typeName() {
-      return "bevy_ui::ui_node::Overflow";
-    }
   }
+
   class PositionTypeRelative extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::PositionType";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("Relative");
     }
-    static typeName() {
-      return "bevy_ui::ui_node::PositionType";
-    }
   }
   class PositionTypeAbsolute extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::PositionType";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("Absolute");
-    }
-    static typeName() {
-      return "bevy_ui::ui_node::PositionType";
     }
   }
   class PositionType extends ReflectableEnum {
     static Relative = () => new PositionTypeRelative();
     static Absolute = () => new PositionTypeAbsolute();
+    static typeName = "bevy_ui::ui_node::PositionType";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(type, value) {
       super(type, value);
     }
-    static typeName() {
-      return "bevy_ui::ui_node::PositionType";
-    }
   }
+
   class Style extends ReflectableObject {
+    static typeName = "bevy_ui::ui_node::Style";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(struct) {
       super(
         {
@@ -515,11 +639,14 @@
         struct
       );
     }
-    static typeName() {
-      return "bevy_ui::ui_node::Style";
-    }
   }
+
   class UiImage extends ReflectableArray {
+    static typeName = "bevy_ui::ui_node::UiImage";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(seq) {
       super(
         [
@@ -535,24 +662,26 @@
         seq
       );
     }
-    static typeName() {
-      return "bevy_ui::ui_node::UiImage";
-    }
   }
+
   class ValUndefined extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::Val";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("Undefined");
     }
-    static typeName() {
-      return "bevy_ui::ui_node::Val";
-    }
   }
   class ValAuto extends ReflectableUnit {
+    static typeName = "bevy_ui::ui_node::Val";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("Auto");
-    }
-    static typeName() {
-      return "bevy_ui::ui_node::Val";
     }
   }
   class Val extends ReflectableEnum {
@@ -560,13 +689,16 @@
     static Auto = () => new ValAuto();
     static Px = (value) => new Val("Px", value);
     static Percent = (value) => new Val("Percent", value);
+    static typeName = "bevy_ui::ui_node::Val";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(type, value) {
       super(type, value);
     }
-    static typeName() {
-      return "bevy_ui::ui_node::Val";
-    }
   }
+
   if (!window.hasOwnProperty("bevyUi")) {
     window.bevyUi = {};
   }

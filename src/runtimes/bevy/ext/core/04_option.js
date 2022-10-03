@@ -1,13 +1,17 @@
 "use strict";
 ((window) => {
+  const { worldResourceId, TypeRegistry } = window.bevyEcs;
   class Option {
     static None = () => undefined;
     static Some = (value) => value;
+
+    static typeName = "core::option::Option";
 
     constructor(value) {
       return value;
     }
   }
+
   if (!window.hasOwnProperty("core")) {
     window.core = {};
   }

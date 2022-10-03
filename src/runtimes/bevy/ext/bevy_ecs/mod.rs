@@ -1,7 +1,9 @@
 use crate as bjs;
 use bjs::{include_js_files, op, Extension, OpState};
 
+// mod component;
 mod entity;
+mod type_registry;
 mod world;
 
 pub fn init() -> Extension {
@@ -14,18 +16,20 @@ pub fn init() -> Extension {
             "05_world.js",
         ))
         .ops(vec![
-            op_wait_for_world::decl(),
+            op_wait_for_frame::decl(),
             entity::op_entity_spawn::decl(),
             entity::op_entity_insert_component::decl(),
             entity::op_entity_get_component::decl(),
             world::op_world_get_resource::decl(),
+            type_registry::op_type_registry_get_type_id_with_name::decl(),
         ])
         .build()
 }
 
+/// Waits until world becomes available to read from
 #[op]
-async fn op_wait_for_world(state: &mut OpState, rid: bjs::ResourceId) {
-    bjs::runtimes::unwrap_world_resource(state, rid)
-        .wait_for_world()
+async fn op_wait_for_frame(state: &mut OpState, world_resource_id: u32) {
+    bjs::runtimes::unwrap_world_resource(state, world_resource_id)
+        .wait_for_frame()
         .await
 }

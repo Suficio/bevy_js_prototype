@@ -1,28 +1,35 @@
 "use strict";
 ((window) => {
-  const { ReflectableEnum, ReflectableObject } = window.bevyEcs;
+  const { ReflectableEnum, ReflectableObject, TypeRegistry, worldResourceId } =
+    window.bevyEcs;
   class ColorRgba extends ReflectableObject {
+    static typeName = "bevy_render::color::Color";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(struct) {
       super(null, struct);
-    }
-    static typeName() {
-      return "bevy_render::color::Color";
     }
   }
   class ColorRgbaLinear extends ReflectableObject {
+    static typeName = "bevy_render::color::Color";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(struct) {
       super(null, struct);
-    }
-    static typeName() {
-      return "bevy_render::color::Color";
     }
   }
   class ColorHsla extends ReflectableObject {
+    static typeName = "bevy_render::color::Color";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(struct) {
       super(null, struct);
-    }
-    static typeName() {
-      return "bevy_render::color::Color";
     }
   }
   class Color extends ReflectableEnum {
@@ -77,14 +84,16 @@
     static White = () => Color.Rgb(1.0, 1.0, 1.0);
     static Yellow = () => Color.Rgb(1.0, 1.0, 0.0);
     static YellowGreen = () => Color.Rgb(0.6, 0.8, 0.2);
-
+    static typeName = "bevy_render::color::Color";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(type, value) {
       super(type, value);
     }
-    static typeName() {
-      return "bevy_render::color::Color";
-    }
   }
+
   if (!window.hasOwnProperty("bevyRender")) {
     window.bevyRender = {};
   }

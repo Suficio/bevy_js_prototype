@@ -1,9 +1,45 @@
 "use strict";
 ((window) => {
-  function reflect() {
-    const obj = {};
-    obj[this.typeName()] = this;
-    return obj;
+  const { ops } = window.Deno.core;
+
+  class TypeRegistry {
+    constructor(worldResourceId) {
+      this.worldResourceId = worldResourceId;
+    }
+
+    // TODO: Could eventually return TypeRegistration but there is no need thus far
+    static getTypeIdWithName(worldResourceId, typeName) {
+      try {
+        const buffer = new Uint8Array(8);
+        // Check if type registration exists
+        if (
+          ops.op_type_registry_get_type_id_with_name(
+            worldResourceId,
+            typeName,
+            buffer
+          )
+        ) {
+          return buffer;
+        }
+      } catch (err) {
+        throw new Error(
+          `Could not get type ID for type name: ${typeName}
+${err}`
+        );
+      }
+    }
+
+    getTypeIdWithName(typeName) {
+      return TypeRegistry.getTypeIdWithName(this.worldResourceId, typeName);
+    }
+  }
+
+  class Reflect {
+    static reflect(reflectable) {
+      const obj = {};
+      obj[reflectable.typeName()] = reflectable;
+      return obj;
+    }
   }
 
   class ReflectableObject extends Object {
@@ -12,16 +48,16 @@
       Object.assign(this, defaults, struct);
     }
 
-    static typeName() {
-      throw new Error("ReflectableObject must implement typeName");
+    typeName() {
+      return this.constructor.typeName;
     }
 
-    typeName() {
-      return this.constructor.typeName();
+    typeId() {
+      return this.constructor.typeId;
     }
 
     reflect() {
-      return reflect.call(this);
+      return Reflect.reflect(this);
     }
   }
 
@@ -36,16 +72,16 @@
       Object.assign(this, defaults, seq);
     }
 
-    static typeName() {
-      throw new Error("ReflectableArray must implement typeName");
+    typeName() {
+      return this.constructor.typeName;
     }
 
-    typeName() {
-      return this.constructor.typeName();
+    typeId() {
+      return this.constructor.typeId;
     }
 
     reflect() {
-      return reflect.call(this);
+      return Reflect.reflect(this);
     }
   }
 
@@ -55,16 +91,16 @@
       this[type] = value;
     }
 
-    static typeName() {
-      throw new Error("ReflectableEnum must implement typeName");
+    typeName() {
+      return this.constructor.typeName;
     }
 
-    typeName() {
-      return this.constructor.typeName();
+    typeId() {
+      return this.constructor.typeId;
     }
 
     reflect() {
-      return reflect.call(this);
+      return Reflect.reflect(this);
     }
   }
 
@@ -73,16 +109,16 @@
       super(value);
     }
 
-    static typeName() {
-      throw new Error("ReflectableUnit must implement typeName");
+    typeName() {
+      return this.constructor.typeName;
     }
 
-    typeName() {
-      return this.constructor.typeName();
+    typeId() {
+      return this.constructor.typeId;
     }
 
     reflect() {
-      return reflect.call(this);
+      return Reflect.reflect(this);
     }
   }
 
@@ -102,9 +138,11 @@
   }
   Object.assign(window.bevyEcs, {
     Bundle,
+    Reflect,
     ReflectableObject,
     ReflectableArray,
     ReflectableEnum,
     ReflectableUnit,
+    TypeRegistry,
   });
 })(globalThis);

@@ -22,6 +22,8 @@ mod utils;
 struct GeneratorOptions {
     #[options(help = "print help message")]
     help: bool,
+    #[options(help = "prettify generated files")]
+    prettify: bool,
     #[options(help = "target directory", default = "src/runtimes/bevy/ext")]
     target: PathBuf,
     #[options(
@@ -63,8 +65,6 @@ fn generate(
     opts: &GeneratorOptions,
     type_registry: &TypeRegistryInternal,
 ) -> Result<(), bjs::AnyError> {
-    let mut tasks = Vec::default();
-
     let dependencies = generate_modules(opts, type_registry);
     for (path, module) in dependencies.iter() {
         let mut p = opts.target.join(path);
@@ -82,17 +82,15 @@ fn generate(
         writeln!(&mut f, r#"}})(globalThis)"#).unwrap();
 
         // For good measure, fire off a beautify command
-        tasks.push(
+        if opts.prettify {
             Command::new("npx.cmd")
                 .args(["prettier", "--write"])
                 .arg(p)
                 .spawn()
-                .unwrap(),
-        );
-    }
-
-    for mut task in tasks.drain(..) {
-        task.wait().unwrap();
+                .unwrap()
+                .wait()
+                .unwrap();
+        }
     }
 
     Ok(())

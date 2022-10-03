@@ -1,7 +1,12 @@
 "use strict";
 ((window) => {
-  const { ReflectableObject } = window.bevyEcs;
+  const { ReflectableObject, TypeRegistry, worldResourceId } = window.bevyEcs;
   class ComputedVisibility extends ReflectableObject {
+    static typeName = "bevy_render::view::visibility::ComputedVisibility";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(struct) {
       super(
         {
@@ -11,26 +16,30 @@
         struct
       );
     }
-    static typeName() {
-      return "bevy_render::view::visibility::ComputedVisibility";
-    }
   }
+
   class Visibility extends ReflectableObject {
+    static typeName = "bevy_render::view::visibility::Visibility";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(struct) {
       super({ is_visible: true }, struct);
     }
-    static typeName() {
-      return "bevy_render::view::visibility::Visibility";
-    }
   }
+
   class VisibleEntities extends ReflectableObject {
+    static typeName = "bevy_render::view::visibility::VisibleEntities";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(struct) {
       super(null, struct);
     }
-    static typeName() {
-      return "bevy_render::view::visibility::VisibleEntities";
-    }
   }
+
   if (!window.hasOwnProperty("bevyRender")) {
     window.bevyRender = {};
   }

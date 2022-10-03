@@ -1,8 +1,13 @@
 "use strict";
 ((window) => {
-  const { ReflectableObject } = window.bevyEcs;
+  const { ReflectableObject, TypeRegistry, worldResourceId } = window.bevyEcs;
   const { Vec2 } = window.glam.f32.vec2;
   class Mat2 extends ReflectableObject {
+    static typeName = "glam::f32::sse2::mat2::Mat2";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(struct) {
       super(
         {
@@ -12,10 +17,8 @@
         struct
       );
     }
-    static typeName() {
-      return "glam::f32::sse2::mat2::Mat2";
-    }
   }
+
   if (!window.hasOwnProperty("glam")) {
     window.glam = {};
   }

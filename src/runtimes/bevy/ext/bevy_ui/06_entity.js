@@ -29,9 +29,6 @@
         struct
       );
     }
-    static typeName() {
-      return "bevy_ui::focus::FocusPolicy";
-    }
     withTextAlignment(alignment) {
       this.text.alignment = alignment;
       return this;

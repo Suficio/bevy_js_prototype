@@ -1,77 +1,100 @@
 "use strict";
 ((window) => {
-  const { ReflectableEnum, ReflectableObject, ReflectableUnit } =
-    window.bevyEcs;
+  const {
+    ReflectableEnum,
+    ReflectableObject,
+    ReflectableUnit,
+    TypeRegistry,
+    worldResourceId,
+  } = window.bevyEcs;
   class AnchorCenter extends ReflectableUnit {
+    static typeName = "bevy_sprite::sprite::Anchor";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("Center");
     }
-    static typeName() {
-      return "bevy_sprite::sprite::Anchor";
-    }
   }
   class AnchorBottomLeft extends ReflectableUnit {
+    static typeName = "bevy_sprite::sprite::Anchor";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("BottomLeft");
     }
-    static typeName() {
-      return "bevy_sprite::sprite::Anchor";
-    }
   }
   class AnchorBottomCenter extends ReflectableUnit {
+    static typeName = "bevy_sprite::sprite::Anchor";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("BottomCenter");
     }
-    static typeName() {
-      return "bevy_sprite::sprite::Anchor";
-    }
   }
   class AnchorBottomRight extends ReflectableUnit {
+    static typeName = "bevy_sprite::sprite::Anchor";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("BottomRight");
     }
-    static typeName() {
-      return "bevy_sprite::sprite::Anchor";
-    }
   }
   class AnchorCenterLeft extends ReflectableUnit {
+    static typeName = "bevy_sprite::sprite::Anchor";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("CenterLeft");
     }
-    static typeName() {
-      return "bevy_sprite::sprite::Anchor";
-    }
   }
   class AnchorCenterRight extends ReflectableUnit {
+    static typeName = "bevy_sprite::sprite::Anchor";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("CenterRight");
     }
-    static typeName() {
-      return "bevy_sprite::sprite::Anchor";
-    }
   }
   class AnchorTopLeft extends ReflectableUnit {
+    static typeName = "bevy_sprite::sprite::Anchor";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("TopLeft");
     }
-    static typeName() {
-      return "bevy_sprite::sprite::Anchor";
-    }
   }
   class AnchorTopCenter extends ReflectableUnit {
+    static typeName = "bevy_sprite::sprite::Anchor";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("TopCenter");
     }
-    static typeName() {
-      return "bevy_sprite::sprite::Anchor";
-    }
   }
   class AnchorTopRight extends ReflectableUnit {
+    static typeName = "bevy_sprite::sprite::Anchor";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor() {
       super("TopRight");
-    }
-    static typeName() {
-      return "bevy_sprite::sprite::Anchor";
     }
   }
   class Anchor extends ReflectableEnum {
@@ -85,21 +108,27 @@
     static TopCenter = () => new AnchorTopCenter();
     static TopRight = () => new AnchorTopRight();
     static Custom = (value) => new Anchor("Custom", value);
+    static typeName = "bevy_sprite::sprite::Anchor";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(type, value) {
       super(type, value);
     }
-    static typeName() {
-      return "bevy_sprite::sprite::Anchor";
-    }
   }
+
   class Sprite extends ReflectableObject {
+    static typeName = "bevy_sprite::sprite::Sprite";
+    static typeId = TypeRegistry.getTypeIdWithName(
+      worldResourceId,
+      this.typeName
+    );
     constructor(struct) {
       super(null, struct);
     }
-    static typeName() {
-      return "bevy_sprite::sprite::Sprite";
-    }
   }
+
   if (!window.hasOwnProperty("bevySprite")) {
     window.bevySprite = {};
   }

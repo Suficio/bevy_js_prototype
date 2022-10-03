@@ -26,7 +26,7 @@ const { Vec } = alloc.vec;
 const { Time } = bevyTime.time;
 
 (async () => {
-  await bevyEcs.waitForWorld();
+  await bevyEcs.nextFrame();
 
   /// Track texts by tracking entity ID
   const colorText = World.spawn();
@@ -37,13 +37,13 @@ const { Time } = bevyTime.time;
   while (true) {
     textColorSystem(colorText);
     textUpdateSystem(fpsText);
-    await bevyEcs.waitForWorld();
+    await bevyEcs.nextFrame();
   }
 })();
 
 function setup(colorText, fpsText) {
   // Text with one section
-  colorText.insertBundle(
+  colorText.insert(
     TextBundle.fromSection(
       "hello\nbevy_js!",
       new TextStyle({
@@ -66,7 +66,7 @@ function setup(colorText, fpsText) {
   );
 
   // Text with multiple sections
-  fpsText.insertBundle(
+  fpsText.insert(
     TextBundle.fromSections([
       new TextSection({
         value: "FPS: ",
