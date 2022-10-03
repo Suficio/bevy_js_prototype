@@ -3,12 +3,14 @@
   const { ReflectableArray, ReflectableObject, TypeRegistry, worldResourceId } =
     window.bevyEcs;
   const { UVec2 } = window.glam.u32.uvec2;
+
   class Camera extends ReflectableObject {
     static typeName = "bevy_render::camera::camera::Camera";
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
     );
+
     constructor(struct) {
       super(null, struct);
     }
@@ -20,6 +22,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor(seq) {
       super(null, seq);
     }
@@ -31,6 +34,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor(struct) {
       super(
         {

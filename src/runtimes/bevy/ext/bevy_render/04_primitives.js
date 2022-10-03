@@ -1,12 +1,14 @@
 "use strict";
 ((window) => {
   const { ReflectableObject, TypeRegistry, worldResourceId } = window.bevyEcs;
+
   class Aabb extends ReflectableObject {
     static typeName = "bevy_render::primitives::Aabb";
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
     );
+
     constructor(struct) {
       super(null, struct);
     }
@@ -18,6 +20,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor(struct) {
       super(null, struct);
     }
@@ -29,6 +32,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor(struct) {
       super(null, struct);
     }

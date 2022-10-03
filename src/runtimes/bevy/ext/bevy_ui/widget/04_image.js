@@ -2,23 +2,27 @@
 ((window) => {
   const { ReflectableEnum, ReflectableUnit, TypeRegistry, worldResourceId } =
     window.bevyEcs;
+
   class ImageModeKeepAspect extends ReflectableUnit {
     static typeName = "bevy_ui::widget::image::ImageMode";
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
     );
+
     constructor() {
       super("KeepAspect");
     }
   }
   class ImageMode extends ReflectableEnum {
     static KeepAspect = () => new ImageModeKeepAspect();
+
     static typeName = "bevy_ui::widget::image::ImageMode";
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
     );
+
     constructor(type, value) {
       super(type, value);
     }

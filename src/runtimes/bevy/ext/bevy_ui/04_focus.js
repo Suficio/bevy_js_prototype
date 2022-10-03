@@ -2,12 +2,14 @@
 ((window) => {
   const { ReflectableEnum, ReflectableUnit, TypeRegistry, worldResourceId } =
     window.bevyEcs;
+
   class FocusPolicyBlock extends ReflectableUnit {
     static typeName = "bevy_ui::focus::FocusPolicy";
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
     );
+
     constructor() {
       super("Block");
     }
@@ -18,6 +20,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor() {
       super("Pass");
     }
@@ -25,11 +28,13 @@
   class FocusPolicy extends ReflectableEnum {
     static Block = () => new FocusPolicyBlock();
     static Pass = () => new FocusPolicyPass();
+
     static typeName = "bevy_ui::focus::FocusPolicy";
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
     );
+
     constructor(type, value) {
       super(type, value);
     }
@@ -41,6 +46,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor() {
       super("Clicked");
     }
@@ -51,6 +57,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor() {
       super("Hovered");
     }
@@ -61,6 +68,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor() {
       super("None");
     }
@@ -69,11 +77,13 @@
     static Clicked = () => new InteractionClicked();
     static Hovered = () => new InteractionHovered();
     static None = () => new InteractionNone();
+
     static typeName = "bevy_ui::focus::Interaction";
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
     );
+
     constructor(type, value) {
       super(type, value);
     }

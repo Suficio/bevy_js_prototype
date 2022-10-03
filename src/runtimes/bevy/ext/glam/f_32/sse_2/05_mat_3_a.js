@@ -2,6 +2,7 @@
 ((window) => {
   const { ReflectableArray, TypeRegistry, worldResourceId } = window.bevyEcs;
   const { Vec3A } = window.glam.f32.sse2.vec3A;
+
   class Mat3A extends ReflectableArray {
     static Zero = () =>
       new Mat3A({
@@ -21,14 +22,17 @@
         y_axis: Vec3A.Nan(),
         z_axis: Vec3A.Nan(),
       });
+
     static typeName = "glam::f32::sse2::mat3a::Mat3A";
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
     );
+
     constructor(seq) {
       super([1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0], seq);
     }
+
     get x_axis() {
       return new Vec3A(this.slice(0, 3));
     }

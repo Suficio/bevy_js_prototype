@@ -1,6 +1,5 @@
 "use strict";
 ((window) => {
-  const { worldResourceId, TypeRegistry } = window.bevyEcs;
   class Option {
     static None = () => undefined;
     static Some = (value) => value;

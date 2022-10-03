@@ -4,12 +4,14 @@
   const { OrthographicProjection, ScalingMode, WindowOrigin } =
     window.bevyRender.camera.projection;
   const { Color } = window.bevyRender.color;
+
   class AmbientLight extends ReflectableObject {
     static typeName = "bevy_pbr::light::AmbientLight";
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
     );
+
     constructor(struct) {
       super(null, struct);
     }
@@ -21,6 +23,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor(struct) {
       super(
         {
@@ -52,6 +55,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor(struct) {
       super(null, struct);
     }
@@ -63,6 +67,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor(struct) {
       super(
         {
@@ -85,6 +90,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor(struct) {
       super(null, struct);
     }
@@ -96,6 +102,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor(struct) {
       super(
         {

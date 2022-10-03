@@ -7,12 +7,14 @@
     TypeRegistry,
     worldResourceId,
   } = window.bevyEcs;
+
   class OrthographicProjection extends ReflectableObject {
     static typeName = "bevy_render::camera::projection::OrthographicProjection";
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
     );
+
     constructor(struct) {
       super(
         {
@@ -37,6 +39,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor(struct) {
       super(
         { fov: 0.7853982, aspect_ratio: 1.0, near: 0.1, far: 1000.0 },
@@ -48,11 +51,13 @@
   class Projection extends ReflectableEnum {
     static Perspective = (value) => new Projection("Perspective", value);
     static Orthographic = (value) => new Projection("Orthographic", value);
+
     static typeName = "bevy_render::camera::projection::Projection";
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
     );
+
     constructor(type, value) {
       super(type, value);
     }
@@ -64,6 +69,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor() {
       super("None");
     }
@@ -74,6 +80,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor() {
       super("WindowSize");
     }
@@ -84,6 +91,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor(struct) {
       super(null, struct);
     }
@@ -96,11 +104,13 @@
     static FixedVertical = (value) => new ScalingMode("FixedVertical", value);
     static FixedHorizontal = (value) =>
       new ScalingMode("FixedHorizontal", value);
+
     static typeName = "bevy_render::camera::projection::ScalingMode";
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
     );
+
     constructor(type, value) {
       super(type, value);
     }
@@ -112,6 +122,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor() {
       super("Center");
     }
@@ -122,6 +133,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor() {
       super("BottomLeft");
     }
@@ -129,11 +141,13 @@
   class WindowOrigin extends ReflectableEnum {
     static Center = () => new WindowOriginCenter();
     static BottomLeft = () => new WindowOriginBottomLeft();
+
     static typeName = "bevy_render::camera::projection::WindowOrigin";
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
     );
+
     constructor(type, value) {
       super(type, value);
     }

@@ -1,12 +1,14 @@
 "use strict";
 ((window) => {
   const { ReflectableObject, TypeRegistry, worldResourceId } = window.bevyEcs;
+
   class IVec3 extends ReflectableObject {
     static typeName = "glam::i32::ivec3::IVec3";
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
     );
+
     constructor(struct) {
       super({ x: 0, y: 0, z: 0 }, struct);
     }

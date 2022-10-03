@@ -56,8 +56,10 @@ impl Module {
             writeln!(f, "}} = window.{file};").unwrap();
         }
 
+        write!(f, "\n").unwrap();
+
         for def in self.types.values() {
-            writeln!(f, "{def}").unwrap();
+            writeln!(f, "{def}\n").unwrap();
         }
 
         let path = self.path.split('.').collect::<Vec<&str>>();

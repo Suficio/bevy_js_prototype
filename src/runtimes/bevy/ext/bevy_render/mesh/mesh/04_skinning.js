@@ -1,12 +1,14 @@
 "use strict";
 ((window) => {
   const { ReflectableObject, TypeRegistry, worldResourceId } = window.bevyEcs;
+
   class SkinnedMesh extends ReflectableObject {
     static typeName = "bevy_render::mesh::mesh::skinning::SkinnedMesh";
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
     );
+
     constructor(struct) {
       super(null, struct);
     }

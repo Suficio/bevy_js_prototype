@@ -3,6 +3,7 @@
   const { ReflectableArray, TypeRegistry, worldResourceId } = window.bevyEcs;
   const { Mat3A } = window.glam.f32.sse2.mat3A;
   const { Vec3A } = window.glam.f32.sse2.vec3A;
+
   class Affine3A extends ReflectableArray {
     static Zero = () =>
       new Affine3A({
@@ -19,14 +20,17 @@
         matrix3: Mat3A.Nan(),
         translation: Vec3A.Nan(),
       });
+
     static typeName = "glam::f32::affine3a::Affine3A";
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
     );
+
     constructor(seq) {
       super([1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0], seq);
     }
+
     get matrix3() {
       return new Mat3A(this.slice(0, 9));
     }

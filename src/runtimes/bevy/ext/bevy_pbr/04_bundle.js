@@ -1,12 +1,14 @@
 "use strict";
 ((window) => {
   const { ReflectableObject, TypeRegistry, worldResourceId } = window.bevyEcs;
+
   class CubemapVisibleEntities extends ReflectableObject {
     static typeName = "bevy_pbr::bundle::CubemapVisibleEntities";
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
     );
+
     constructor(struct) {
       super(null, struct);
     }

@@ -1,12 +1,14 @@
 "use strict";
 ((window) => {
   const { ReflectableArray, TypeRegistry, worldResourceId } = window.bevyEcs;
+
   class Parent extends ReflectableArray {
     static typeName = "bevy_hierarchy::components::parent::Parent";
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
     );
+
     constructor(seq) {
       super(null, seq);
     }

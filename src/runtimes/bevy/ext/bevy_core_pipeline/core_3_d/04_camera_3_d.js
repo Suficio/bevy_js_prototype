@@ -7,12 +7,14 @@
     TypeRegistry,
     worldResourceId,
   } = window.bevyEcs;
+
   class Camera3d extends ReflectableObject {
     static typeName = "bevy_core_pipeline::core_3d::camera_3d::Camera3d";
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
     );
+
     constructor(struct) {
       super(null, struct);
     }
@@ -25,6 +27,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor() {
       super("Load");
     }
@@ -32,12 +35,14 @@
   class Camera3dDepthLoadOp extends ReflectableEnum {
     static Clear = (value) => new Camera3dDepthLoadOp("Clear", value);
     static Load = () => new Camera3dDepthLoadOpLoad();
+
     static typeName =
       "bevy_core_pipeline::core_3d::camera_3d::Camera3dDepthLoadOp";
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
     );
+
     constructor(type, value) {
       super(type, value);
     }

@@ -2,12 +2,14 @@
 ((window) => {
   const { ReflectableEnum, ReflectableObject, TypeRegistry, worldResourceId } =
     window.bevyEcs;
+
   class ColorRgba extends ReflectableObject {
     static typeName = "bevy_render::color::Color";
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
     );
+
     constructor(struct) {
       super(null, struct);
     }
@@ -18,6 +20,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor(struct) {
       super(null, struct);
     }
@@ -28,6 +31,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor(struct) {
       super(null, struct);
     }
@@ -84,11 +88,13 @@
     static White = () => Color.Rgb(1.0, 1.0, 1.0);
     static Yellow = () => Color.Rgb(1.0, 1.0, 0.0);
     static YellowGreen = () => Color.Rgb(0.6, 0.8, 0.2);
+
     static typeName = "bevy_render::color::Color";
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
     );
+
     constructor(type, value) {
       super(type, value);
     }

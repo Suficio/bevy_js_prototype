@@ -1,12 +1,14 @@
 "use strict";
 ((window) => {
   const { ReflectableObject, TypeRegistry, worldResourceId } = window.bevyEcs;
+
   class Stopwatch extends ReflectableObject {
     static typeName = "bevy_time::stopwatch::Stopwatch";
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
     );
+
     constructor(struct) {
       super({ elapsed: { secs: 0, nanos: 0 }, paused: false }, struct);
     }

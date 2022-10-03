@@ -1,12 +1,14 @@
 "use strict";
 ((window) => {
   const { ReflectableObject, TypeRegistry, worldResourceId } = window.bevyEcs;
+
   class ComputedVisibility extends ReflectableObject {
     static typeName = "bevy_render::view::visibility::ComputedVisibility";
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
     );
+
     constructor(struct) {
       super(
         {
@@ -24,6 +26,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor(struct) {
       super({ is_visible: true }, struct);
     }
@@ -35,6 +38,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor(struct) {
       super(null, struct);
     }

@@ -2,6 +2,7 @@
 ((window) => {
   const { ReflectableArray, TypeRegistry, worldResourceId } = window.bevyEcs;
   const { Affine3A } = window.glam.f32.affine3A;
+
   class GlobalTransform extends ReflectableArray {
     static typeName =
       "bevy_transform::components::global_transform::GlobalTransform";
@@ -9,6 +10,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor(seq) {
       super([Affine3A.Identity()], seq);
     }

@@ -2,12 +2,14 @@
 ((window) => {
   const { ReflectableObject, TypeRegistry, worldResourceId } = window.bevyEcs;
   const { Stopwatch } = window.bevyTime.stopwatch;
+
   class Timer extends ReflectableObject {
     static typeName = "bevy_time::timer::Timer";
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
     );
+
     constructor(struct) {
       super(
         {

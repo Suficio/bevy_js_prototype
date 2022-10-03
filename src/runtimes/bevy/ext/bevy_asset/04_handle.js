@@ -1,6 +1,7 @@
 "use strict";
 ((window) => {
-  const { ReflectableObject, TypeRegistry, worldResourceId } = window.bevyEcs;
+  const { ReflectableObject } = window.bevyEcs;
+
   class Handle extends ReflectableObject {
     static typeName = "bevy_asset::handle::Handle";
 

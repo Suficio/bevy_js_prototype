@@ -226,6 +226,8 @@ fn generate_type_info(o: &mut String, type_name: &str, module: &mut Module) {
         r#"static typeId = TypeRegistry.getTypeIdWithName(worldResourceId, this.typeName);"#,
     )
     .unwrap();
+
+    write!(o, "\n").unwrap();
 }
 
 fn generate_array_type(
@@ -381,6 +383,8 @@ pub fn generate_type(
                     }
                 }
             }
+
+            write!(&mut o, "\n").unwrap();
 
             generate_type_info(&mut o, &type_name, module);
             writeln!(

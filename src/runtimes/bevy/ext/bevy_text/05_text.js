@@ -8,12 +8,14 @@
     TypeRegistry,
     worldResourceId,
   } = window.bevyEcs;
+
   class HorizontalAlignLeft extends ReflectableUnit {
     static typeName = "bevy_text::text::HorizontalAlign";
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
     );
+
     constructor() {
       super("Left");
     }
@@ -24,6 +26,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor() {
       super("Center");
     }
@@ -34,6 +37,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor() {
       super("Right");
     }
@@ -42,11 +46,13 @@
     static Left = () => new HorizontalAlignLeft();
     static Center = () => new HorizontalAlignCenter();
     static Right = () => new HorizontalAlignRight();
+
     static typeName = "bevy_text::text::HorizontalAlign";
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
     );
+
     constructor(type, value) {
       super(type, value);
     }
@@ -56,11 +62,13 @@
     static fromSection = (value, style) =>
       new Text({ sections: [new TextSection({ value, style })] });
     static fromSections = (sections) => new Text({ sections });
+
     static typeName = "bevy_text::text::Text";
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
     );
+
     constructor(struct) {
       super(
         {
@@ -73,6 +81,7 @@
         struct
       );
     }
+
     withAlignment(alignment) {
       this.alignment = alignment;
       return this;
@@ -125,11 +134,13 @@
         vertical: VerticalAlign.Bottom(),
         horizontal: HorizontalAlign.Right(),
       });
+
     static typeName = "bevy_text::text::TextAlignment";
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
     );
+
     constructor(struct) {
       super(null, struct);
     }
@@ -137,11 +148,13 @@
 
   class TextSection extends ReflectableObject {
     static fromStyle = (style) => new TextSection({ style });
+
     static typeName = "bevy_text::text::TextSection";
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
     );
+
     constructor(struct) {
       super({ value: "", style: new TextStyle() }, struct);
     }
@@ -153,6 +166,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor(struct) {
       super(null, struct);
     }
@@ -164,6 +178,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor() {
       super("Top");
     }
@@ -174,6 +189,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor() {
       super("Center");
     }
@@ -184,6 +200,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor() {
       super("Bottom");
     }
@@ -192,11 +209,13 @@
     static Top = () => new VerticalAlignTop();
     static Center = () => new VerticalAlignCenter();
     static Bottom = () => new VerticalAlignBottom();
+
     static typeName = "bevy_text::text::VerticalAlign";
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
     );
+
     constructor(type, value) {
       super(type, value);
     }

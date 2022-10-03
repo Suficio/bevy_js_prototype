@@ -7,12 +7,14 @@
     TypeRegistry,
     worldResourceId,
   } = window.bevyEcs;
+
   class AnchorCenter extends ReflectableUnit {
     static typeName = "bevy_sprite::sprite::Anchor";
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
     );
+
     constructor() {
       super("Center");
     }
@@ -23,6 +25,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor() {
       super("BottomLeft");
     }
@@ -33,6 +36,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor() {
       super("BottomCenter");
     }
@@ -43,6 +47,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor() {
       super("BottomRight");
     }
@@ -53,6 +58,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor() {
       super("CenterLeft");
     }
@@ -63,6 +69,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor() {
       super("CenterRight");
     }
@@ -73,6 +80,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor() {
       super("TopLeft");
     }
@@ -83,6 +91,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor() {
       super("TopCenter");
     }
@@ -93,6 +102,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor() {
       super("TopRight");
     }
@@ -108,11 +118,13 @@
     static TopCenter = () => new AnchorTopCenter();
     static TopRight = () => new AnchorTopRight();
     static Custom = (value) => new Anchor("Custom", value);
+
     static typeName = "bevy_sprite::sprite::Anchor";
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
     );
+
     constructor(type, value) {
       super(type, value);
     }
@@ -124,6 +136,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor(struct) {
       super(null, struct);
     }

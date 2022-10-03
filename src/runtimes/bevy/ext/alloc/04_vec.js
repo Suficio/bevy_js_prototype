@@ -1,6 +1,7 @@
 "use strict";
 ((window) => {
-  const { ReflectableArray, TypeRegistry, worldResourceId } = window.bevyEcs;
+  const { ReflectableArray } = window.bevyEcs;
+
   class Vec extends ReflectableArray {
     static typeName = "alloc::vec::Vec";
 

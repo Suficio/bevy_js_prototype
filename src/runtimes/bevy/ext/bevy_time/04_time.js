@@ -9,9 +9,11 @@
       worldResourceId,
       this.typeName
     );
+
     constructor(struct) {
       super(null, struct);
     }
+
     static delta() {
       return ops.op_time_delta();
     }
@@ -25,6 +27,7 @@
       return ops.op_time_since_startup();
     }
   }
+
   if (!window.hasOwnProperty("bevyTime")) {
     window.bevyTime = {};
   }

@@ -2,12 +2,14 @@
 ((window) => {
   const { ReflectableObject, TypeRegistry, worldResourceId } = window.bevyEcs;
   const { Vec2 } = window.glam.f32.vec2;
+
   class Mat2 extends ReflectableObject {
     static typeName = "glam::f32::sse2::mat2::Mat2";
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
     );
+
     constructor(struct) {
       super(
         {

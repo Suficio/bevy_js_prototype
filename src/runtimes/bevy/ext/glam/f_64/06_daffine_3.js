@@ -3,12 +3,14 @@
   const { ReflectableObject, TypeRegistry, worldResourceId } = window.bevyEcs;
   const { DMat3 } = window.glam.f64.dmat3;
   const { DVec3 } = window.glam.f64.dvec3;
+
   class DAffine3 extends ReflectableObject {
     static typeName = "glam::f64::daffine3::DAffine3";
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
     );
+
     constructor(struct) {
       super(
         {
