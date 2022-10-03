@@ -17,7 +17,7 @@ inspector = ["tide", "tide-websockets"]
 generator = ["convert_case", "syn", "gumdrop"]
 
 [dependencies]
-# TODO(#6120) Detached non-Send tasks don't run
+# TODO(https://github.com/bevyengine/bevy/pull/6121) Detached non-Send tasks don't run
 bevy = { git = "https://github.com/bevyengine/bevy.git", rev = "92c90a9bade54ecc5b26cad72d30683d7aebd654" }
 deno_core = { git = "https://github.com/Suficio/deno.git", branch = "initialize-resource-table" }
 

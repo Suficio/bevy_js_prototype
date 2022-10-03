@@ -8,7 +8,7 @@
       this.typeName
     );
     constructor(struct) {
-      super({ hash: 2211555877726730205, name: "" }, struct);
+      super({ hash: 13963134382976710451, name: "" }, struct);
     }
   }
 

@@ -17,7 +17,6 @@
       super(null, seq);
     }
   }
-
   class ClearColorConfigDefault extends ReflectableUnit {
     static typeName = "bevy_core_pipeline::clear_color::ClearColorConfig";
     static typeId = TypeRegistry.getTypeIdWithName(
