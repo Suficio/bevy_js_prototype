@@ -19,7 +19,7 @@ generator = ["convert_case", "syn", "gumdrop"]
 [dependencies]
 # TODO(#6120) Detached non-Send tasks don't run
 bevy = { git = "https://github.com/bevyengine/bevy.git", rev = "92c90a9bade54ecc5b26cad72d30683d7aebd654" }
-deno_core = { path = "../deno/core" }
+deno_core = { git = "https://github.com/Suficio/deno.git", branch = "initialize-resource-table" }
 
 serde_json = "1.0.85"
 serde_path_to_error = "0.1.8"
