@@ -32,9 +32,7 @@ ${err}`
           );
         }
       } else {
-        Deno.core.print(JSON.stringify(maybeComponent) + "\n");
         let reflected = reflect(maybeComponent);
-        Deno.core.print(JSON.stringify(reflected) + "\n");
 
         try {
           core.ops.op_entity_insert_component(
@@ -55,20 +53,18 @@ ${err}`
       return this;
     }
 
-    get(component) {
+    get(constructor) {
       try {
         let res = core.ops.op_entity_get_component(
           worldResourceId,
           this.entity,
-          component.typeName()
+          constructor.typeName
         );
 
-        return new component(res);
+        return new constructor(res);
       } catch (err) {
         throw new Error(
-          `Could not get component: ${component.typeName()} from entity: ${
-            this.entity
-          }
+          `Could not get component: ${constructor.typeName} from entity: ${this.entity}
 ${err}`
         );
       }

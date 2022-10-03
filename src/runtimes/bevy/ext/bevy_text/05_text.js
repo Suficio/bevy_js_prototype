@@ -143,7 +143,7 @@
       this.typeName
     );
     constructor(struct) {
-      super(null, struct);
+      super({ value: "", style: new TextStyle() }, struct);
     }
   }
 
