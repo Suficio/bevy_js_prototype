@@ -2,7 +2,7 @@
 
 ((window) => {
   const { core } = window.Deno;
-  const { reflect, worldResourceId, Bundle } = window.bevyEcs;
+  const { reflect, worldResourceId, Bundle } = window.Bevy.ecs;
 
   class Entity {
     constructor(eEntity) {
@@ -71,5 +71,5 @@ ${err}`
     }
   }
 
-  Object.assign(window.bevyEcs, { Entity });
+  Object.assign(window.Bevy.ecs, { Entity });
 })(globalThis);

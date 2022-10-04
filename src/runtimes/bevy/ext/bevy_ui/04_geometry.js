@@ -1,6 +1,6 @@
 "use strict";
 ((window) => {
-  const { ReflectableObject, TypeRegistry, worldResourceId } = window.bevyEcs;
+  const { ReflectableObject, TypeRegistry, worldResourceId } = window.Bevy.ecs;
 
   class Size extends ReflectableObject {
     static typeName = "bevy_ui::geometry::Size";
@@ -26,11 +26,14 @@
     }
   }
 
-  if (!window.hasOwnProperty("bevyUi")) {
-    window.bevyUi = {};
+  if (!window.hasOwnProperty("Bevy")) {
+    window.Bevy = {};
   }
-  if (!window.bevyUi.hasOwnProperty("geometry")) {
-    window.bevyUi.geometry = {};
+  if (!window.Bevy.hasOwnProperty("ui")) {
+    window.Bevy.ui = {};
   }
-  Object.assign(window.bevyUi.geometry, { Size, UiRect });
+  if (!window.Bevy.ui.hasOwnProperty("geometry")) {
+    window.Bevy.ui.geometry = {};
+  }
+  Object.assign(window.Bevy.ui.geometry, { Size, UiRect });
 })(globalThis);

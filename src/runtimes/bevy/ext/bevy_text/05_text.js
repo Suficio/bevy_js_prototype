@@ -7,7 +7,7 @@
     ReflectableUnit,
     TypeRegistry,
     worldResourceId,
-  } = window.bevyEcs;
+  } = window.Bevy.ecs;
 
   class HorizontalAlignLeft extends ReflectableUnit {
     static typeName = "bevy_text::text::HorizontalAlign";
@@ -221,13 +221,16 @@
     }
   }
 
-  if (!window.hasOwnProperty("bevyText")) {
-    window.bevyText = {};
+  if (!window.hasOwnProperty("Bevy")) {
+    window.Bevy = {};
   }
-  if (!window.bevyText.hasOwnProperty("text")) {
-    window.bevyText.text = {};
+  if (!window.Bevy.hasOwnProperty("text")) {
+    window.Bevy.text = {};
   }
-  Object.assign(window.bevyText.text, {
+  if (!window.Bevy.text.hasOwnProperty("text")) {
+    window.Bevy.text.text = {};
+  }
+  Object.assign(window.Bevy.text.text, {
     HorizontalAlign,
     Text,
     TextAlignment,

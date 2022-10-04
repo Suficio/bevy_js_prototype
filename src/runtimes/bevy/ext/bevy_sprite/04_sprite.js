@@ -6,7 +6,7 @@
     ReflectableUnit,
     TypeRegistry,
     worldResourceId,
-  } = window.bevyEcs;
+  } = window.Bevy.ecs;
 
   class AnchorCenter extends ReflectableUnit {
     static typeName = "bevy_sprite::sprite::Anchor";
@@ -142,11 +142,14 @@
     }
   }
 
-  if (!window.hasOwnProperty("bevySprite")) {
-    window.bevySprite = {};
+  if (!window.hasOwnProperty("Bevy")) {
+    window.Bevy = {};
   }
-  if (!window.bevySprite.hasOwnProperty("sprite")) {
-    window.bevySprite.sprite = {};
+  if (!window.Bevy.hasOwnProperty("sprite")) {
+    window.Bevy.sprite = {};
   }
-  Object.assign(window.bevySprite.sprite, { Anchor, Sprite });
+  if (!window.Bevy.sprite.hasOwnProperty("sprite")) {
+    window.Bevy.sprite.sprite = {};
+  }
+  Object.assign(window.Bevy.sprite.sprite, { Anchor, Sprite });
 })(globalThis);

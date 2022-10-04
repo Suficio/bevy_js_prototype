@@ -1,6 +1,6 @@
 "use strict";
 ((window) => {
-  const { ReflectableObject, TypeRegistry, worldResourceId } = window.bevyEcs;
+  const { ReflectableObject, TypeRegistry, worldResourceId } = window.Bevy.ecs;
 
   class AnimationPlayer extends ReflectableObject {
     static typeName = "bevy_animation::AnimationPlayer";
@@ -14,8 +14,11 @@
     }
   }
 
-  if (!window.hasOwnProperty("bevyAnimation")) {
-    window.bevyAnimation = {};
+  if (!window.hasOwnProperty("Bevy")) {
+    window.Bevy = {};
   }
-  Object.assign(window.bevyAnimation, { AnimationPlayer });
+  if (!window.Bevy.hasOwnProperty("animation")) {
+    window.Bevy.animation = {};
+  }
+  Object.assign(window.Bevy.animation, { AnimationPlayer });
 })(globalThis);

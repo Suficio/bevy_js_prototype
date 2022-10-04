@@ -1,6 +1,6 @@
 "use strict";
 ((window) => {
-  const { ReflectableObject, TypeRegistry, worldResourceId } = window.bevyEcs;
+  const { ReflectableObject, TypeRegistry, worldResourceId } = window.Bevy.ecs;
   const { Vec3 } = window.glam.f32.vec3;
 
   class Transform extends ReflectableObject {
@@ -22,14 +22,17 @@
     }
   }
 
-  if (!window.hasOwnProperty("bevyTransform")) {
-    window.bevyTransform = {};
+  if (!window.hasOwnProperty("Bevy")) {
+    window.Bevy = {};
   }
-  if (!window.bevyTransform.hasOwnProperty("components")) {
-    window.bevyTransform.components = {};
+  if (!window.Bevy.hasOwnProperty("transform")) {
+    window.Bevy.transform = {};
   }
-  if (!window.bevyTransform.components.hasOwnProperty("transform")) {
-    window.bevyTransform.components.transform = {};
+  if (!window.Bevy.transform.hasOwnProperty("components")) {
+    window.Bevy.transform.components = {};
   }
-  Object.assign(window.bevyTransform.components.transform, { Transform });
+  if (!window.Bevy.transform.components.hasOwnProperty("transform")) {
+    window.Bevy.transform.components.transform = {};
+  }
+  Object.assign(window.Bevy.transform.components.transform, { Transform });
 })(globalThis);

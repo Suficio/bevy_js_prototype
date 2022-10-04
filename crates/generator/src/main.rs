@@ -1,7 +1,8 @@
 //! Generates JavaScript definition files for ECS Entities from Bevy TypeRegistry
 
-use bevy::{prelude::*, reflect::TypeRegistryInternal, utils::hashbrown::HashMap};
+use bevy::{prelude::*, reflect::TypeRegistryInternal};
 use gumdrop::Options;
+use std::collections::HashMap;
 use std::{
     fs::{self, File},
     io::Write as _,
@@ -58,10 +59,7 @@ fn generate_modules(
     evaluate_dependency_order(modules, opts.level)
 }
 
-fn generate(
-    opts: &GeneratorOptions,
-    type_registry: &TypeRegistryInternal,
-) -> Result<(), bjs::AnyError> {
+fn generate(opts: &GeneratorOptions, type_registry: &TypeRegistryInternal) {
     let mut tasks = Vec::default();
 
     let dependencies = generate_modules(opts, type_registry);
@@ -71,7 +69,7 @@ fn generate(
         let p = Path::new(&p);
 
         fs::create_dir_all(p.parent().unwrap()).unwrap();
-        let mut f = File::create(p)?;
+        let mut f = File::create(p).unwrap();
 
         writeln!(&mut f, r#""use strict";"#).unwrap();
         writeln!(&mut f, r#"((window) => {{"#).unwrap();
@@ -95,11 +93,9 @@ fn generate(
     for mut task in tasks.drain(..) {
         task.wait().unwrap();
     }
-
-    Ok(())
 }
 
-fn main() -> Result<(), bjs::AnyError> {
+fn main() {
     let opts = GeneratorOptions::parse_args_default_or_exit();
 
     let mut app = App::new();
@@ -111,5 +107,5 @@ fn main() -> Result<(), bjs::AnyError> {
         .expect("Type registry not registered by Bevy")
         .read();
 
-    generate(&opts, &type_registry)
+    generate(&opts, &type_registry);
 }

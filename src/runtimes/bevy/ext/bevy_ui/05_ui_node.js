@@ -1,6 +1,6 @@
 "use strict";
 ((window) => {
-  const { Handle } = window.bevyAsset.handle;
+  const { Handle } = window.Bevy.asset.handle;
   const {
     ReflectableArray,
     ReflectableEnum,
@@ -8,9 +8,9 @@
     ReflectableUnit,
     TypeRegistry,
     worldResourceId,
-  } = window.bevyEcs;
-  const { Color } = window.bevyRender.color;
-  const { Size, UiRect } = window.bevyUi.geometry;
+  } = window.Bevy.ecs;
+  const { Color } = window.Bevy.render.color;
+  const { Size, UiRect } = window.Bevy.ui.geometry;
   const { Option } = window.core.option;
   const { Vec2 } = window.glam.f32.vec2;
 
@@ -768,13 +768,16 @@
     }
   }
 
-  if (!window.hasOwnProperty("bevyUi")) {
-    window.bevyUi = {};
+  if (!window.hasOwnProperty("Bevy")) {
+    window.Bevy = {};
   }
-  if (!window.bevyUi.hasOwnProperty("uiNode")) {
-    window.bevyUi.uiNode = {};
+  if (!window.Bevy.hasOwnProperty("ui")) {
+    window.Bevy.ui = {};
   }
-  Object.assign(window.bevyUi.uiNode, {
+  if (!window.Bevy.ui.hasOwnProperty("uiNode")) {
+    window.Bevy.ui.uiNode = {};
+  }
+  Object.assign(window.Bevy.ui.uiNode, {
     AlignContent,
     AlignItems,
     AlignSelf,

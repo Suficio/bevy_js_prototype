@@ -1,6 +1,6 @@
 "use strict";
 ((window) => {
-  const { ReflectableObject, TypeRegistry, worldResourceId } = window.bevyEcs;
+  const { ReflectableObject, TypeRegistry, worldResourceId } = window.Bevy.ecs;
 
   class Name extends ReflectableObject {
     static typeName = "bevy_core::name::Name";
@@ -14,11 +14,14 @@
     }
   }
 
-  if (!window.hasOwnProperty("bevyCore")) {
-    window.bevyCore = {};
+  if (!window.hasOwnProperty("Bevy")) {
+    window.Bevy = {};
   }
-  if (!window.bevyCore.hasOwnProperty("name")) {
-    window.bevyCore.name = {};
+  if (!window.Bevy.hasOwnProperty("core")) {
+    window.Bevy.core = {};
   }
-  Object.assign(window.bevyCore.name, { Name });
+  if (!window.Bevy.core.hasOwnProperty("name")) {
+    window.Bevy.core.name = {};
+  }
+  Object.assign(window.Bevy.core.name, { Name });
 })(globalThis);

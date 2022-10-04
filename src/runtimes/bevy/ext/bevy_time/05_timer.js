@@ -1,7 +1,7 @@
 "use strict";
 ((window) => {
-  const { ReflectableObject, TypeRegistry, worldResourceId } = window.bevyEcs;
-  const { Stopwatch } = window.bevyTime.stopwatch;
+  const { ReflectableObject, TypeRegistry, worldResourceId } = window.Bevy.ecs;
+  const { Stopwatch } = window.Bevy.time.stopwatch;
 
   class Timer extends ReflectableObject {
     static typeName = "bevy_time::timer::Timer";
@@ -27,11 +27,14 @@
     }
   }
 
-  if (!window.hasOwnProperty("bevyTime")) {
-    window.bevyTime = {};
+  if (!window.hasOwnProperty("Bevy")) {
+    window.Bevy = {};
   }
-  if (!window.bevyTime.hasOwnProperty("timer")) {
-    window.bevyTime.timer = {};
+  if (!window.Bevy.hasOwnProperty("time")) {
+    window.Bevy.time = {};
   }
-  Object.assign(window.bevyTime.timer, { Timer });
+  if (!window.Bevy.time.hasOwnProperty("timer")) {
+    window.Bevy.time.timer = {};
+  }
+  Object.assign(window.Bevy.time.timer, { Timer });
 })(globalThis);

@@ -6,7 +6,7 @@
     ReflectableUnit,
     TypeRegistry,
     worldResourceId,
-  } = window.bevyEcs;
+  } = window.Bevy.ecs;
 
   class ClearColor extends ReflectableArray {
     static typeName = "bevy_core_pipeline::clear_color::ClearColor";
@@ -58,13 +58,16 @@
     }
   }
 
-  if (!window.hasOwnProperty("bevyCorePipeline")) {
-    window.bevyCorePipeline = {};
+  if (!window.hasOwnProperty("Bevy")) {
+    window.Bevy = {};
   }
-  if (!window.bevyCorePipeline.hasOwnProperty("clearColor")) {
-    window.bevyCorePipeline.clearColor = {};
+  if (!window.Bevy.hasOwnProperty("pipeline")) {
+    window.Bevy.pipeline = {};
   }
-  Object.assign(window.bevyCorePipeline.clearColor, {
+  if (!window.Bevy.pipeline.hasOwnProperty("clearColor")) {
+    window.Bevy.pipeline.clearColor = {};
+  }
+  Object.assign(window.Bevy.pipeline.clearColor, {
     ClearColor,
     ClearColorConfig,
   });

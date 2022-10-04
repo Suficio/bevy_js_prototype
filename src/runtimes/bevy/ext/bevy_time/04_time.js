@@ -1,6 +1,6 @@
 "use strict";
 ((window) => {
-  const { ReflectableObject, TypeRegistry, worldResourceId } = window.bevyEcs;
+  const { ReflectableObject, TypeRegistry, worldResourceId } = window.Bevy.ecs;
   const { ops } = window.Deno.core;
 
   class Time extends ReflectableObject {
@@ -28,11 +28,14 @@
     }
   }
 
-  if (!window.hasOwnProperty("bevyTime")) {
-    window.bevyTime = {};
+  if (!window.hasOwnProperty("Bevy")) {
+    window.Bevy = {};
   }
-  if (!window.bevyTime.hasOwnProperty("time")) {
-    window.bevyTime.time = {};
+  if (!window.Bevy.hasOwnProperty("time")) {
+    window.Bevy.time = {};
   }
-  Object.assign(window.bevyTime.time, { Time });
+  if (!window.Bevy.time.hasOwnProperty("time")) {
+    window.Bevy.time.time = {};
+  }
+  Object.assign(window.Bevy.time.time, { Time });
 })(globalThis);

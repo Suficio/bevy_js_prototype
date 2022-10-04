@@ -69,7 +69,6 @@ impl Module {
         }
 
         let path = module_path(&self.path);
-        println!("{path}");
         let path = path.split('.').collect::<Vec<&str>>();
 
         writeln!(

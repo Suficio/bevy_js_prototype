@@ -1,7 +1,7 @@
 "use strict";
 ((window) => {
   const { ReflectableEnum, ReflectableUnit, TypeRegistry, worldResourceId } =
-    window.bevyEcs;
+    window.Bevy.ecs;
 
   class ImageModeKeepAspect extends ReflectableUnit {
     static typeName = "bevy_ui::widget::image::ImageMode";
@@ -28,14 +28,17 @@
     }
   }
 
-  if (!window.hasOwnProperty("bevyUi")) {
-    window.bevyUi = {};
+  if (!window.hasOwnProperty("Bevy")) {
+    window.Bevy = {};
   }
-  if (!window.bevyUi.hasOwnProperty("widget")) {
-    window.bevyUi.widget = {};
+  if (!window.Bevy.hasOwnProperty("ui")) {
+    window.Bevy.ui = {};
   }
-  if (!window.bevyUi.widget.hasOwnProperty("image")) {
-    window.bevyUi.widget.image = {};
+  if (!window.Bevy.ui.hasOwnProperty("widget")) {
+    window.Bevy.ui.widget = {};
   }
-  Object.assign(window.bevyUi.widget.image, { ImageMode });
+  if (!window.Bevy.ui.widget.hasOwnProperty("image")) {
+    window.Bevy.ui.widget.image = {};
+  }
+  Object.assign(window.Bevy.ui.widget.image, { ImageMode });
 })(globalThis);

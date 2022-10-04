@@ -133,10 +133,13 @@ ${err}`
     }
   }
 
-  if (!window.hasOwnProperty("bevyEcs")) {
-    window.bevyEcs = {};
+  if (!window.hasOwnProperty("Bevy")) {
+    window.Bevy = {};
   }
-  Object.assign(window.bevyEcs, {
+  if (!window.Bevy.hasOwnProperty("ecs")) {
+    window.Bevy.ecs = {};
+  }
+  Object.assign(window.Bevy.ecs, {
     Bundle,
     Reflect,
     ReflectableObject,

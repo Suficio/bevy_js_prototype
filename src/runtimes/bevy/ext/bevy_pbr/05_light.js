@@ -1,9 +1,9 @@
 "use strict";
 ((window) => {
-  const { ReflectableObject, TypeRegistry, worldResourceId } = window.bevyEcs;
+  const { ReflectableObject, TypeRegistry, worldResourceId } = window.Bevy.ecs;
   const { OrthographicProjection, ScalingMode, WindowOrigin } =
-    window.bevyRender.camera.projection;
-  const { Color } = window.bevyRender.color;
+    window.Bevy.render.camera.projection;
+  const { Color } = window.Bevy.render.color;
 
   class AmbientLight extends ReflectableObject {
     static typeName = "bevy_pbr::light::AmbientLight";
@@ -121,13 +121,16 @@
     }
   }
 
-  if (!window.hasOwnProperty("bevyPbr")) {
-    window.bevyPbr = {};
+  if (!window.hasOwnProperty("Bevy")) {
+    window.Bevy = {};
   }
-  if (!window.bevyPbr.hasOwnProperty("light")) {
-    window.bevyPbr.light = {};
+  if (!window.Bevy.hasOwnProperty("pbr")) {
+    window.Bevy.pbr = {};
   }
-  Object.assign(window.bevyPbr.light, {
+  if (!window.Bevy.pbr.hasOwnProperty("light")) {
+    window.Bevy.pbr.light = {};
+  }
+  Object.assign(window.Bevy.pbr.light, {
     AmbientLight,
     DirectionalLight,
     DirectionalLightShadowMap,

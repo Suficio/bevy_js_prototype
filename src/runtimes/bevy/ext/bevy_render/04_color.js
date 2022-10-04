@@ -1,7 +1,7 @@
 "use strict";
 ((window) => {
   const { ReflectableEnum, ReflectableObject, TypeRegistry, worldResourceId } =
-    window.bevyEcs;
+    window.Bevy.ecs;
 
   class ColorRgba extends ReflectableObject {
     static typeName = "bevy_render::color::Color";
@@ -100,11 +100,14 @@
     }
   }
 
-  if (!window.hasOwnProperty("bevyRender")) {
-    window.bevyRender = {};
+  if (!window.hasOwnProperty("Bevy")) {
+    window.Bevy = {};
   }
-  if (!window.bevyRender.hasOwnProperty("color")) {
-    window.bevyRender.color = {};
+  if (!window.Bevy.hasOwnProperty("render")) {
+    window.Bevy.render = {};
   }
-  Object.assign(window.bevyRender.color, { Color });
+  if (!window.Bevy.render.hasOwnProperty("color")) {
+    window.Bevy.render.color = {};
+  }
+  Object.assign(window.Bevy.render.color, { Color });
 })(globalThis);

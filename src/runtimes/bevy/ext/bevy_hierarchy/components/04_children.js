@@ -1,6 +1,6 @@
 "use strict";
 ((window) => {
-  const { ReflectableArray, TypeRegistry, worldResourceId } = window.bevyEcs;
+  const { ReflectableArray, TypeRegistry, worldResourceId } = window.Bevy.ecs;
 
   class Children extends ReflectableArray {
     static typeName = "bevy_hierarchy::components::children::Children";
@@ -14,14 +14,17 @@
     }
   }
 
-  if (!window.hasOwnProperty("bevyHierarchy")) {
-    window.bevyHierarchy = {};
+  if (!window.hasOwnProperty("Bevy")) {
+    window.Bevy = {};
   }
-  if (!window.bevyHierarchy.hasOwnProperty("components")) {
-    window.bevyHierarchy.components = {};
+  if (!window.Bevy.hasOwnProperty("hierarchy")) {
+    window.Bevy.hierarchy = {};
   }
-  if (!window.bevyHierarchy.components.hasOwnProperty("children")) {
-    window.bevyHierarchy.components.children = {};
+  if (!window.Bevy.hierarchy.hasOwnProperty("components")) {
+    window.Bevy.hierarchy.components = {};
   }
-  Object.assign(window.bevyHierarchy.components.children, { Children });
+  if (!window.Bevy.hierarchy.components.hasOwnProperty("children")) {
+    window.Bevy.hierarchy.components.children = {};
+  }
+  Object.assign(window.Bevy.hierarchy.components.children, { Children });
 })(globalThis);

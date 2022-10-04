@@ -1,6 +1,6 @@
 "use strict";
 ((window) => {
-  const { ReflectableObject, TypeRegistry, worldResourceId } = window.bevyEcs;
+  const { ReflectableObject, TypeRegistry, worldResourceId } = window.Bevy.ecs;
 
   class CubemapVisibleEntities extends ReflectableObject {
     static typeName = "bevy_pbr::bundle::CubemapVisibleEntities";
@@ -14,11 +14,14 @@
     }
   }
 
-  if (!window.hasOwnProperty("bevyPbr")) {
-    window.bevyPbr = {};
+  if (!window.hasOwnProperty("Bevy")) {
+    window.Bevy = {};
   }
-  if (!window.bevyPbr.hasOwnProperty("bundle")) {
-    window.bevyPbr.bundle = {};
+  if (!window.Bevy.hasOwnProperty("pbr")) {
+    window.Bevy.pbr = {};
   }
-  Object.assign(window.bevyPbr.bundle, { CubemapVisibleEntities });
+  if (!window.Bevy.pbr.hasOwnProperty("bundle")) {
+    window.Bevy.pbr.bundle = {};
+  }
+  Object.assign(window.Bevy.pbr.bundle, { CubemapVisibleEntities });
 })(globalThis);

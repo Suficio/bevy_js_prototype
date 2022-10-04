@@ -1,6 +1,6 @@
 "use strict";
 ((window) => {
-  const { ReflectableArray } = window.bevyEcs;
+  const { ReflectableArray } = window.Bevy.ecs;
 
   class Vec extends ReflectableArray {
     static typeName = "alloc::vec::Vec";

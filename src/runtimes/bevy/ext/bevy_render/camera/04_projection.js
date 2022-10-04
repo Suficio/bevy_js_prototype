@@ -6,7 +6,7 @@
     ReflectableUnit,
     TypeRegistry,
     worldResourceId,
-  } = window.bevyEcs;
+  } = window.Bevy.ecs;
 
   class OrthographicProjection extends ReflectableObject {
     static typeName = "bevy_render::camera::projection::OrthographicProjection";
@@ -153,16 +153,19 @@
     }
   }
 
-  if (!window.hasOwnProperty("bevyRender")) {
-    window.bevyRender = {};
+  if (!window.hasOwnProperty("Bevy")) {
+    window.Bevy = {};
   }
-  if (!window.bevyRender.hasOwnProperty("camera")) {
-    window.bevyRender.camera = {};
+  if (!window.Bevy.hasOwnProperty("render")) {
+    window.Bevy.render = {};
   }
-  if (!window.bevyRender.camera.hasOwnProperty("projection")) {
-    window.bevyRender.camera.projection = {};
+  if (!window.Bevy.render.hasOwnProperty("camera")) {
+    window.Bevy.render.camera = {};
   }
-  Object.assign(window.bevyRender.camera.projection, {
+  if (!window.Bevy.render.camera.hasOwnProperty("projection")) {
+    window.Bevy.render.camera.projection = {};
+  }
+  Object.assign(window.Bevy.render.camera.projection, {
     OrthographicProjection,
     PerspectiveProjection,
     Projection,

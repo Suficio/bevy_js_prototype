@@ -1,6 +1,6 @@
 "use strict";
 ((window) => {
-  const { ReflectableObject, TypeRegistry, worldResourceId } = window.bevyEcs;
+  const { ReflectableObject, TypeRegistry, worldResourceId } = window.Bevy.ecs;
 
   class Aabb extends ReflectableObject {
     static typeName = "bevy_render::primitives::Aabb";
@@ -38,11 +38,18 @@
     }
   }
 
-  if (!window.hasOwnProperty("bevyRender")) {
-    window.bevyRender = {};
+  if (!window.hasOwnProperty("Bevy")) {
+    window.Bevy = {};
   }
-  if (!window.bevyRender.hasOwnProperty("primitives")) {
-    window.bevyRender.primitives = {};
+  if (!window.Bevy.hasOwnProperty("render")) {
+    window.Bevy.render = {};
   }
-  Object.assign(window.bevyRender.primitives, { Aabb, CubemapFrusta, Frustum });
+  if (!window.Bevy.render.hasOwnProperty("primitives")) {
+    window.Bevy.render.primitives = {};
+  }
+  Object.assign(window.Bevy.render.primitives, {
+    Aabb,
+    CubemapFrusta,
+    Frustum,
+  });
 })(globalThis);

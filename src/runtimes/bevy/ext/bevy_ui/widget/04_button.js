@@ -1,6 +1,6 @@
 "use strict";
 ((window) => {
-  const { ReflectableObject, TypeRegistry, worldResourceId } = window.bevyEcs;
+  const { ReflectableObject, TypeRegistry, worldResourceId } = window.Bevy.ecs;
 
   class Button extends ReflectableObject {
     static typeName = "bevy_ui::widget::button::Button";
@@ -14,14 +14,17 @@
     }
   }
 
-  if (!window.hasOwnProperty("bevyUi")) {
-    window.bevyUi = {};
+  if (!window.hasOwnProperty("Bevy")) {
+    window.Bevy = {};
   }
-  if (!window.bevyUi.hasOwnProperty("widget")) {
-    window.bevyUi.widget = {};
+  if (!window.Bevy.hasOwnProperty("ui")) {
+    window.Bevy.ui = {};
   }
-  if (!window.bevyUi.widget.hasOwnProperty("button")) {
-    window.bevyUi.widget.button = {};
+  if (!window.Bevy.ui.hasOwnProperty("widget")) {
+    window.Bevy.ui.widget = {};
   }
-  Object.assign(window.bevyUi.widget.button, { Button });
+  if (!window.Bevy.ui.widget.hasOwnProperty("button")) {
+    window.Bevy.ui.widget.button = {};
+  }
+  Object.assign(window.Bevy.ui.widget.button, { Button });
 })(globalThis);
