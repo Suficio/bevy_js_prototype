@@ -2,7 +2,7 @@
 
 ((window) => {
   const { ops } = window.Deno.core;
-  const { Entity } = window.bevyEcs;
+  const { Entity } = window.Bevy.ecs;
 
   class World {
     constructor(worldResourceId) {
@@ -44,5 +44,5 @@ ${err}`
     }
   }
 
-  Object.assign(window.bevyEcs, { World });
+  Object.assign(window.Bevy.ecs, { World });
 })(globalThis);

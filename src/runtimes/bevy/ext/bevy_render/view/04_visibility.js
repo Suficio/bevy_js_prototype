@@ -1,12 +1,14 @@
 "use strict";
 ((window) => {
-  const { ReflectableObject, TypeRegistry, worldResourceId } = window.bevyEcs;
+  const { ReflectableObject, TypeRegistry, worldResourceId } = window.Bevy.ecs;
+
   class ComputedVisibility extends ReflectableObject {
     static typeName = "bevy_render::view::visibility::ComputedVisibility";
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
     );
+
     constructor(struct) {
       super(
         {
@@ -24,6 +26,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor(struct) {
       super({ is_visible: true }, struct);
     }
@@ -35,21 +38,26 @@
       worldResourceId,
       this.typeName
     );
+
     constructor(struct) {
       super(null, struct);
     }
   }
 
-  if (!window.hasOwnProperty("bevyRender")) {
-    window.bevyRender = {};
+  if (!window.hasOwnProperty("Bevy")) {
+    window.Bevy = {};
   }
-  if (!window.bevyRender.hasOwnProperty("view")) {
-    window.bevyRender.view = {};
+  if (!window.Bevy.hasOwnProperty("render")) {
+    window.Bevy.render = {};
   }
-  if (!window.bevyRender.view.hasOwnProperty("visibility")) {
-    window.bevyRender.view.visibility = {};
+  if (!window.Bevy.render.hasOwnProperty("view")) {
+    window.Bevy.render.view = {};
   }
-  Object.assign(window.bevyRender.view.visibility, {
+  if (!window.Bevy.render.view.hasOwnProperty("visibility")) {
+    window.Bevy.render.view.visibility = {};
+  }
+
+  Object.assign(window.Bevy.render.view.visibility, {
     ComputedVisibility,
     Visibility,
     VisibleEntities,

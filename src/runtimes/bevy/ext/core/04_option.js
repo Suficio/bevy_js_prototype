@@ -1,6 +1,5 @@
 "use strict";
 ((window) => {
-  const { worldResourceId, TypeRegistry } = window.bevyEcs;
   class Option {
     static None = () => undefined;
     static Some = (value) => value;
@@ -18,5 +17,6 @@
   if (!window.core.hasOwnProperty("option")) {
     window.core.option = {};
   }
+
   Object.assign(window.core.option, { Option });
 })(globalThis);

@@ -1,13 +1,15 @@
 "use strict";
 ((window) => {
   const { ReflectableEnum, ReflectableUnit, TypeRegistry, worldResourceId } =
-    window.bevyEcs;
+    window.Bevy.ecs;
+
   class FocusPolicyBlock extends ReflectableUnit {
     static typeName = "bevy_ui::focus::FocusPolicy";
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
     );
+
     constructor() {
       super("Block");
     }
@@ -18,6 +20,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor() {
       super("Pass");
     }
@@ -25,11 +28,13 @@
   class FocusPolicy extends ReflectableEnum {
     static Block = () => new FocusPolicyBlock();
     static Pass = () => new FocusPolicyPass();
+
     static typeName = "bevy_ui::focus::FocusPolicy";
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
     );
+
     constructor(type, value) {
       super(type, value);
     }
@@ -41,6 +46,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor() {
       super("Clicked");
     }
@@ -51,6 +57,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor() {
       super("Hovered");
     }
@@ -61,6 +68,7 @@
       worldResourceId,
       this.typeName
     );
+
     constructor() {
       super("None");
     }
@@ -69,21 +77,27 @@
     static Clicked = () => new InteractionClicked();
     static Hovered = () => new InteractionHovered();
     static None = () => new InteractionNone();
+
     static typeName = "bevy_ui::focus::Interaction";
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
     );
+
     constructor(type, value) {
       super(type, value);
     }
   }
 
-  if (!window.hasOwnProperty("bevyUi")) {
-    window.bevyUi = {};
+  if (!window.hasOwnProperty("Bevy")) {
+    window.Bevy = {};
   }
-  if (!window.bevyUi.hasOwnProperty("focus")) {
-    window.bevyUi.focus = {};
+  if (!window.Bevy.hasOwnProperty("ui")) {
+    window.Bevy.ui = {};
   }
-  Object.assign(window.bevyUi.focus, { FocusPolicy, Interaction });
+  if (!window.Bevy.ui.hasOwnProperty("focus")) {
+    window.Bevy.ui.focus = {};
+  }
+
+  Object.assign(window.Bevy.ui.focus, { FocusPolicy, Interaction });
 })(globalThis);

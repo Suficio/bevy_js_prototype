@@ -1,18 +1,19 @@
 "use strict";
 ((window) => {
-  const { Bundle } = window.bevyEcs;
-  const { Visibility, ComputedVisibility } = bevyRender.view.visibility;
-  const { FocusPolicy } = bevyUi.focus;
-  const { Node, CalculatedSize, Style } = bevyUi.uiNode;
-  const { Transform } = bevyTransform.components.transform;
-  const { GlobalTransform } = bevyTransform.components.globalTransform;
-  const { Text } = bevyText.text;
+  const { Bundle } = window.Bevy.ecs;
+  const { Visibility, ComputedVisibility } = window.Bevy.render.view.visibility;
+  const { FocusPolicy } = window.Bevy.ui.focus;
+  const { Node, CalculatedSize, Style } = window.Bevy.ui.uiNode;
+  const { Transform } = window.Bevy.transform.components.transform;
+  const { GlobalTransform } = window.Bevy.transform.components.globalTransform;
+  const { Text } = window.Bevy.text.text;
 
   class TextBundle extends Bundle {
     static fromSection = (value, style) =>
       new TextBundle({ text: Text.fromSection(value, style) });
     static fromSections = (sections) =>
       new TextBundle({ text: Text.fromSections(sections) });
+
     constructor(struct) {
       super(
         {
@@ -29,6 +30,7 @@
         struct
       );
     }
+
     withTextAlignment(alignment) {
       this.text.alignment = alignment;
       return this;
@@ -39,11 +41,14 @@
     }
   }
 
-  if (!window.hasOwnProperty("bevyUi")) {
-    window.bevyUi = {};
+  if (!window.hasOwnProperty("Bevy")) {
+    window.Bevy = {};
   }
-  if (!window.bevyUi.hasOwnProperty("entity")) {
-    window.bevyUi.entity = {};
+  if (!window.Bevy.hasOwnProperty("ui")) {
+    window.Bevy.ui = {};
   }
-  Object.assign(window.bevyUi.entity, { TextBundle });
+  if (!window.Bevy.ui.hasOwnProperty("entity")) {
+    window.Bevy.ui.entity = {};
+  }
+  Object.assign(window.Bevy.ui.entity, { TextBundle });
 })(globalThis);

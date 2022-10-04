@@ -2,10 +2,6 @@
 
 Prototype JavaScript itegration with the Bevy game engine that allows you to write first class systems with all the freedom that JavaScript affords you.
 
-# bevy_js_prototype
-
-Prototype JavaScript itegration with the Bevy game engine that allows you to write first class systems with all the freedom that JavaScript affords you.
-
 ```diff
 - This codebase is seriously unstable, basic features are not implemented, and
 - you can easily expect the whole structure of the codebase to change at anytime.
@@ -57,12 +53,4 @@ Using Chrome or Edge you can open up `chrome://inspect` or `edge://inspect` in y
 
 ### Generating JavaScript definitions
 
-There is a built-in generator that generates JavaScript definitions for Bevy reflect types, it can be ran using:
-
-```diff
-- Be warned that the generator will overwrite existing files
-```
-
-```
-cargo run --features="generator" --bin generator
-```
+There is a built-in generator that generates JavaScript definitions for Bevy reflect types, more information is available in [bevy_js_generator/README.md](crates/bevy_js_generator/README.md).

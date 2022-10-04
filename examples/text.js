@@ -3,15 +3,15 @@
 // It displays the current FPS in the top left corner, as well as text that changes color
 // in the bottom right. For text within a scene, please see the text2d example.
 
-const { Entity, World } = bevyEcs;
-const { Visibility, ComputedVisibility } = bevyRender.view.visibility;
-const { FocusPolicy } = bevyUi.focus;
-const { TextBundle } = bevyUi.entity;
+const { Entity, World } = Bevy.ecs;
+const { Visibility, ComputedVisibility } = Bevy.render.view.visibility;
+const { FocusPolicy } = Bevy.ui.focus;
+const { TextBundle } = Bevy.ui.entity;
 const { Node, CalculatedSize, Style, AlignSelf, PositionType, Val } =
-  bevyUi.uiNode;
-const { UiRect } = bevyUi.geometry;
-const { Transform } = bevyTransform.components.transform;
-const { GlobalTransform } = bevyTransform.components.globalTransform;
+  Bevy.ui.uiNode;
+const { UiRect } = Bevy.ui.geometry;
+const { Transform } = Bevy.transform.components.transform;
+const { GlobalTransform } = Bevy.transform.components.globalTransform;
 const { Affine3A } = glam.f32.affine3A;
 const {
   Text,
@@ -20,13 +20,13 @@ const {
   TextSection,
   VerticalAlign,
   TextStyle,
-} = bevyText.text;
-const { Color } = bevyRender.color;
+} = Bevy.text.text;
+const { Color } = Bevy.render.color;
 const { Vec } = alloc.vec;
-const { Time } = bevyTime.time;
+const { Time } = Bevy.time.time;
 
 (async () => {
-  await bevyEcs.nextFrame();
+  await Bevy.ecs.nextFrame();
 
   /// Track texts by tracking entity ID
   const colorText = World.spawn();
@@ -37,7 +37,7 @@ const { Time } = bevyTime.time;
   while (true) {
     textColorSystem(colorText);
     textUpdateSystem(fpsText);
-    await bevyEcs.nextFrame();
+    await Bevy.ecs.nextFrame();
   }
 })();
 
@@ -47,7 +47,7 @@ function setup(colorText, fpsText) {
     TextBundle.fromSection(
       "hello\nbevy_js!",
       new TextStyle({
-        font: bevyAsset.AssetServer.load("fonts/FiraSans-Bold.ttf"),
+        font: Bevy.asset.AssetServer.load("fonts/FiraSans-Bold.ttf"),
         font_size: 100.0,
         color: Color.White(),
       })
@@ -71,14 +71,14 @@ function setup(colorText, fpsText) {
       new TextSection({
         value: "FPS: ",
         style: new TextStyle({
-          font: bevyAsset.AssetServer.load("fonts/FiraSans-Bold.ttf"),
+          font: Bevy.asset.AssetServer.load("fonts/FiraSans-Bold.ttf"),
           font_size: 60.0,
           color: Color.White(),
         }),
       }),
       TextSection.fromStyle(
         new TextStyle({
-          font: bevyAsset.AssetServer.load("fonts/FiraMono-Medium.ttf"),
+          font: Bevy.asset.AssetServer.load("fonts/FiraMono-Medium.ttf"),
           font_size: 60.0,
           color: Color.Gold(),
         })

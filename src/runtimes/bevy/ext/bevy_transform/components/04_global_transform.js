@@ -1,7 +1,8 @@
 "use strict";
 ((window) => {
-  const { ReflectableArray, TypeRegistry, worldResourceId } = window.bevyEcs;
+  const { ReflectableArray, TypeRegistry, worldResourceId } = window.Bevy.ecs;
   const { Affine3A } = window.glam.f32.affine3A;
+
   class GlobalTransform extends ReflectableArray {
     static typeName =
       "bevy_transform::components::global_transform::GlobalTransform";
@@ -9,21 +10,26 @@
       worldResourceId,
       this.typeName
     );
+
     constructor(seq) {
       super([Affine3A.Identity()], seq);
     }
   }
 
-  if (!window.hasOwnProperty("bevyTransform")) {
-    window.bevyTransform = {};
+  if (!window.hasOwnProperty("Bevy")) {
+    window.Bevy = {};
   }
-  if (!window.bevyTransform.hasOwnProperty("components")) {
-    window.bevyTransform.components = {};
+  if (!window.Bevy.hasOwnProperty("transform")) {
+    window.Bevy.transform = {};
   }
-  if (!window.bevyTransform.components.hasOwnProperty("globalTransform")) {
-    window.bevyTransform.components.globalTransform = {};
+  if (!window.Bevy.transform.hasOwnProperty("components")) {
+    window.Bevy.transform.components = {};
   }
-  Object.assign(window.bevyTransform.components.globalTransform, {
+  if (!window.Bevy.transform.components.hasOwnProperty("globalTransform")) {
+    window.Bevy.transform.components.globalTransform = {};
+  }
+
+  Object.assign(window.Bevy.transform.components.globalTransform, {
     GlobalTransform,
   });
 })(globalThis);

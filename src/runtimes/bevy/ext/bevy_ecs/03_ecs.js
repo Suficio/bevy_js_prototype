@@ -35,10 +35,11 @@ ${err}`);
     await core.opAsync("op_wait_for_frame", worldResourceId);
   }
 
-  let bevyEcs = {
-    reflect,
-    nextFrame,
-    worldResourceId,
-  };
-  Object.assign(window, { bevyEcs });
+  if (!window.hasOwnProperty("Bevy")) {
+    window.Bevy = {};
+  }
+  if (!window.Bevy.hasOwnProperty("ecs")) {
+    window.Bevy.ecs = {};
+  }
+  Object.assign(window.Bevy.ecs, { reflect, nextFrame, worldResourceId });
 })(globalThis);

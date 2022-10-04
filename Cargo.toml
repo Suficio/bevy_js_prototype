@@ -4,7 +4,7 @@ version = "0.0.1"
 edition = "2021"
 description = "Prototype JavaScript integration in Bevy game engine"
 exclude = ["assets/"]
-keywords = ["game", "engine", "gamedev", "bevy", "deno", "javascript"]
+keywords = ["bevy", "bevy_js", "deno", "gamedev", "javascript"]
 license = "MIT OR Apache-2.0"
 readme = "README.md"
 repository = "https://github.com/Suficio/bevy_js_prototype"
@@ -14,12 +14,18 @@ repository = "https://github.com/Suficio/bevy_js_prototype"
 [features]
 default = []
 inspector = ["tide", "tide-websockets"]
-generator = ["convert_case", "syn", "gumdrop"]
 
-[dependencies]
+[workspace]
+members = ["crates/*"]
+
+[workspace.dependencies]
 # TODO(https://github.com/bevyengine/bevy/pull/6121) Detached non-Send tasks don't run
 bevy = { git = "https://github.com/bevyengine/bevy.git", rev = "92c90a9bade54ecc5b26cad72d30683d7aebd654" }
 deno_core = { git = "https://github.com/Suficio/deno.git", branch = "initialize-resource-table" }
+
+[dependencies]
+bevy = { workspace = true }
+deno_core = { workspace = true }
 
 serde_json = "1.0.85"
 serde_path_to_error = "0.1.8"
@@ -28,11 +34,6 @@ serde_path_to_error = "0.1.8"
 tide = { version = "0.16.0", default-features = false, features = ["h1-server"], optional = true }
 tide-websockets = { version = "0.4.0", optional = true }
 
-# Generator dependencies
-gumdrop = { version = "0.8.1", optional = true }
-convert_case = { version = "0.5.0", optional = true }
-syn = { version = "1.0.98", features = ["extra-traits", "printing"], optional = true }
-
 # Enable only a small amount of optimization in debug mode
 [profile.dev]
 opt-level = 1
@@ -40,10 +41,6 @@ opt-level = 1
 # Enable high optimizations for dependencies (incl. Bevy), but not for our code:
 [profile.dev.package."*"]
 opt-level = 3
-
-[[bin]]
-name = "generator"
-required-features = ["generator"]
 
 [[example]]
 name = "hello_world"

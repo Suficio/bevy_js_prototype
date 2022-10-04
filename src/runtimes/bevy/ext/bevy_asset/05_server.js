@@ -2,7 +2,7 @@
 
 ((window) => {
   const { core } = window.Deno;
-  const { worldResourceId } = window.bevyEcs;
+  const { worldResourceId } = window.Bevy.ecs;
 
   class AssetServer {
     constructor() {}
@@ -14,5 +14,5 @@
     }
   }
 
-  Object.assign(window.bevyAsset, { AssetServer });
+  Object.assign(window.Bevy.asset, { AssetServer });
 })(globalThis);

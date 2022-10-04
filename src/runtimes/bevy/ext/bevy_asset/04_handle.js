@@ -1,6 +1,7 @@
 "use strict";
 ((window) => {
-  const { ReflectableObject, TypeRegistry, worldResourceId } = window.bevyEcs;
+  const { ReflectableObject } = window.Bevy.ecs;
+
   class Handle extends ReflectableObject {
     static typeName = "bevy_asset::handle::Handle";
 
@@ -9,11 +10,15 @@
     }
   }
 
-  if (!window.hasOwnProperty("bevyAsset")) {
-    window.bevyAsset = {};
+  if (!window.hasOwnProperty("Bevy")) {
+    window.Bevy = {};
   }
-  if (!window.bevyAsset.hasOwnProperty("handle")) {
-    window.bevyAsset.handle = {};
+  if (!window.Bevy.hasOwnProperty("asset")) {
+    window.Bevy.asset = {};
   }
-  Object.assign(window.bevyAsset.handle, { Handle });
+  if (!window.Bevy.asset.hasOwnProperty("handle")) {
+    window.Bevy.asset.handle = {};
+  }
+
+  Object.assign(window.Bevy.asset.handle, { Handle });
 })(globalThis);
