@@ -1,7 +1,6 @@
 //! Generates JavaScript definition files for ECS Entities from Bevy TypeRegistry
 
 use bevy::{prelude::*, reflect::TypeRegistryInternal, utils::hashbrown::HashMap};
-use bevy_js as bjs;
 use gumdrop::Options;
 use std::{
     fs::{self, File},
@@ -12,7 +11,7 @@ use std::{
 
 use generate::generate_type;
 use module::Module;
-use utils::{display_path, evaluate_dependency_order, type_path};
+use utils::{evaluate_dependency_order, file_path};
 
 mod generate;
 mod module;
@@ -40,9 +39,7 @@ fn generate_modules(
     let mut modules = HashMap::<String, Module>::default();
 
     for registration in type_registry.iter() {
-        let path = type_path(registration.type_name());
-        let path = display_path(&path);
-
+        let path = file_path(registration.type_name());
         let structure = modules
             .entry(path)
             .or_insert_with_key(|p| Module::new(p.clone()));
@@ -55,8 +52,8 @@ fn generate_modules(
         .filter(|m| !m.is_empty())
         .collect::<Vec<Module>>();
 
-    // Registed additional dependencies
-    modules.push(Module::new("bevyEcs".to_string()));
+    // Register additional dependencies
+    modules.push(Module::new("bevy_ecs".to_string()));
 
     evaluate_dependency_order(modules, opts.level)
 }

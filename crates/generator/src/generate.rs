@@ -1,7 +1,7 @@
 //! Generates JavaScript definition files for ECS Entities from Bevy TypeRegistry
 
 use crate::{
-    utils::{display_path, strip_generics, type_path},
+    utils::{file_path, strip_generics},
     Module,
 };
 use bevy::{
@@ -54,13 +54,12 @@ fn generate_type_init(
 
     // Do not generate imports for reflectable values
     if !matches!(reflect.reflect_ref(), ReflectRef::Value(_)) {
-        let type_path = display_path(&type_path(&type_name));
-        module.insert_import(type_path, short_name.clone());
+        module.insert_import(&file_path(&type_name), &short_name);
     }
 
     match reflect.reflect_ref() {
         ReflectRef::Struct(s) => {
-            module.insert_import("bevyEcs".to_string(), "ReflectableObject".to_string());
+            module.insert_import("bevy_ecs", "ReflectableObject");
 
             if use_constructor {
                 write!(&mut o, r#"new {short_name}("#).unwrap();
@@ -217,8 +216,8 @@ fn generate_default_type_init(
 }
 
 fn generate_type_info(o: &mut String, type_name: &str, module: &mut Module) {
-    module.insert_import("bevyEcs".to_string(), "TypeRegistry".to_string());
-    module.insert_import("bevyEcs".to_string(), "worldResourceId".to_string());
+    module.insert_import("bevy_ecs", "TypeRegistry");
+    module.insert_import("bevy_ecs", "worldResourceId");
 
     writeln!(o, r#"static typeName = "{type_name}""#,).unwrap();
     writeln!(
@@ -238,7 +237,7 @@ fn generate_array_type(
     registration: &TypeRegistration,
     module: &mut Module,
 ) {
-    module.insert_import("bevyEcs".to_string(), "ReflectableArray".to_string());
+    module.insert_import("bevy_ecs", "ReflectableArray");
 
     writeln!(o, r#"class {short_name} extends ReflectableArray {{"#,).unwrap();
     generate_type_info(o, type_name, module);
@@ -264,7 +263,7 @@ pub fn generate_type(
 
     match registration.type_info() {
         TypeInfo::Struct(_) => {
-            module.insert_import("bevyEcs".to_string(), "ReflectableObject".to_string());
+            module.insert_import("bevy_ecs", "ReflectableObject");
 
             writeln!(&mut o, r#"class {short_name} extends ReflectableObject {{"#,).unwrap();
             generate_type_info(&mut o, &type_name, module);
@@ -302,8 +301,7 @@ pub fn generate_type(
                 let name = variant.name();
                 match variant {
                     VariantInfo::Struct(_) => {
-                        module
-                            .insert_import("bevyEcs".to_string(), "ReflectableObject".to_string());
+                        module.insert_import("bevy_ecs", "ReflectableObject");
 
                         writeln!(
                             &mut o,
@@ -334,7 +332,7 @@ pub fn generate_type(
                     // Dont create type definitions for unit variants as
                     // these will be referenced by value
                     VariantInfo::Unit(_) => {
-                        module.insert_import("bevyEcs".to_string(), "ReflectableUnit".to_string());
+                        module.insert_import("bevy_ecs", "ReflectableUnit");
 
                         writeln!(
                             &mut o,
@@ -348,7 +346,7 @@ pub fn generate_type(
                 }
             }
 
-            module.insert_import("bevyEcs".to_string(), "ReflectableEnum".to_string());
+            module.insert_import("bevy_ecs", "ReflectableEnum");
 
             writeln!(&mut o, r#"class {short_name} extends ReflectableEnum {{ "#).unwrap();
 

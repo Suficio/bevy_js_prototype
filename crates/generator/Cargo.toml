@@ -1,0 +1,18 @@
+[package]
+name = "bevy_js_generator"
+version = "0.0.1"
+edition = "2021"
+description = "Generate JavaScript types for use in BevyJS"
+keywords = ["bevy_js"]
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+bevy = { workspace = true }
+deno_core = { workspace = true }
+
+gumdrop = { version = "0.8.1" }
+convert_case = { version = "0.5.0" }
+syn = { version = "1.0.98", features = ["extra-traits", "printing"] }

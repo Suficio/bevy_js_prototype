@@ -1,6 +1,5 @@
-use bevy::utils::hashbrown::HashMap;
+use std::collections::HashMap;
 use convert_case::{Case, Casing};
-use std::path::{Path, PathBuf};
 use syn::{
     punctuated::Punctuated, token::Comma, GenericArgument, PathArguments, TypePath,
     __private::ToTokens,
@@ -25,39 +24,42 @@ pub fn strip_generics(name: &str) -> (String, Punctuated<GenericArgument, Comma>
     (stripped, arguments)
 }
 
-/// Generate file path to module of a type
-pub fn type_path(type_name: &str) -> PathBuf {
+/// Generate file path to module
+pub fn file_path(type_name: &str) -> String {
     let t: TypePath = syn::parse_str(type_name).unwrap();
     let segments = t.path.segments;
 
-    let mut path = PathBuf::default();
-    let iter = segments
-        .iter()
-        .map(|s| format!("{}", s.ident).to_case(Case::Camel));
+    let mut iter = segments.iter().map(|s| format!("{}", s.ident));
+    let _ = iter.next_back(); // Skip actual type
 
-    for segment in iter {
-        path.push(segment);
-    }
-    path.pop();
-
-    path
+    Vec::from_iter(iter).join("/")
 }
 
-/// Force path to display with forward slash
-pub fn display_path(path: &Path) -> String {
-    path.iter()
-        .map(|s| s.to_str().unwrap())
-        .collect::<Vec<&str>>()
-        .join(".")
+/// Generate JavaScript module path from file path
+pub fn module_path(file_path: &str) -> String {
+    let mut iter = file_path.split('/');
+
+    let namespace = match iter.next() {
+        Some(namespace) => namespace,
+        None => return String::new(),
+    };
+
+    let mut path = vec![];
+
+    // Convert crate scope to module scope (e.g. "bevy_text" to "Bevy.text")
+    if namespace.starts_with("bevy_") {
+        let module = namespace.split('_').last().unwrap();
+        path.push(format!("Bevy.{module}"));
+    } else {
+        path.push(format!("{namespace}"));
+    }
+
+    path.extend(iter.map(|p| p.to_case(Case::Camel)));
+    path.join(".")
 }
 
 fn ordered_module_path(module: &Module, level: usize) -> String {
-    let mut path = module
-        .path
-        .split('.')
-        .map(|s| s.to_case(Case::Snake))
-        .collect::<Vec<String>>();
-
+    let mut path = module.path.split('/').collect::<Vec<_>>();
     match path.len() {
         0 => unreachable!(),
         // Ensure that a separate folder can be created to establish a crate

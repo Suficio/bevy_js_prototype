@@ -3,7 +3,7 @@
 // It displays the current FPS in the top left corner, as well as text that changes color
 // in the bottom right. For text within a scene, please see the text2d example.
 
-const { Entity, World } = bevyEcs;
+const { Entity, World } = Bevy.ecs;
 const { Visibility, ComputedVisibility } = bevyRender.view.visibility;
 const { FocusPolicy } = bevyUi.focus;
 const { TextBundle } = bevyUi.entity;
@@ -26,7 +26,7 @@ const { Vec } = alloc.vec;
 const { Time } = bevyTime.time;
 
 (async () => {
-  await bevyEcs.nextFrame();
+  await Bevy.ecs.nextFrame();
 
   /// Track texts by tracking entity ID
   const colorText = World.spawn();
@@ -37,7 +37,7 @@ const { Time } = bevyTime.time;
   while (true) {
     textColorSystem(colorText);
     textUpdateSystem(fpsText);
-    await bevyEcs.nextFrame();
+    await Bevy.ecs.nextFrame();
   }
 })();
 

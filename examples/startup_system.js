@@ -11,7 +11,7 @@
   // Note that [startup_system] blocks on the await, therefore, [normal_frame]
   // will only run during the first four frames after [startup_system].
   for (let i = 0; i < 4; i++) {
-    await bevyEcs.nextFrame();
+    await Bevy.ecs.nextFrame();
     await normal_system(i);
   }
 })();

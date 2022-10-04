@@ -1,3 +1,4 @@
+use crate::utils::module_path;
 use std::collections::{btree_map::BTreeMap, BTreeSet};
 
 /// Holds the properties necessary to generate a file
@@ -28,10 +29,14 @@ impl Module {
         self.types.is_empty()
     }
 
-    pub fn insert_import(&mut self, path: String, import: String) {
+    // Take &str as input for convenience
+    pub fn insert_import(&mut self, path: &str, import: &str) {
         // Do not import from the same file
         if !self.path.ends_with(&path) {
-            self.imports.entry(path).or_default().insert(import);
+            self.imports
+                .entry(path.to_string())
+                .or_default()
+                .insert(import.to_string());
         }
     }
 
@@ -53,7 +58,8 @@ impl Module {
             for import in imports.iter() {
                 write!(f, "{import}, ").unwrap();
             }
-            writeln!(f, "}} = window.{file};").unwrap();
+            let module = module_path(file);
+            writeln!(f, "}} = window.{module};").unwrap();
         }
 
         write!(f, "\n").unwrap();
@@ -62,7 +68,9 @@ impl Module {
             writeln!(f, "{def}\n").unwrap();
         }
 
-        let path = self.path.split('.').collect::<Vec<&str>>();
+        let path = module_path(&self.path);
+        println!("{path}");
+        let path = path.split('.').collect::<Vec<&str>>();
 
         writeln!(
             f,
