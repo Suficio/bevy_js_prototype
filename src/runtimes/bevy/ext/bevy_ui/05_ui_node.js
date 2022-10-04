@@ -777,6 +777,7 @@
   if (!window.Bevy.ui.hasOwnProperty("uiNode")) {
     window.Bevy.ui.uiNode = {};
   }
+
   Object.assign(window.Bevy.ui.uiNode, {
     AlignContent,
     AlignItems,

@@ -26,5 +26,6 @@
   if (!window.Bevy.hierarchy.components.hasOwnProperty("parent")) {
     window.Bevy.hierarchy.components.parent = {};
   }
+
   Object.assign(window.Bevy.hierarchy.components.parent, { Parent });
 })(globalThis);

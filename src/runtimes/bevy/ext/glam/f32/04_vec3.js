@@ -23,5 +23,6 @@
   if (!window.glam.f32.hasOwnProperty("vec3")) {
     window.glam.f32.vec3 = {};
   }
+
   Object.assign(window.glam.f32.vec3, { Vec3 });
 })(globalThis);

@@ -47,6 +47,7 @@
   if (!window.Bevy.render.hasOwnProperty("primitives")) {
     window.Bevy.render.primitives = {};
   }
+
   Object.assign(window.Bevy.render.primitives, {
     Aabb,
     CubemapFrusta,

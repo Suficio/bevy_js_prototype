@@ -109,5 +109,6 @@
   if (!window.Bevy.render.hasOwnProperty("color")) {
     window.Bevy.render.color = {};
   }
+
   Object.assign(window.Bevy.render.color, { Color });
 })(globalThis);

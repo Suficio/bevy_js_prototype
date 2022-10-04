@@ -34,5 +34,6 @@
   if (!window.glam.f32.hasOwnProperty("affine2")) {
     window.glam.f32.affine2 = {};
   }
+
   Object.assign(window.glam.f32.affine2, { Affine2 });
 })(globalThis);

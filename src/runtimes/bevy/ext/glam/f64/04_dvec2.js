@@ -23,5 +23,6 @@
   if (!window.glam.f64.hasOwnProperty("dvec2")) {
     window.glam.f64.dvec2 = {};
   }
+
   Object.assign(window.glam.f64.dvec2, { DVec2 });
 })(globalThis);

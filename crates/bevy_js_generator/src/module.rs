@@ -84,6 +84,8 @@ impl Module {
             writeln!(f, "if (!window.{preceeding}.hasOwnProperty('{item}')) {{ window.{preceeding}.{item} = {{}} }}").unwrap();
         }
 
+        write!(f, "\n").unwrap();
+
         write!(f, "Object.assign(window.{}, {{ ", path.join(".")).unwrap();
         for def in self.types.keys() {
             write!(f, "{def}, ").unwrap();

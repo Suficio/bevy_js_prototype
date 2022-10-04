@@ -17,5 +17,6 @@
   if (!window.core.hasOwnProperty("option")) {
     window.core.option = {};
   }
+
   Object.assign(window.core.option, { Option });
 })(globalThis);

@@ -23,5 +23,6 @@
   if (!window.glam.u32.hasOwnProperty("uvec2")) {
     window.glam.u32.uvec2 = {};
   }
+
   Object.assign(window.glam.u32.uvec2, { UVec2 });
 })(globalThis);

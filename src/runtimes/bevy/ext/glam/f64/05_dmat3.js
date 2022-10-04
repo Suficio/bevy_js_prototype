@@ -31,5 +31,6 @@
   if (!window.glam.f64.hasOwnProperty("dmat3")) {
     window.glam.f64.dmat3 = {};
   }
+
   Object.assign(window.glam.f64.dmat3, { DMat3 });
 })(globalThis);

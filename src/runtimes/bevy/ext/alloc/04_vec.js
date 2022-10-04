@@ -16,5 +16,6 @@
   if (!window.alloc.hasOwnProperty("vec")) {
     window.alloc.vec = {};
   }
+
   Object.assign(window.alloc.vec, { Vec });
 })(globalThis);

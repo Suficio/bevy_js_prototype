@@ -23,5 +23,6 @@
   if (!window.Bevy.pbr.hasOwnProperty("bundle")) {
     window.Bevy.pbr.bundle = {};
   }
+
   Object.assign(window.Bevy.pbr.bundle, { CubemapVisibleEntities });
 })(globalThis);

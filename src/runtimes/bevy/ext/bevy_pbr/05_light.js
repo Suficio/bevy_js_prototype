@@ -130,6 +130,7 @@
   if (!window.Bevy.pbr.hasOwnProperty("light")) {
     window.Bevy.pbr.light = {};
   }
+
   Object.assign(window.Bevy.pbr.light, {
     AmbientLight,
     DirectionalLight,

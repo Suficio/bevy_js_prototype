@@ -67,6 +67,7 @@
   if (!window.Bevy.pipeline.hasOwnProperty("clearColor")) {
     window.Bevy.pipeline.clearColor = {};
   }
+
   Object.assign(window.Bevy.pipeline.clearColor, {
     ClearColor,
     ClearColorConfig,

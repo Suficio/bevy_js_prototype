@@ -139,6 +139,7 @@ ${err}`
   if (!window.Bevy.hasOwnProperty("ecs")) {
     window.Bevy.ecs = {};
   }
+
   Object.assign(window.Bevy.ecs, {
     Bundle,
     Reflect,

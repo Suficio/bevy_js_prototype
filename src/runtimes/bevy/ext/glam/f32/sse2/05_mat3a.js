@@ -65,5 +65,6 @@
   if (!window.glam.f32.sse2.hasOwnProperty("mat3A")) {
     window.glam.f32.sse2.mat3A = {};
   }
+
   Object.assign(window.glam.f32.sse2.mat3A, { Mat3A });
 })(globalThis);

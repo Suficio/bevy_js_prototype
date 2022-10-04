@@ -14,7 +14,6 @@ repository = "https://github.com/Suficio/bevy_js_prototype"
 [features]
 default = []
 inspector = ["tide", "tide-websockets"]
-generator = ["bevy_js_generator"]
 
 [workspace]
 members = ["crates/*"]
@@ -34,9 +33,6 @@ serde_path_to_error = "0.1.8"
 # Inspector dependencies
 tide = { version = "0.16.0", default-features = false, features = ["h1-server"], optional = true }
 tide-websockets = { version = "0.4.0", optional = true }
-
-# Generator dependencies
-bevy_js_generator = { path = "./crates/bevy_js_generator", optional = true }
 
 # Enable only a small amount of optimization in debug mode
 [profile.dev]

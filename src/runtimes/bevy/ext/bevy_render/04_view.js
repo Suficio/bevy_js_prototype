@@ -23,5 +23,6 @@
   if (!window.Bevy.render.hasOwnProperty("view")) {
     window.Bevy.render.view = {};
   }
+
   Object.assign(window.Bevy.render.view, { Msaa });
 })(globalThis);

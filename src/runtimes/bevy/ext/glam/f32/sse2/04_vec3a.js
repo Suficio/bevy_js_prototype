@@ -57,5 +57,6 @@
   if (!window.glam.f32.sse2.hasOwnProperty("vec3A")) {
     window.glam.f32.sse2.vec3A = {};
   }
+
   Object.assign(window.glam.f32.sse2.vec3A, { Vec3A });
 })(globalThis);

@@ -35,5 +35,6 @@
   if (!window.glam.f32.sse2.hasOwnProperty("mat4")) {
     window.glam.f32.sse2.mat4 = {};
   }
+
   Object.assign(window.glam.f32.sse2.mat4, { Mat4 });
 })(globalThis);

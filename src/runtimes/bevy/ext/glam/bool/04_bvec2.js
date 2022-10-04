@@ -23,5 +23,6 @@
   if (!window.glam.bool.hasOwnProperty("bvec2")) {
     window.glam.bool.bvec2 = {};
   }
+
   Object.assign(window.glam.bool.bvec2, { BVec2 });
 })(globalThis);

@@ -36,5 +36,6 @@
   if (!window.Bevy.time.hasOwnProperty("timer")) {
     window.Bevy.time.timer = {};
   }
+
   Object.assign(window.Bevy.time.timer, { Timer });
 })(globalThis);

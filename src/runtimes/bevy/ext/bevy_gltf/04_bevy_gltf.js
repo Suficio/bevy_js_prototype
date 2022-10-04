@@ -20,5 +20,6 @@
   if (!window.Bevy.hasOwnProperty("gltf")) {
     window.Bevy.gltf = {};
   }
+
   Object.assign(window.Bevy.gltf, { GltfExtras });
 })(globalThis);

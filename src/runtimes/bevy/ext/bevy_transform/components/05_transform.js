@@ -34,5 +34,6 @@
   if (!window.Bevy.transform.components.hasOwnProperty("transform")) {
     window.Bevy.transform.components.transform = {};
   }
+
   Object.assign(window.Bevy.transform.components.transform, { Transform });
 })(globalThis);

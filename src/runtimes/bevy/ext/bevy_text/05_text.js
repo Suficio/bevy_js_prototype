@@ -230,6 +230,7 @@
   if (!window.Bevy.text.hasOwnProperty("text")) {
     window.Bevy.text.text = {};
   }
+
   Object.assign(window.Bevy.text.text, {
     HorizontalAlign,
     Text,

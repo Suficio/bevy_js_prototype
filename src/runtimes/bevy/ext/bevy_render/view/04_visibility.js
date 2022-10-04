@@ -56,6 +56,7 @@
   if (!window.Bevy.render.view.hasOwnProperty("visibility")) {
     window.Bevy.render.view.visibility = {};
   }
+
   Object.assign(window.Bevy.render.view.visibility, {
     ComputedVisibility,
     Visibility,

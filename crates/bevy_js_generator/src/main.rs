@@ -1,4 +1,4 @@
-//! Generates JavaScript definition files for ECS Entities from Bevy TypeRegistry
+//! Generates JavaScript definitions for Bevy reflect types
 
 use bevy::{prelude::*, reflect::TypeRegistryInternal};
 use gumdrop::Options;

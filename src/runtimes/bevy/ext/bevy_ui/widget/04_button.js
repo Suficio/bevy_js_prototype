@@ -26,5 +26,6 @@
   if (!window.Bevy.ui.widget.hasOwnProperty("button")) {
     window.Bevy.ui.widget.button = {};
   }
+
   Object.assign(window.Bevy.ui.widget.button, { Button });
 })(globalThis);

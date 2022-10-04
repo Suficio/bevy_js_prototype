@@ -28,6 +28,7 @@
   if (!window.Bevy.transform.components.hasOwnProperty("globalTransform")) {
     window.Bevy.transform.components.globalTransform = {};
   }
+
   Object.assign(window.Bevy.transform.components.globalTransform, {
     GlobalTransform,
   });

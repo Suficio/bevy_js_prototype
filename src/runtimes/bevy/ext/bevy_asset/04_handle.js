@@ -19,5 +19,6 @@
   if (!window.Bevy.asset.hasOwnProperty("handle")) {
     window.Bevy.asset.handle = {};
   }
+
   Object.assign(window.Bevy.asset.handle, { Handle });
 })(globalThis);

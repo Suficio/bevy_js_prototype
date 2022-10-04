@@ -23,5 +23,6 @@
   if (!window.Bevy.core.hasOwnProperty("name")) {
     window.Bevy.core.name = {};
   }
+
   Object.assign(window.Bevy.core.name, { Name });
 })(globalThis);

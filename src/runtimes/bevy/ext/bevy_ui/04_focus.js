@@ -98,5 +98,6 @@
   if (!window.Bevy.ui.hasOwnProperty("focus")) {
     window.Bevy.ui.focus = {};
   }
+
   Object.assign(window.Bevy.ui.focus, { FocusPolicy, Interaction });
 })(globalThis);

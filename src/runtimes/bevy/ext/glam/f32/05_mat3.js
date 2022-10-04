@@ -31,5 +31,6 @@
   if (!window.glam.f32.hasOwnProperty("mat3")) {
     window.glam.f32.mat3 = {};
   }
+
   Object.assign(window.glam.f32.mat3, { Mat3 });
 })(globalThis);

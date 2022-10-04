@@ -23,5 +23,6 @@
   if (!window.Bevy.time.hasOwnProperty("stopwatch")) {
     window.Bevy.time.stopwatch = {};
   }
+
   Object.assign(window.Bevy.time.stopwatch, { Stopwatch });
 })(globalThis);

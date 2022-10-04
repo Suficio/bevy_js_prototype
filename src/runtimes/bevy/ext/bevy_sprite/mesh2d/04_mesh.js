@@ -26,5 +26,6 @@
   if (!window.Bevy.sprite.mesh2D.hasOwnProperty("mesh")) {
     window.Bevy.sprite.mesh2D.mesh = {};
   }
+
   Object.assign(window.Bevy.sprite.mesh2D.mesh, { Mesh2dHandle });
 })(globalThis);

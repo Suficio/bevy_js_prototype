@@ -35,5 +35,6 @@
   if (!window.glam.f64.hasOwnProperty("daffine3")) {
     window.glam.f64.daffine3 = {};
   }
+
   Object.assign(window.glam.f64.daffine3, { DAffine3 });
 })(globalThis);

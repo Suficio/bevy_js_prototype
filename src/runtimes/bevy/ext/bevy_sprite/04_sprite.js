@@ -151,5 +151,6 @@
   if (!window.Bevy.sprite.hasOwnProperty("sprite")) {
     window.Bevy.sprite.sprite = {};
   }
+
   Object.assign(window.Bevy.sprite.sprite, { Anchor, Sprite });
 })(globalThis);

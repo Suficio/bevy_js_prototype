@@ -40,5 +40,6 @@
   if (!window.Bevy.ui.widget.hasOwnProperty("image")) {
     window.Bevy.ui.widget.image = {};
   }
+
   Object.assign(window.Bevy.ui.widget.image, { ImageMode });
 })(globalThis);

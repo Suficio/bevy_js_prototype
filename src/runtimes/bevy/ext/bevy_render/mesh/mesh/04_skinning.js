@@ -29,5 +29,6 @@
   if (!window.Bevy.render.mesh.mesh.hasOwnProperty("skinning")) {
     window.Bevy.render.mesh.mesh.skinning = {};
   }
+
   Object.assign(window.Bevy.render.mesh.mesh.skinning, { SkinnedMesh });
 })(globalThis);

@@ -60,6 +60,7 @@
   if (!window.Bevy.pipeline.core3D.hasOwnProperty("camera3D")) {
     window.Bevy.pipeline.core3D.camera3D = {};
   }
+
   Object.assign(window.Bevy.pipeline.core3D.camera3D, {
     Camera3d,
     Camera3dDepthLoadOp,

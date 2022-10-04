@@ -165,6 +165,7 @@
   if (!window.Bevy.render.camera.hasOwnProperty("projection")) {
     window.Bevy.render.camera.projection = {};
   }
+
   Object.assign(window.Bevy.render.camera.projection, {
     OrthographicProjection,
     PerspectiveProjection,

@@ -35,5 +35,6 @@
   if (!window.Bevy.ui.hasOwnProperty("geometry")) {
     window.Bevy.ui.geometry = {};
   }
+
   Object.assign(window.Bevy.ui.geometry, { Size, UiRect });
 })(globalThis);

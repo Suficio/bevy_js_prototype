@@ -59,6 +59,7 @@
   if (!window.Bevy.render.camera.hasOwnProperty("camera")) {
     window.Bevy.render.camera.camera = {};
   }
+
   Object.assign(window.Bevy.render.camera.camera, {
     Camera,
     CameraRenderGraph,

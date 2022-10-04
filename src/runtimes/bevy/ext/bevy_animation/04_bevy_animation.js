@@ -20,5 +20,6 @@
   if (!window.Bevy.hasOwnProperty("animation")) {
     window.Bevy.animation = {};
   }
+
   Object.assign(window.Bevy.animation, { AnimationPlayer });
 })(globalThis);
