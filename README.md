@@ -2,10 +2,6 @@
 
 Prototype JavaScript itegration with the Bevy game engine that allows you to write first class systems with all the freedom that JavaScript affords you.
 
-# bevy_js_prototype
-
-Prototype JavaScript itegration with the Bevy game engine that allows you to write first class systems with all the freedom that JavaScript affords you.
-
 ```diff
 - This codebase is seriously unstable, basic features are not implemented, and
 - you can easily expect the whole structure of the codebase to change at anytime.
