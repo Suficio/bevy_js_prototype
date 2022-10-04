@@ -24,7 +24,7 @@ struct GeneratorOptions {
     help: bool,
     #[options(help = "prettify generated files")]
     prettify: bool,
-    #[options(help = "target directory", default = "src/runtimes/bevy/ext")]
+    #[options(help = "target directory", default = "../../src/runtimes/bevy/ext")]
     target: PathBuf,
     #[options(
         help = "used to set the level that generated modules are loaded after",

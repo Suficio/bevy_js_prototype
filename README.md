@@ -57,12 +57,4 @@ Using Chrome or Edge you can open up `chrome://inspect` or `edge://inspect` in y
 
 ### Generating JavaScript definitions
 
-There is a built-in generator that generates JavaScript definitions for Bevy reflect types, it can be ran using:
-
-```diff
-- Be warned that the generator will overwrite existing files
-```
-
-```
-cargo run --features="generator" --bin generator
-```
+There is a built-in generator that generates JavaScript definitions for Bevy reflect types, more information is available in [bevy_js_generator/README.md](crates/bevy_js_generator/README.md).
