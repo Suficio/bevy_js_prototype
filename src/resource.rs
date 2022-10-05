@@ -18,9 +18,9 @@ impl<R: bjs::IntoRuntime> FromWorld for JsRuntimeResource<R> {
             .non_send_resource::<bjs::WorldResourceExt>()
             .inner()
             .clone();
-        let r = resource.clone();
 
         // Runtime must be initialized in a Bevy context
+        let r = resource.clone();
         let runtime = resource.lend(world, || R::into_runtime(r));
 
         Self {

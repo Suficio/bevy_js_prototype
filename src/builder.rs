@@ -19,10 +19,6 @@ impl JsRuntimeBuilder {
         &mut self.options.extensions
     }
 
-    pub fn resource_table(&mut self) -> &mut bjs::ResourceTable {
-        &mut self.options.resource_table
-    }
-
     // /// Whether inspector should break on the first line and wait
     // pub fn inspector_should_wait(mut self, inspector_should_wait: bool) -> Self {
     //     self.options.worker.should_break_on_first_statement = inspector_should_wait;
@@ -38,12 +34,6 @@ impl JsRuntimeBuilder {
     /// Adds JavaScript [Extension](bjs::Extension)
     pub fn with_extension(mut self, extension: bjs::Extension) -> Self {
         self.options.extensions.push(extension);
-        self
-    }
-
-    /// Adds Javascript [Resource](bjs::Resource)
-    pub fn with_resource(mut self, resource: Rc<dyn bjs::Resource>) -> Self {
-        self.options.resource_table.add_rc_dyn(resource);
         self
     }
 
