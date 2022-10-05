@@ -2,6 +2,14 @@ use crate as bjs;
 use bevy::{prelude::*, reflect::ReflectFromPtr};
 use bjs::{op, OpState};
 
+#[op(fast)]
+pub fn op_world_entity_spawn(state: &mut OpState, world_resource_id: u32, out: &mut [u8]) {
+    let res = bjs::runtimes::unwrap_world_resource(state, world_resource_id);
+    let mut world = res.borrow_world_mut();
+
+    super::entity::entity_to_bytes(&world.spawn_empty().id(), out)
+}
+
 #[op(v8)]
 pub fn op_world_get_resource(
     state: &mut OpState,

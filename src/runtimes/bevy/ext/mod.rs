@@ -38,9 +38,9 @@ pub fn serialize(
         .map_err(|err| bjs::AnyError::msg(format!("{}, occured at: {}", err, track.path())))
 }
 
-pub fn deserialize<'scope>(
+pub fn deserialize(
     type_registry: &TypeRegistryInternal,
-    scope: &mut v8::HandleScope<'scope>,
+    scope: &mut v8::HandleScope,
     value: bjs::serde_v8::Value,
 ) -> Result<Box<dyn Reflect>, bjs::AnyError> {
     let reflect_deserializer = UntypedReflectDeserializer::new(type_registry);

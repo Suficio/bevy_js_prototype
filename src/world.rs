@@ -26,12 +26,12 @@ impl WorldResource {
 
     pub fn borrow_world(&self) -> Ref<&World> {
         self.try_borrow_world()
-            .expect("World was not lent to JS runtime")
+            .expect("World was not lent to JS runtime or a mutable borrow exists")
     }
 
     pub fn borrow_world_mut(&self) -> RefMut<&mut World> {
         self.try_borrow_world_mut()
-            .expect("World was not lent to JS runtime")
+            .expect("World was not lent to JS runtime or another mutable borrow exists")
     }
 }
 

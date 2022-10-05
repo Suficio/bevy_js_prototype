@@ -33,6 +33,13 @@
 
     // TODO: Could eventually return TypeRegistration but there is no need thus far
     static getTypeIdWithName(worldResourceId, typeName) {
+      if (worldResourceId == null) {
+        throw new Error("World resource ID must be provided");
+      }
+      if (typeName == null) {
+        throw new Error("Type name must be provided");
+      }
+
       try {
         const buffer = new Uint8Array(8);
         // Check if type registration exists
@@ -136,6 +143,7 @@ ${err}`);
   }
 
   Object.assign(window.Bevy.ecs, {
+    worldResourceId,
     unwrapReflect,
     nextFrame,
     Bundle,

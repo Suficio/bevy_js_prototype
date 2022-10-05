@@ -19,9 +19,9 @@ pub fn init(resource: Rc<bjs::WorldResource>) -> bjs::Extension {
         ))
         .ops(vec![
             op_wait_for_frame::decl(),
-            entity::op_entity_spawn::decl(),
             entity::op_entity_insert_component::decl(),
             entity::op_entity_get_component::decl(),
+            world::op_world_entity_spawn::decl(),
             world::op_world_get_resource::decl(),
             type_registry::op_type_registry_get_type_id_with_name::decl(),
         ])

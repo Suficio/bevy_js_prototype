@@ -42,7 +42,10 @@ impl<T> RefLend<T> {
                     Ok(r) => Some(RefMut::map(r, |ptr| mem::transmute(ptr))),
                     Err(_) => None,
                 },
-                Err(_) => None,
+                Err(_) => {
+                    println!("Borrow exists");
+                    None
+                }
             }
         }
     }

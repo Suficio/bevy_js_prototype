@@ -2,26 +2,37 @@
 
 ((window) => {
   const { core } = window.Deno;
-  const { unwrapReflect, worldResourceId, Bundle } = window.Bevy.ecs;
+  const { unwrapReflect, Bundle } = window.Bevy.ecs;
 
-  class Entity {
-    constructor(eEntity) {
-      if (eEntity) {
-        this.entity = eEntity;
-      } else {
-        this.entity = core.ops.op_entity_spawn(worldResourceId);
+  class Entity extends Map {
+    constructor(worldResourceId, id) {
+      if (worldResourceId == null) {
+        throw new Error("World resource ID must be provided");
       }
+      if (id == null || !(id instanceof Uint8Array)) {
+        throw new Error("Entity ID must be provided and must be Uint8Array");
+      }
+
+      super();
+      this.worldResourceId = worldResourceId;
+      this.id = id;
     }
 
-    id() {
-      return this.eEntity;
-    }
+    static insert(worldResourceId, id, maybeComponent) {
+      if (worldResourceId == null) {
+        throw new Error("World resource ID must be provided");
+      }
+      if (id == null || !(id instanceof Uint8Array)) {
+        throw new Error("Entity ID must be provided and must be Uint8Array");
+      }
+      if (maybeComponent == null) {
+        throw new Error("Component or bundle must be provided");
+      }
 
-    insert(maybeComponent) {
       if (maybeComponent instanceof Bundle) {
         try {
           for (const component of Object.values(maybeComponent)) {
-            this.insert(component);
+            this.insert(worldResourceId, id, component);
           }
         } catch (err) {
           throw new Error(
@@ -33,18 +44,16 @@ ${err}`
         }
       } else {
         let reflected = unwrapReflect(maybeComponent);
-
         try {
           core.ops.op_entity_insert_component(
             worldResourceId,
-            this.entity,
+            id.buffer,
+            maybeComponent.typeId(),
             reflected
           );
         } catch (err) {
           throw new Error(
-            `Could not insert component: ${component.typeName()} into entity: ${
-              this.entity
-            }
+            `Could not insert component: ${maybeComponent.typeName()} into entity: ${id}
 ${err}`
           );
         }
@@ -53,21 +62,39 @@ ${err}`
       return this;
     }
 
-    get(constructor) {
+    static get(worldResourceId, id, constructor) {
+      if (worldResourceId == null) {
+        throw new Error("World resource ID must be provided");
+      }
+      if (id == null || !(id instanceof Uint8Array)) {
+        throw new Error("Entity ID must be provided and must be Uint8Array");
+      }
+      if (constructor == null) {
+        throw new Error("Constructor must be provided");
+      }
+
       try {
         let res = core.ops.op_entity_get_component(
           worldResourceId,
-          this.entity,
-          constructor.typeName
+          id.buffer,
+          constructor.typeId
         );
 
         return new constructor(res);
       } catch (err) {
         throw new Error(
-          `Could not get component: ${constructor.typeName} from entity: ${this.entity}
+          `Could not get component: ${constructor.typeName} from entity: ${id}
 ${err}`
         );
       }
+    }
+
+    insert(maybeComponent) {
+      return Entity.insert(this.worldResourceId, this.id, maybeComponent);
+    }
+
+    get(constructor) {
+      return Entity.get(this.worldResourceId, this.id, constructor);
     }
   }
 
