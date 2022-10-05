@@ -21,23 +21,29 @@ impl<T> RefLend<T> {
         r
     }
 
-    /// Borrows lent reference if one exists
-    pub fn borrow(&self) -> Option<&T> {
+    /// Borrows lent reference if one exists or can be borrowed
+    pub fn borrow(&self) -> Option<Ref<&T>> {
         unsafe {
-            self.0
-                .try_borrow()
-                .ok()
-                .and_then(|r| r.map(|ptr| mem::transmute(&*ptr)))
+            match self.0.try_borrow() {
+                Ok(r) => match Ref::filter_map(r, Option::as_ref) {
+                    Ok(r) => Some(Ref::map(r, |ptr| mem::transmute(ptr))),
+                    Err(_) => None,
+                },
+                Err(_) => None,
+            }
         }
     }
 
-    /// Mutably borrows reference if one exists
-    pub fn borrow_mut(&self) -> Option<&mut T> {
+    /// Mutably borrows reference if one exists or can be borrowed
+    pub fn borrow_mut(&self) -> Option<RefMut<&mut T>> {
         unsafe {
-            self.0
-                .try_borrow_mut()
-                .ok()
-                .and_then(|r| r.map(|ptr| mem::transmute(&mut *ptr)))
+            match self.0.try_borrow_mut() {
+                Ok(r) => match RefMut::filter_map(r, Option::as_mut) {
+                    Ok(r) => Some(RefMut::map(r, |ptr| mem::transmute(ptr))),
+                    Err(_) => None,
+                },
+                Err(_) => None,
+            }
         }
     }
 }
@@ -47,7 +53,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn lend() {
+    fn lend_already_borrowed() {
         let lend = RefLend::<String>::default();
         let mut string = "Hello, World!".to_string();
 
@@ -55,10 +61,27 @@ mod tests {
 
         lend.scope(&mut string, || {
             let string = lend.borrow().unwrap();
-            assert_eq!(string, "Hello, World!");
+            assert_eq!(*string, "Hello, World!");
+
+            assert!(lend.borrow().is_some());
+            assert!(lend.borrow_mut().is_none());
         });
 
         // Out of Lend scope
         assert!(lend.borrow().is_none());
+    }
+
+    #[test]
+    fn lend_already_borrowed_mut() {
+        let lend = RefLend::<String>::default();
+        let mut string = "Hello, World!".to_string();
+
+        lend.scope(&mut string, || {
+            let string = lend.borrow_mut().unwrap();
+            assert_eq!(*string, "Hello, World!");
+
+            assert!(lend.borrow().is_none());
+            assert!(lend.borrow_mut().is_none());
+        });
     }
 }

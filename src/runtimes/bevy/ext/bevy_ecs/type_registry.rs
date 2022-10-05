@@ -1,10 +1,26 @@
 //! Handles operations on the TypeRegistry of a World
 
-use std::any::TypeId;
-
 use crate as bjs;
 use bevy::prelude::*;
 use bjs::{op, OpState};
+use std::{any::TypeId, mem, slice};
+
+pub(crate) fn type_id_to_bytes(type_id: &TypeId, out: &mut [u8]) {
+    unsafe {
+        out.copy_from_slice(slice::from_raw_parts(
+            (type_id as *const TypeId) as *const u8,
+            mem::size_of::<TypeId>(),
+        ));
+    }
+}
+
+pub(crate) fn bytes_to_type_id(type_id: &[u8]) -> TypeId {
+    unsafe {
+        let mut out = [0u8; mem::size_of::<TypeId>()];
+        out.clone_from_slice(type_id);
+        mem::transmute(out)
+    }
+}
 
 /// Returns [TypeId] from type registration in [AppTypeRegistry] from the type
 /// name.
@@ -28,13 +44,7 @@ fn op_type_registry_get_type_id_with_name(
         None => return false,
     };
 
-    let slice = unsafe {
-        std::slice::from_raw_parts(
-            (&type_id as *const TypeId) as *const u8,
-            std::mem::size_of::<TypeId>(),
-        )
-    };
-    out.copy_from_slice(slice);
+    type_id_to_bytes(&type_id, out);
 
     true
 }

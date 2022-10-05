@@ -1,6 +1,30 @@
 "use strict";
 ((window) => {
-  const { ops } = window.Deno.core;
+  const { core } = window.Deno;
+
+  // Need to instruct how to serialize BigInt
+  BigInt.prototype.toJSON = function () {
+    return this.toString();
+  };
+
+  // Evaluate worldResourceId at extension initialization
+  const worldResourceId = (() => {
+    let res = core.resources();
+    let rid = Object.keys(res).find(
+      (rid) => res[rid] === "bevy_js::world::WorldResource"
+    );
+    if (rid === undefined) {
+      throw new Error(
+        "Could not find Bevy world resource id. Ensure that you are running within a Bevy context."
+      );
+    }
+
+    return rid;
+  })();
+
+  async function nextFrame() {
+    await core.opAsync("op_wait_for_frame", worldResourceId);
+  }
 
   class TypeRegistry {
     constructor(worldResourceId) {
@@ -9,11 +33,18 @@
 
     // TODO: Could eventually return TypeRegistration but there is no need thus far
     static getTypeIdWithName(worldResourceId, typeName) {
+      if (worldResourceId == undefined) {
+        throw new Error("World resource ID must be provided");
+      }
+      if (typeName == undefined) {
+        throw new Error("Type name must be provided");
+      }
+
       try {
         const buffer = new Uint8Array(8);
         // Check if type registration exists
         if (
-          ops.op_type_registry_get_type_id_with_name(
+          core.ops.op_type_registry_get_type_id_with_name(
             worldResourceId,
             typeName,
             buffer
@@ -34,34 +65,41 @@ ${err}`
     }
   }
 
-  class Reflect {
-    static reflect(reflectable) {
-      const obj = {};
-      obj[reflectable.typeName()] = reflectable;
-      return obj;
+  const Reflect = (Base) =>
+    class extends Base {
+      typeName() {
+        return this.constructor.typeName;
+      }
+
+      typeId() {
+        return this.constructor.typeId;
+      }
+
+      reflect() {
+        const obj = {};
+        obj[this.typeName()] = this;
+        return obj;
+      }
+    };
+
+  // Call reflect method otherwise panic if not implemented
+  function unwrapReflect(reflectable) {
+    try {
+      return reflectable.reflect();
+    } catch (err) {
+      throw new Error(`Object must implement method "reflect" in order to be reflected:
+${err}`);
     }
   }
 
-  class ReflectableObject extends Object {
+  class ReflectableObject extends Reflect(Object) {
     constructor(defaults, struct) {
       super();
       Object.assign(this, defaults, struct);
     }
-
-    typeName() {
-      return this.constructor.typeName;
-    }
-
-    typeId() {
-      return this.constructor.typeId;
-    }
-
-    reflect() {
-      return Reflect.reflect(this);
-    }
   }
 
-  class ReflectableArray extends Array {
+  class ReflectableArray extends Reflect(Array) {
     constructor(defaults, seq) {
       super();
 
@@ -71,54 +109,18 @@ ${err}`
 
       Object.assign(this, defaults, seq);
     }
-
-    typeName() {
-      return this.constructor.typeName;
-    }
-
-    typeId() {
-      return this.constructor.typeId;
-    }
-
-    reflect() {
-      return Reflect.reflect(this);
-    }
   }
 
-  class ReflectableEnum extends Object {
+  class ReflectableEnum extends Reflect(Object) {
     constructor(type, value) {
       super();
       this[type] = value;
     }
-
-    typeName() {
-      return this.constructor.typeName;
-    }
-
-    typeId() {
-      return this.constructor.typeId;
-    }
-
-    reflect() {
-      return Reflect.reflect(this);
-    }
   }
 
-  class ReflectableUnit extends String {
+  class ReflectableUnit extends Reflect(String) {
     constructor(value) {
       super(value);
-    }
-
-    typeName() {
-      return this.constructor.typeName;
-    }
-
-    typeId() {
-      return this.constructor.typeId;
-    }
-
-    reflect() {
-      return Reflect.reflect(this);
     }
   }
 
@@ -141,6 +143,9 @@ ${err}`
   }
 
   Object.assign(window.Bevy.ecs, {
+    worldResourceId,
+    unwrapReflect,
+    nextFrame,
     Bundle,
     Reflect,
     ReflectableObject,
