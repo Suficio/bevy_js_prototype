@@ -12,7 +12,6 @@ pub fn init(resource: Rc<bjs::WorldResource>) -> bjs::Extension {
     bjs::Extension::builder()
         .js(include_js_files!(
             prefix "bevy:ext/bevy_ecs",
-            "03_ecs.js",
             "03_bevy_ecs.js",
             "04_entity.js",
             "05_query.js",

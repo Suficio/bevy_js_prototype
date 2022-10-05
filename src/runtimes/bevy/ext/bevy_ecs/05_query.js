@@ -2,11 +2,11 @@
 
 ((window) => {
   const { core } = window.Deno;
-  const { reflect, worldResourceId } = window.bevyEcs;
+  const { unwrapReflect, worldResourceId } = window.Bevy.ecs;
 
   class Query {
     constructor() {}
   }
 
-  Object.assign(window.bevyEcs, { Query });
+  Object.assign(window.Bevy.ecs, { Query });
 })(globalThis);

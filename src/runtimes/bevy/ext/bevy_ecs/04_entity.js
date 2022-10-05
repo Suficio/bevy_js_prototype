@@ -2,7 +2,7 @@
 
 ((window) => {
   const { core } = window.Deno;
-  const { reflect, worldResourceId, Bundle } = window.Bevy.ecs;
+  const { unwrapReflect, worldResourceId, Bundle } = window.Bevy.ecs;
 
   class Entity {
     constructor(eEntity) {
@@ -32,7 +32,7 @@ ${err}`
           );
         }
       } else {
-        let reflected = reflect(maybeComponent);
+        let reflected = unwrapReflect(maybeComponent);
 
         try {
           core.ops.op_entity_insert_component(

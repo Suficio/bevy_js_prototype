@@ -3,8 +3,8 @@ use bevy::prelude::*;
 use bjs::{op, serde_v8, v8, OpState};
 
 #[op]
-pub fn op_entity_spawn(state: &mut OpState, r_world: bjs::ResourceId) -> u64 {
-    let res = bjs::runtimes::unwrap_world_resource(state, r_world);
+pub fn op_entity_spawn(state: &mut OpState, world_resource_id: u32) -> u64 {
+    let res = bjs::runtimes::unwrap_world_resource(state, world_resource_id);
     let mut world = res.borrow_world_mut();
 
     world.spawn_empty().id().to_bits()
@@ -14,11 +14,11 @@ pub fn op_entity_spawn(state: &mut OpState, r_world: bjs::ResourceId) -> u64 {
 pub fn op_entity_insert_component<'scope>(
     scope: &mut v8::HandleScope<'scope>,
     state: &mut OpState,
-    r_world: bjs::ResourceId,
-    e_entity: u64,
+    world_resource_id: u32,
+    entity: u64,
     component: serde_v8::Value,
 ) -> Result<(), bjs::AnyError> {
-    let res = bjs::runtimes::unwrap_world_resource(state, r_world);
+    let res = bjs::runtimes::unwrap_world_resource(state, world_resource_id);
     let mut world = res.borrow_world_mut();
 
     let type_registry = world.resource::<AppTypeRegistry>().clone();
@@ -45,8 +45,8 @@ pub fn op_entity_insert_component<'scope>(
             ))
         })?;
 
-    let e_entity = Entity::from_bits(e_entity);
-    component_impl.apply_or_insert(&mut world, e_entity, component.as_reflect());
+    let entity = Entity::from_bits(entity);
+    component_impl.apply_or_insert(&mut world, entity, component.as_reflect());
 
     Ok(())
 }
@@ -54,11 +54,11 @@ pub fn op_entity_insert_component<'scope>(
 #[op]
 pub fn op_entity_get_component(
     state: &mut OpState,
-    r_world: bjs::ResourceId,
-    e_entity: u64,
+    world_resource_id: u32,
+    entity: u64,
     type_name: String,
 ) -> Result<serde_json::Value, bjs::AnyError> {
-    let res = bjs::runtimes::unwrap_world_resource(state, r_world);
+    let res = bjs::runtimes::unwrap_world_resource(state, world_resource_id);
     let world = res.borrow_world_mut();
 
     let type_registry = world.resource::<AppTypeRegistry>().clone();
@@ -81,8 +81,8 @@ pub fn op_entity_get_component(
             ))
         })?;
 
-    let e_entity = Entity::from_bits(e_entity);
-    let value = component_impl.reflect(&world, e_entity).ok_or_else(|| {
+    let entity = Entity::from_bits(entity);
+    let value = component_impl.reflect(&world, entity).ok_or_else(|| {
         bjs::AnyError::msg(format!(
             "Could not get component {} as it does not exist",
             type_name
