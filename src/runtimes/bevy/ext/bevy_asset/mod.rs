@@ -1,9 +1,9 @@
 use crate as bjs;
 use bevy::{asset::HandleId, prelude::*};
-use bjs::{include_js_files, op, Extension, OpState};
+use bjs::{include_js_files, op, OpState};
 
-pub fn init() -> Extension {
-    Extension::builder()
+pub fn init() -> bjs::Extension {
+    bjs::Extension::builder()
         .js(include_js_files!(
             prefix "bevy:ext/bevy_asset",
             "04_handle.js",

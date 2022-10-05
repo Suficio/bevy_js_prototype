@@ -1,13 +1,14 @@
 use crate as bjs;
-use bjs::{include_js_files, op, Extension, OpState};
+use bjs::{include_js_files, op, OpState};
+use std::rc::Rc;
 
 // mod component;
 mod entity;
 mod type_registry;
 mod world;
 
-pub fn init() -> Extension {
-    Extension::builder()
+pub fn init(resource: Rc<bjs::WorldResource>) -> bjs::Extension {
+    bjs::Extension::builder()
         .js(include_js_files!(
             prefix "bevy:ext/bevy_ecs",
             "03_ecs.js",
@@ -23,6 +24,10 @@ pub fn init() -> Extension {
             world::op_world_get_resource::decl(),
             type_registry::op_type_registry_get_type_id_with_name::decl(),
         ])
+        .state(move |state| {
+            state.resource_table.add_rc(resource.clone());
+            Ok(())
+        })
         .build()
 }
 
