@@ -31,7 +31,7 @@ impl JsRuntimeBuilder {
         self
     }
 
-    /// Adds JavaScript [Extension](bjs::Extension)
+    /// Adds JavaScript [bjs::Extension]
     pub fn with_extension(mut self, extension: bjs::Extension) -> Self {
         self.options.extensions.push(extension);
         self
