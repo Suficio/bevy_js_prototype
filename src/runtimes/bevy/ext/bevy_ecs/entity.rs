@@ -5,7 +5,7 @@ use bjs::{op, serde_v8, v8, OpState};
 #[op]
 pub fn op_entity_spawn(state: &mut OpState, r_world: bjs::ResourceId) -> u64 {
     let res = bjs::runtimes::unwrap_world_resource(state, r_world);
-    let world = res.borrow_world_mut();
+    let mut world = res.borrow_world_mut();
 
     world.spawn_empty().id().to_bits()
 }
@@ -19,7 +19,7 @@ pub fn op_entity_insert_component<'scope>(
     component: serde_v8::Value,
 ) -> Result<(), bjs::AnyError> {
     let res = bjs::runtimes::unwrap_world_resource(state, r_world);
-    let world = res.borrow_world_mut();
+    let mut world = res.borrow_world_mut();
 
     let type_registry = world.resource::<AppTypeRegistry>().clone();
     let type_registry = type_registry.read();
@@ -46,7 +46,7 @@ pub fn op_entity_insert_component<'scope>(
         })?;
 
     let e_entity = Entity::from_bits(e_entity);
-    component_impl.apply_or_insert(world, e_entity, component.as_reflect());
+    component_impl.apply_or_insert(&mut world, e_entity, component.as_reflect());
 
     Ok(())
 }
@@ -82,7 +82,7 @@ pub fn op_entity_get_component(
         })?;
 
     let e_entity = Entity::from_bits(e_entity);
-    let value = component_impl.reflect(world, e_entity).ok_or_else(|| {
+    let value = component_impl.reflect(&world, e_entity).ok_or_else(|| {
         bjs::AnyError::msg(format!(
             "Could not get component {} as it does not exist",
             type_name
