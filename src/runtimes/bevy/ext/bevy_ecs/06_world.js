@@ -10,7 +10,7 @@
     }
 
     static spawn(worldResourceId) {
-      if (!worldResourceId) {
+      if (worldResourceId == undefined) {
         throw new Error("World resource ID must be provided");
       }
 
@@ -20,10 +20,10 @@
     }
 
     static getResource(worldResourceId, constructor) {
-      if (!worldResourceId) {
+      if (worldResourceId == undefined) {
         throw new Error("World resource ID must be provided");
       }
-      if (!constructor) {
+      if (constructor == undefined) {
         throw new Error("Constructor must be provided");
       }
 

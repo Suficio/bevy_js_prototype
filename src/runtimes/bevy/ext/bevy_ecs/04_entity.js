@@ -6,10 +6,10 @@
 
   class Entity extends Map {
     constructor(worldResourceId, id) {
-      if (worldResourceId == null) {
+      if (worldResourceId == undefined) {
         throw new Error("World resource ID must be provided");
       }
-      if (id == null || !(id instanceof Uint8Array)) {
+      if (id == undefined || !(id instanceof Uint8Array)) {
         throw new Error("Entity ID must be provided and must be Uint8Array");
       }
 
@@ -19,13 +19,13 @@
     }
 
     static insert(worldResourceId, id, maybeComponent) {
-      if (worldResourceId == null) {
+      if (worldResourceId == undefined) {
         throw new Error("World resource ID must be provided");
       }
-      if (id == null || !(id instanceof Uint8Array)) {
+      if (id == undefined || !(id instanceof Uint8Array)) {
         throw new Error("Entity ID must be provided and must be Uint8Array");
       }
-      if (maybeComponent == null) {
+      if (maybeComponent == undefined) {
         throw new Error("Component or bundle must be provided");
       }
 
@@ -63,13 +63,13 @@ ${err}`
     }
 
     static get(worldResourceId, id, constructor) {
-      if (worldResourceId == null) {
+      if (worldResourceId == undefined) {
         throw new Error("World resource ID must be provided");
       }
-      if (id == null || !(id instanceof Uint8Array)) {
+      if (id == undefined || !(id instanceof Uint8Array)) {
         throw new Error("Entity ID must be provided and must be Uint8Array");
       }
-      if (constructor == null) {
+      if (constructor == undefined) {
         throw new Error("Constructor must be provided");
       }
 

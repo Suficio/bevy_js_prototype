@@ -33,10 +33,10 @@
 
     // TODO: Could eventually return TypeRegistration but there is no need thus far
     static getTypeIdWithName(worldResourceId, typeName) {
-      if (worldResourceId == null) {
+      if (worldResourceId == undefined) {
         throw new Error("World resource ID must be provided");
       }
-      if (typeName == null) {
+      if (typeName == undefined) {
         throw new Error("Type name must be provided");
       }
 

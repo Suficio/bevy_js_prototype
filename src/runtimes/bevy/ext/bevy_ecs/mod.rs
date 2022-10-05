@@ -4,7 +4,6 @@ use std::rc::Rc;
 
 // mod component;
 mod entity;
-mod query;
 mod type_registry;
 mod world;
 

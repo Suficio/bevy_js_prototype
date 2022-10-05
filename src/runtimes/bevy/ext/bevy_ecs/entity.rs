@@ -1,6 +1,6 @@
 use crate as bjs;
 use bevy::prelude::*;
-use bjs::{op, serde_v8, v8, AnyError, OpState};
+use bjs::{op, serde_v8, v8, OpState};
 use std::{mem, slice};
 
 pub(crate) fn entity_to_bytes(entity: &Entity, out: &mut [u8]) {
@@ -33,7 +33,7 @@ pub fn op_entity_insert_component(
     // Providing `type_id` necessary as long as component is dynamic
     type_id: &[u8],
     component: serde_v8::Value,
-) -> Result<(), AnyError> {
+) -> Result<(), bjs::AnyError> {
     let res = bjs::runtimes::unwrap_world_resource(state, world_resource_id);
     let mut world = res.borrow_world_mut();
 
