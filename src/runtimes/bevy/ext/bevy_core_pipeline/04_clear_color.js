@@ -14,6 +14,10 @@
       worldResourceId,
       this.typeName
     );
+    static componentId = TypeRegistry.getComponentId(
+      worldResourceId,
+      this.typeId
+    );
 
     constructor(seq) {
       super(null, seq);
@@ -26,6 +30,10 @@
       worldResourceId,
       this.typeName
     );
+    static componentId = TypeRegistry.getComponentId(
+      worldResourceId,
+      this.typeId
+    );
 
     constructor() {
       super("Default");
@@ -36,6 +44,10 @@
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
+    );
+    static componentId = TypeRegistry.getComponentId(
+      worldResourceId,
+      this.typeId
     );
 
     constructor() {
@@ -51,6 +63,10 @@
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
+    );
+    static componentId = TypeRegistry.getComponentId(
+      worldResourceId,
+      this.typeId
     );
 
     constructor(type, value) {

@@ -15,6 +15,10 @@
       worldResourceId,
       this.typeName
     );
+    static componentId = TypeRegistry.getComponentId(
+      worldResourceId,
+      this.typeId
+    );
 
     constructor() {
       super("Left");
@@ -26,6 +30,10 @@
       worldResourceId,
       this.typeName
     );
+    static componentId = TypeRegistry.getComponentId(
+      worldResourceId,
+      this.typeId
+    );
 
     constructor() {
       super("Center");
@@ -36,6 +44,10 @@
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
+    );
+    static componentId = TypeRegistry.getComponentId(
+      worldResourceId,
+      this.typeId
     );
 
     constructor() {
@@ -52,6 +64,10 @@
       worldResourceId,
       this.typeName
     );
+    static componentId = TypeRegistry.getComponentId(
+      worldResourceId,
+      this.typeId
+    );
 
     constructor(type, value) {
       super(type, value);
@@ -67,6 +83,10 @@
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
+    );
+    static componentId = TypeRegistry.getComponentId(
+      worldResourceId,
+      this.typeId
     );
 
     constructor(struct) {
@@ -140,6 +160,10 @@
       worldResourceId,
       this.typeName
     );
+    static componentId = TypeRegistry.getComponentId(
+      worldResourceId,
+      this.typeId
+    );
 
     constructor(struct) {
       super(null, struct);
@@ -154,6 +178,10 @@
       worldResourceId,
       this.typeName
     );
+    static componentId = TypeRegistry.getComponentId(
+      worldResourceId,
+      this.typeId
+    );
 
     constructor(struct) {
       super({ value: "", style: new TextStyle() }, struct);
@@ -165,6 +193,10 @@
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
+    );
+    static componentId = TypeRegistry.getComponentId(
+      worldResourceId,
+      this.typeId
     );
 
     constructor(struct) {
@@ -178,6 +210,10 @@
       worldResourceId,
       this.typeName
     );
+    static componentId = TypeRegistry.getComponentId(
+      worldResourceId,
+      this.typeId
+    );
 
     constructor() {
       super("Top");
@@ -189,6 +225,10 @@
       worldResourceId,
       this.typeName
     );
+    static componentId = TypeRegistry.getComponentId(
+      worldResourceId,
+      this.typeId
+    );
 
     constructor() {
       super("Center");
@@ -199,6 +239,10 @@
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
+    );
+    static componentId = TypeRegistry.getComponentId(
+      worldResourceId,
+      this.typeId
     );
 
     constructor() {
@@ -214,6 +258,10 @@
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
+    );
+    static componentId = TypeRegistry.getComponentId(
+      worldResourceId,
+      this.typeId
     );
 
     constructor(type, value) {

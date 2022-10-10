@@ -19,16 +19,6 @@
     }
 
     static insert(worldResourceId, id, maybeComponent) {
-      if (worldResourceId == undefined) {
-        throw new Error("World resource ID must be provided");
-      }
-      if (id == undefined || !(id instanceof Uint8Array)) {
-        throw new Error("Entity ID must be provided and must be Uint8Array");
-      }
-      if (maybeComponent == undefined) {
-        throw new Error("Component or bundle must be provided");
-      }
-
       if (maybeComponent instanceof Bundle) {
         try {
           for (const component of Object.values(maybeComponent)) {
@@ -48,7 +38,7 @@ ${err}`
           core.ops.op_entity_insert_component(
             worldResourceId,
             id.buffer,
-            maybeComponent.typeId(),
+            maybeComponent.typeId().buffer,
             reflected
           );
         } catch (err) {
@@ -63,16 +53,6 @@ ${err}`
     }
 
     static get(worldResourceId, id, constructor) {
-      if (worldResourceId == undefined) {
-        throw new Error("World resource ID must be provided");
-      }
-      if (id == undefined || !(id instanceof Uint8Array)) {
-        throw new Error("Entity ID must be provided and must be Uint8Array");
-      }
-      if (constructor == undefined) {
-        throw new Error("Constructor must be provided");
-      }
-
       try {
         let res = core.ops.op_entity_get_component(
           worldResourceId,

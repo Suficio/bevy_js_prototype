@@ -8,6 +8,10 @@
       worldResourceId,
       this.typeName
     );
+    static componentId = TypeRegistry.getComponentId(
+      worldResourceId,
+      this.typeId
+    );
 
     constructor(struct) {
       super(
@@ -26,6 +30,10 @@
       worldResourceId,
       this.typeName
     );
+    static componentId = TypeRegistry.getComponentId(
+      worldResourceId,
+      this.typeId
+    );
 
     constructor(struct) {
       super({ is_visible: true }, struct);
@@ -37,6 +45,10 @@
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
+    );
+    static componentId = TypeRegistry.getComponentId(
+      worldResourceId,
+      this.typeId
     );
 
     constructor(struct) {

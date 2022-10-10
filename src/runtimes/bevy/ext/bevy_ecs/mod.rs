@@ -23,6 +23,7 @@ pub fn init(resource: Rc<bjs::WorldResource>) -> bjs::Extension {
             world::op_world_entity_spawn::decl(),
             world::op_world_get_resource::decl(),
             type_registry::op_type_registry_get_type_id_with_name::decl(),
+            type_registry::op_type_registry_get_component_id_with_type_id::decl(),
         ])
         .state(move |state| {
             state.resource_table.add_rc(resource.clone());

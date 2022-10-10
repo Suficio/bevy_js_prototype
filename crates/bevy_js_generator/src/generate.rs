@@ -225,6 +225,11 @@ fn generate_type_info(o: &mut String, type_name: &str, module: &mut Module) {
         r#"static typeId = TypeRegistry.getTypeIdWithName(worldResourceId, this.typeName);"#,
     )
     .unwrap();
+    writeln!(
+        o,
+        r#"static componentId = TypeRegistry.getComponentId(worldResourceId, this.typeId);"#,
+    )
+    .unwrap();
 
     write!(o, "\n").unwrap();
 }

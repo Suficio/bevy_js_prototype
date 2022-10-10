@@ -9,6 +9,10 @@
       worldResourceId,
       this.typeName
     );
+    static componentId = TypeRegistry.getComponentId(
+      worldResourceId,
+      this.typeId
+    );
 
     constructor() {
       super("KeepAspect");
@@ -21,6 +25,10 @@
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
+    );
+    static componentId = TypeRegistry.getComponentId(
+      worldResourceId,
+      this.typeId
     );
 
     constructor(type, value) {

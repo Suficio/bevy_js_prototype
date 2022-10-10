@@ -14,6 +14,10 @@
       worldResourceId,
       this.typeName
     );
+    static componentId = TypeRegistry.getComponentId(
+      worldResourceId,
+      this.typeId
+    );
 
     constructor(struct) {
       super(
@@ -39,6 +43,10 @@
       worldResourceId,
       this.typeName
     );
+    static componentId = TypeRegistry.getComponentId(
+      worldResourceId,
+      this.typeId
+    );
 
     constructor(struct) {
       super(
@@ -57,6 +65,10 @@
       worldResourceId,
       this.typeName
     );
+    static componentId = TypeRegistry.getComponentId(
+      worldResourceId,
+      this.typeId
+    );
 
     constructor(type, value) {
       super(type, value);
@@ -69,6 +81,10 @@
       worldResourceId,
       this.typeName
     );
+    static componentId = TypeRegistry.getComponentId(
+      worldResourceId,
+      this.typeId
+    );
 
     constructor() {
       super("None");
@@ -80,6 +96,10 @@
       worldResourceId,
       this.typeName
     );
+    static componentId = TypeRegistry.getComponentId(
+      worldResourceId,
+      this.typeId
+    );
 
     constructor() {
       super("WindowSize");
@@ -90,6 +110,10 @@
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
+    );
+    static componentId = TypeRegistry.getComponentId(
+      worldResourceId,
+      this.typeId
     );
 
     constructor(struct) {
@@ -110,6 +134,10 @@
       worldResourceId,
       this.typeName
     );
+    static componentId = TypeRegistry.getComponentId(
+      worldResourceId,
+      this.typeId
+    );
 
     constructor(type, value) {
       super(type, value);
@@ -122,6 +150,10 @@
       worldResourceId,
       this.typeName
     );
+    static componentId = TypeRegistry.getComponentId(
+      worldResourceId,
+      this.typeId
+    );
 
     constructor() {
       super("Center");
@@ -132,6 +164,10 @@
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
+    );
+    static componentId = TypeRegistry.getComponentId(
+      worldResourceId,
+      this.typeId
     );
 
     constructor() {
@@ -146,6 +182,10 @@
     static typeId = TypeRegistry.getTypeIdWithName(
       worldResourceId,
       this.typeName
+    );
+    static componentId = TypeRegistry.getComponentId(
+      worldResourceId,
+      this.typeId
     );
 
     constructor(type, value) {
