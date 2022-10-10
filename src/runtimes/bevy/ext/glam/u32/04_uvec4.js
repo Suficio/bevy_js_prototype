@@ -8,6 +8,10 @@
       worldResourceId,
       this.typeName
     );
+    static componentId = TypeRegistry.getComponentId(
+      worldResourceId,
+      this.typeId
+    );
 
     constructor(struct) {
       super({ x: 0, y: 0, z: 0, w: 0 }, struct);

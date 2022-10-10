@@ -10,6 +10,10 @@
       worldResourceId,
       this.typeName
     );
+    static componentId = TypeRegistry.getComponentId(
+      worldResourceId,
+      this.typeId
+    );
 
     constructor(seq) {
       super([Affine3A.Identity()], seq);

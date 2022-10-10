@@ -33,13 +33,6 @@
 
     // TODO: Could eventually return TypeRegistration but there is no need thus far
     static getTypeIdWithName(worldResourceId, typeName) {
-      if (worldResourceId == undefined) {
-        throw new Error("World resource ID must be provided");
-      }
-      if (typeName == undefined) {
-        throw new Error("Type name must be provided");
-      }
-
       try {
         const buffer = new Uint8Array(8);
         // Check if type registration exists
@@ -47,7 +40,7 @@
           core.ops.op_type_registry_get_type_id_with_name(
             worldResourceId,
             typeName,
-            buffer
+            buffer.buffer
           )
         ) {
           return buffer;
@@ -60,8 +53,33 @@ ${err}`
       }
     }
 
+    static getComponentId(worldResourceId, typeId) {
+      try {
+        const buffer = new Uint8Array(8);
+        // Check if component registration exists
+        if (
+          core.ops.op_type_registry_get_component_id_with_type_id(
+            worldResourceId,
+            typeId.buffer,
+            buffer.buffer
+          )
+        ) {
+          return buffer;
+        }
+      } catch (err) {
+        throw new Error(
+          `Could not get component ID for type name: ${typeName}
+${err}`
+        );
+      }
+    }
+
     getTypeIdWithName(typeName) {
       return TypeRegistry.getTypeIdWithName(this.worldResourceId, typeName);
+    }
+
+    getComponentId(typeId) {
+      return TypeRegistry.getComponentId(this.worldResourceId, typeId);
     }
   }
 
@@ -73,6 +91,10 @@ ${err}`
 
       typeId() {
         return this.constructor.typeId;
+      }
+
+      componentId() {
+        return this.constructor.componentId;
       }
 
       reflect() {
@@ -141,7 +163,6 @@ ${err}`);
   if (!window.Bevy.hasOwnProperty("ecs")) {
     window.Bevy.ecs = {};
   }
-
   Object.assign(window.Bevy.ecs, {
     worldResourceId,
     unwrapReflect,

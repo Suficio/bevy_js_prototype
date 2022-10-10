@@ -8,6 +8,10 @@
       worldResourceId,
       this.typeName
     );
+    static componentId = TypeRegistry.getComponentId(
+      worldResourceId,
+      this.typeId
+    );
 
     constructor(struct) {
       super({ elapsed: { secs: 0, nanos: 0 }, paused: false }, struct);

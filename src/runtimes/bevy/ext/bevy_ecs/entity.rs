@@ -13,6 +13,7 @@ pub(crate) fn entity_to_bytes(entity: &Entity, out: &mut [u8]) {
     }
 }
 
+// TODO: Return as reference to Entity
 pub(crate) fn bytes_to_entity(entity_id: &[u8]) -> Entity {
     let id = unsafe {
         let mut out = [0u8; mem::size_of::<u64>()];

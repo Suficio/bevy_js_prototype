@@ -10,23 +10,12 @@
     }
 
     static spawn(worldResourceId) {
-      if (worldResourceId == undefined) {
-        throw new Error("World resource ID must be provided");
-      }
-
       const id = new Uint8Array(8);
       ops.op_world_entity_spawn(worldResourceId, id.buffer);
       return new Entity(worldResourceId, id);
     }
 
     static getResource(worldResourceId, constructor) {
-      if (worldResourceId == undefined) {
-        throw new Error("World resource ID must be provided");
-      }
-      if (constructor == undefined) {
-        throw new Error("Constructor must be provided");
-      }
-
       try {
         let res = ops.op_world_get_resource(
           worldResourceId,
