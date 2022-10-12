@@ -1,7 +1,10 @@
 "use strict";
 ((window) => {
-  const { ReflectableArray, TypeRegistry, worldResourceId } = window.Bevy.ecs;
+  const { ReflectableArray, ReflectableObject, TypeRegistry, worldResourceId } =
+    window.Bevy.ecs;
   const { Affine3A } = window.glam.f32.affine3A;
+  const { Mat3A } = window.glam.f32.sse2.mat3A;
+  const { Vec3A } = window.glam.f32.sse2.vec3A;
 
   class GlobalTransform extends ReflectableArray {
     static typeName =
@@ -16,7 +19,19 @@
     );
 
     constructor(seq) {
-      super([Affine3A.Identity()], seq);
+      super(
+        [
+          new Affine3A({
+            matrix3: new Mat3A({
+              x_axis: new Vec3A({ x: 1.0, y: 0.0, z: 0.0 }),
+              y_axis: new Vec3A({ x: 0.0, y: 1.0, z: 0.0 }),
+              z_axis: new Vec3A({ x: 0.0, y: 0.0, z: 1.0 }),
+            }),
+            translation: new Vec3A({ x: 0.0, y: 0.0, z: 0.0 }),
+          }),
+        ],
+        seq
+      );
     }
   }
 

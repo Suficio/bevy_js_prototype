@@ -1,7 +1,17 @@
 use crate as bjs;
+use bjs::include_js_files;
 use std::rc::Rc;
 
 pub mod ext;
+
+pub fn init() -> bjs::Extension {
+    bjs::Extension::builder()
+        .js(include_js_files!(
+            prefix "bevy",
+            "./03_console.js",
+        ))
+        .build()
+}
 
 /// Represents the default `bevy_js` [JsRuntime](bjs::JsRuntime) which provides
 /// methods to interact with `Bevy` [Worlds](bevy::prelude::World).
@@ -13,6 +23,8 @@ impl BevyRuntime {
     pub fn builder(resource: Rc<bjs::WorldResource>) -> bjs::JsRuntimeBuilder {
         bjs::JsRuntime::builder()
             .with_module_loader(Rc::new(bjs::FsModuleLoader))
+            .with_extension(deno_console::init())
+            .with_extension(init())
             .with_extension(ext::bevy_ecs::init(resource))
             .with_extension(ext::core::init())
             .with_extension(ext::alloc::init())

@@ -126,7 +126,7 @@ ${err}`);
       super();
 
       if (seq && !(seq instanceof Array)) {
-        seq = [seq];
+        seq = Object.assign([], seq);
       }
 
       Object.assign(this, defaults, seq);

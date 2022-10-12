@@ -15,10 +15,7 @@
 
     constructor(struct) {
       super(
-        {
-          is_visible_in_hierarchy: false,
-          is_visible_in_view: false,
-        },
+        { is_visible_in_hierarchy: false, is_visible_in_view: false },
         struct
       );
     }
