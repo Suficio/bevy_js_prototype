@@ -25,8 +25,8 @@
       this.typeId
     );
 
-    constructor(struct) {
-      super([0.0, 0.0, 0.0], struct);
+    constructor(seq) {
+      super([0.0, 0.0, 0.0], seq);
     }
 
     get x() {

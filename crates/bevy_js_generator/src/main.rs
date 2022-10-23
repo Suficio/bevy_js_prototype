@@ -64,6 +64,10 @@ fn generate(opts: &GeneratorOptions, type_registry: &TypeRegistryInternal) {
 
     let dependencies = generate_modules(opts, type_registry);
     for (path, module) in dependencies.iter() {
+        if module.is_empty() {
+            continue;
+        }
+
         let mut p = opts.target.join(path);
         p.set_extension("js");
         let p = Path::new(&p);

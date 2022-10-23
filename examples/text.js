@@ -60,7 +60,6 @@ function setup(colorText, fpsText) {
       .withTextAlignment(TextAlignment.TopCenter())
       .withStyle(
         new Style({
-          align_self: AlignSelf.FlexEnd(),
           position_type: PositionType.Absolute(),
           position: new UiRect({
             bottom: Val.Px(5.0),
@@ -88,11 +87,7 @@ function setup(colorText, fpsText) {
           color: Color.Gold(),
         })
       ),
-    ]).withStyle(
-      new Style({
-        align_self: AlignSelf.FlexEnd(),
-      })
-    )
+    ])
   );
 }
 
