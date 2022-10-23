@@ -54,6 +54,10 @@ ${err}`
     }
 
     static getComponentId(worldResourceId, typeId) {
+      if (typeId == null) {
+        return undefined;
+      }
+
       try {
         const buffer = new Uint8Array(8);
         // Check if component registration exists
@@ -68,7 +72,7 @@ ${err}`
         }
       } catch (err) {
         throw new Error(
-          `Could not get component ID for type name: ${typeName}
+          `Could not get component ID for type ID: ${typeId}
 ${err}`
         );
       }
@@ -126,7 +130,7 @@ ${err}`);
       super();
 
       if (seq && !(seq instanceof Array)) {
-        seq = [seq];
+        seq = Object.assign([], seq);
       }
 
       Object.assign(this, defaults, seq);

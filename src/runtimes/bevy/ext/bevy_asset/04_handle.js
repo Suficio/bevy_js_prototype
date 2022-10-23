@@ -6,7 +6,10 @@
     static typeName = "bevy_asset::handle::Handle";
 
     constructor(struct) {
-      super(null, struct);
+      super(
+        { id: { Id: ["d81b7179-0448-4eb0-89fe-c067222725bf", 0] } },
+        struct
+      );
     }
   }
 

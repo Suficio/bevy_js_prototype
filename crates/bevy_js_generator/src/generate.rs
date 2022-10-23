@@ -215,11 +215,10 @@ fn generate_default_type_init(
     o
 }
 
-fn generate_type_info(o: &mut String, type_name: &str, module: &mut Module) {
+fn generate_type_info(o: &mut String, module: &mut Module) {
     module.insert_import("bevy_ecs", "TypeRegistry");
     module.insert_import("bevy_ecs", "worldResourceId");
 
-    writeln!(o, r#"static typeName = "{type_name}""#,).unwrap();
     writeln!(
         o,
         r#"static typeId = TypeRegistry.getTypeIdWithName(worldResourceId, this.typeName);"#,
@@ -230,8 +229,6 @@ fn generate_type_info(o: &mut String, type_name: &str, module: &mut Module) {
         r#"static componentId = TypeRegistry.getComponentId(worldResourceId, this.typeId);"#,
     )
     .unwrap();
-
-    write!(o, "\n").unwrap();
 }
 
 fn generate_array_type(
@@ -239,13 +236,21 @@ fn generate_array_type(
     type_registry: &TypeRegistryInternal,
     short_name: &str,
     type_name: &str,
+    generics: &syn::punctuated::Punctuated<syn::GenericArgument, syn::token::Comma>,
     registration: &TypeRegistration,
     module: &mut Module,
 ) {
     module.insert_import("bevy_ecs", "ReflectableArray");
 
     writeln!(o, r#"class {short_name} extends ReflectableArray {{"#,).unwrap();
-    generate_type_info(o, type_name, module);
+
+    writeln!(o, r#"static typeName = "{type_name}""#,).unwrap();
+    if generics.is_empty() {
+        generate_type_info(o, module);
+    }
+
+    write!(o, "\n").unwrap();
+
     writeln!(
         o,
         r#"constructor(seq) {{ super({}, seq) }}"#,
@@ -264,14 +269,21 @@ pub fn generate_type(
     let mut o = String::new();
 
     let (short_name, _) = strip_generics(registration.short_name());
-    let (type_name, _generics) = strip_generics(registration.type_name());
+    let (type_name, generics) = strip_generics(registration.type_name());
 
     match registration.type_info() {
         TypeInfo::Struct(_) => {
             module.insert_import("bevy_ecs", "ReflectableObject");
 
             writeln!(&mut o, r#"class {short_name} extends ReflectableObject {{"#,).unwrap();
-            generate_type_info(&mut o, &type_name, module);
+
+            writeln!(o, r#"static typeName = "{type_name}""#,).unwrap();
+            if generics.is_empty() {
+                generate_type_info(&mut o, module);
+            }
+
+            write!(o, "\n").unwrap();
+
             writeln!(
                 &mut o,
                 r#"constructor(struct) {{ super({}, struct) }}"#,
@@ -285,6 +297,7 @@ pub fn generate_type(
             type_registry,
             &short_name,
             &type_name,
+            &generics,
             registration,
             module,
         ),
@@ -294,6 +307,7 @@ pub fn generate_type(
             type_registry,
             &short_name,
             &type_name,
+            &generics,
             registration,
             module,
         ),
@@ -313,7 +327,14 @@ pub fn generate_type(
                             r#"class {short_name}{name} extends ReflectableObject {{"#,
                         )
                         .unwrap();
-                        generate_type_info(&mut o, &type_name, module);
+
+                        writeln!(o, r#"static typeName = "{type_name}""#,).unwrap();
+                        if generics.is_empty() {
+                            generate_type_info(&mut o, module);
+                        }
+
+                        write!(o, "\n").unwrap();
+
                         writeln!(
                             &mut o,
                             r#"constructor(struct) {{ super({}, struct) }}"#,
@@ -329,6 +350,7 @@ pub fn generate_type(
                                 type_registry,
                                 &format!("{short_name}{name}"),
                                 &type_name,
+                                &generics,
                                 registration,
                                 module,
                             );
@@ -344,7 +366,14 @@ pub fn generate_type(
                             r#"class {short_name}{name} extends ReflectableUnit {{"#,
                         )
                         .unwrap();
-                        generate_type_info(&mut o, &type_name, module);
+
+                        writeln!(o, r#"static typeName = "{type_name}""#,).unwrap();
+                        if generics.is_empty() {
+                            generate_type_info(&mut o, module);
+                        }
+
+                        write!(o, "\n").unwrap();
+
                         writeln!(&mut o, r#"constructor() {{ super("{name}") }}"#,).unwrap();
                         writeln!(&mut o, r#"}}"#,).unwrap();
                     }
@@ -389,7 +418,13 @@ pub fn generate_type(
 
             write!(&mut o, "\n").unwrap();
 
-            generate_type_info(&mut o, &type_name, module);
+            writeln!(o, r#"static typeName = "{type_name}""#,).unwrap();
+            if generics.is_empty() {
+                generate_type_info(&mut o, module);
+            }
+
+            write!(o, "\n").unwrap();
+
             writeln!(
                 &mut o,
                 r#"constructor(type, value) {{ super(type, value) }}"#,

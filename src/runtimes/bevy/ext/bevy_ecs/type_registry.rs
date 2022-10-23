@@ -31,6 +31,7 @@ pub(crate) fn component_id_to_bytes(component_id: &ComponentId, out: &mut [u8]) 
     }
 }
 
+#[allow(dead_code)]
 pub(crate) fn bytes_to_component_id(component_id: &[u8]) -> ComponentId {
     unsafe {
         let mut out = [0u8; mem::size_of::<ComponentId>()];
