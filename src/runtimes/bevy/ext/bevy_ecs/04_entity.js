@@ -37,8 +37,8 @@ ${err}`
         try {
           core.ops.op_entity_insert_component(
             worldResourceId,
-            id.buffer,
-            maybeComponent.typeId().buffer,
+            id,
+            maybeComponent.typeId(),
             reflected
           );
         } catch (err) {
@@ -56,7 +56,7 @@ ${err}`
       try {
         let res = core.ops.op_entity_get_component(
           worldResourceId,
-          id.buffer,
+          id,
           constructor.typeId
         );
 

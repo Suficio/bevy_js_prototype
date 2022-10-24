@@ -754,7 +754,7 @@
     );
 
     constructor(struct) {
-      super({ size: new Vec2({ x: 0.0, y: 0.0 }) }, struct);
+      super({ calculated_size: new Vec2({ x: 0.0, y: 0.0 }) }, struct);
     }
   }
 

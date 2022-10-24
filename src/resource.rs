@@ -1,50 +1,111 @@
 use crate as bjs;
-use bevy::prelude::*;
-use bjs::{
-    futures::{channel::oneshot, executor, future},
-    v8,
-};
-use std::{marker::PhantomData, task::Poll};
+use bevy::{prelude::*, tasks::IoTaskPool};
+use bjs::{futures::channel::oneshot, v8};
+use std::{cell::RefCell, marker::PhantomData, rc::Rc};
 
 pub struct JsRuntimeResource<R> {
-    runtime: bjs::JsRuntime,
+    // Refactor to Option
+    runtime: Rc<RefCell<bjs::JsRuntime>>,
     _phantom: PhantomData<R>,
 }
 
 impl<R: bjs::IntoRuntime> FromWorld for JsRuntimeResource<R> {
     fn from_world(world: &mut World) -> Self {
-        // TODO: Use World::resource_scope
-        let resource = world
-            .non_send_resource::<bjs::WorldResourceExt>()
-            .inner()
-            .clone();
-
-        // Runtime must be initialized in a Bevy context
-        let r = resource.clone();
-        let runtime = resource.lend(world, || R::into_runtime(r));
+        let runtime = world.resource_scope(|world, resource: Mut<bjs::WorldResourceExt>| {
+            let resource = resource.inner();
+            // Runtime must be initialized in a Bevy context
+            let runtime = resource.lend(world, || R::into_runtime(resource.clone()));
+            runtime
+        });
 
         Self {
-            runtime,
+            runtime: Rc::new(RefCell::new(runtime)),
             _phantom: PhantomData::default(),
         }
     }
 }
 
 impl<R> JsRuntimeResource<R> {
+    /// Executes a script on the [JsRuntime](bjs::JsRuntime)
+    ///
+    /// # Safety
+    ///
+    /// Script must be executed in the context of a Bevy world
     pub fn execute_script(
-        &mut self,
+        &self,
         name: &str,
         source_code: &str,
     ) -> Result<v8::Global<v8::Value>, bjs::AnyError> {
-        self.runtime.execute_script(name, source_code)
+        self.runtime.borrow_mut().execute_script(name, source_code)
     }
 
+    /// Executes a module on the [JsRuntime](bjs::JsRuntime)
+    ///
+    /// Module is executed by calling [JsRuntimeResource::poll_runtime]
     pub fn execute_module(
-        &mut self,
+        &self,
         specifier: bjs::ModuleSpecifier,
         source_code: Option<String>,
     ) -> oneshot::Receiver<Result<(), bjs::AnyError>> {
-        self.runtime.execute_module(specifier, source_code)
+        let (sender, receiver) = oneshot::channel();
+
+        let runtime = self.runtime.clone();
+        IoTaskPool::get()
+            .spawn_local(async move {
+                // Module will be evaluated by [drive_runtime]
+                match runtime
+                    .borrow_mut()
+                    .load_module(&specifier, source_code)
+                    .await
+                {
+                    Ok(_) => {
+                        info!("Loaded module: {}", specifier);
+                        let _ = sender.send(Ok(()));
+                    }
+                    Err(err) => {
+                        error!("Could not load module: {}", specifier);
+                        error!("{}", err);
+                        let _ = sender.send(Err(err));
+                    }
+                }
+            })
+            .detach();
+
+        receiver
+    }
+
+    /// Polls the event loop of the [JsRuntime](bjs::JsRuntime)
+    ///
+    /// # Safety
+    ///
+    /// Event loop must be polled in the context of a Bevy world
+    pub fn poll_runtime(&self) {
+        let mut runtime = match self.runtime.try_borrow_mut() {
+            Ok(runtime) => runtime,
+            Err(_) => return,
+        };
+
+        match runtime.pending_mod_evaluate.take() {
+            Some(module_id) => {
+                let receiver = runtime.execute_module(module_id);
+
+                // Spawn monitoring task to inform user about module execution state
+                IoTaskPool::get()
+                    .spawn_local(async move {
+                        match receiver.await {
+                            Ok(Err(err)) => {
+                                error!("{}", err)
+                            }
+                            Err(_canceled) => {
+                                error!("{}", bjs::AnyError::msg("Module evaluation was canceled"))
+                            }
+                            _ => {}
+                        }
+                    })
+                    .detach();
+            }
+            None => runtime.poll_runtime(),
+        }
     }
 }
 
@@ -57,13 +118,13 @@ impl<R> JsRuntimeResource<R> {
         name: String,
         host: std::net::SocketAddr,
     ) -> bjs::inspector::InspectorInfo {
-        self.runtime.inspector(name, host)
+        self.runtime.borrow_mut().inspector(name, host)
     }
 
     /// Registers inspector with the [JsRuntime]
     pub fn register_inspector(&self, meta: &bjs::inspector::InspectorMeta) {
         let name = std::any::type_name::<R>().to_string();
-        self.runtime.register_inspector(name, meta);
+        self.runtime.borrow_mut().register_inspector(name, meta);
     }
 }
 
@@ -75,26 +136,9 @@ pub fn drive_runtime<R: 'static>(world: &mut World) {
         .inner()
         .clone();
 
-    let deno = world
-        .non_send_resource::<JsRuntimeResource<R>>()
-        .runtime
-        .deno
-        .clone();
-
-    // Lend [World] reference to the resource and execute the Deno event loop
-    // within the scope
-    res.lend(world, || {
-        executor::block_on(future::poll_fn(move |cx| {
-            let mut deno = match deno.try_borrow_mut() {
-                Ok(deno) => deno,
-                Err(_) => return Poll::Ready(()),
-            };
-
-            if let Poll::Ready(Err(err)) = deno.poll_event_loop(cx, false) {
-                error!("{}", err)
-            }
-
-            Poll::Ready(())
-        }));
-    });
+    world.resource_scope(|world, runtime: Mut<JsRuntimeResource<R>>| {
+        // Lend [World] reference to the resource and execute the Deno event loop
+        // within the scope
+        res.lend(world, || runtime.poll_runtime());
+    })
 }

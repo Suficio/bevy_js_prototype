@@ -22,7 +22,7 @@
             paused: false,
           }),
           duration: { secs: 0, nanos: 0 },
-          repeating: false,
+          mode: null,
           finished: false,
           times_finished_this_tick: 0,
         },

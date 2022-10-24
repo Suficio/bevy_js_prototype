@@ -12,7 +12,7 @@ fn main() {
         .run();
 }
 
-fn setup_runtime(mut res: NonSendMut<bjs::JsRuntimeResource<BevyRuntime>>) {
+fn setup_runtime(res: NonSend<bjs::JsRuntimeResource<BevyRuntime>>) {
     let specifier = bjs::resolve::path("./examples/startup_system.js").unwrap();
     let _ = res.execute_module(specifier, None);
 }

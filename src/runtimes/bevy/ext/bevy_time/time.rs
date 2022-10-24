@@ -33,7 +33,7 @@ fn op_time_seconds_since_startup(state: &mut OpState, r_world: bjs::ResourceId) 
     let world = res.borrow_world();
 
     let time = world.resource::<Time>();
-    time.seconds_since_startup()
+    time.elapsed_seconds_f64()
 }
 
 #[op]
