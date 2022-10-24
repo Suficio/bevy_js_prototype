@@ -20,7 +20,7 @@ members = ["crates/*"]
 
 [workspace.dependencies]
 # TODO(https://github.com/bevyengine/bevy/pull/6121) Detached non-Send tasks don't run
-bevy = { git = "https://github.com/Suficio/bevy.git", rev = "df1110c2b0d51afc720cb44a9fb41830703dbf46" }
+bevy = { git = "https://github.com/Suficio/bevy.git", branch = "query-state-with-state" }
 deno_core = "0.155.0"
 
 [dependencies]
@@ -28,8 +28,8 @@ bevy = { workspace = true }
 deno_core = { workspace = true }
 deno_console = "0.73.0"
 
-serde_json = "1.0.85"
-serde_path_to_error = "0.1.8"
+serde_json = "1.0"
+serde_path_to_error = "0.1"
 
 # Inspector dependencies
 tide = { version = "0.16.0", default-features = false, features = ["h1-server"], optional = true }

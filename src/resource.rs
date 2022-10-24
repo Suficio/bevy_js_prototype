@@ -26,7 +26,7 @@ impl<R: bjs::IntoRuntime> FromWorld for JsRuntimeResource<R> {
 }
 
 impl<R> JsRuntimeResource<R> {
-    /// Executes a script on the [JsRuntime]
+    /// Executes a script on the [JsRuntime](bjs::JsRuntime)
     ///
     /// # Safety
     ///
@@ -39,7 +39,7 @@ impl<R> JsRuntimeResource<R> {
         self.runtime.borrow_mut().execute_script(name, source_code)
     }
 
-    /// Loads a module and its dependencies for later execution
+    /// Executes a module on the [JsRuntime](bjs::JsRuntime)
     ///
     /// Module is executed by calling [JsRuntimeResource::poll_runtime]
     pub fn execute_module(
@@ -74,7 +74,7 @@ impl<R> JsRuntimeResource<R> {
         receiver
     }
 
-    /// Polls the event loop of the [JsRuntime]
+    /// Polls the event loop of the [JsRuntime](bjs::JsRuntime)
     ///
     /// # Safety
     ///
@@ -89,7 +89,7 @@ impl<R> JsRuntimeResource<R> {
             Some(module_id) => {
                 let receiver = runtime.execute_module(module_id);
 
-                // Spawn monitoring tasks to inform user about module execution state
+                // Spawn monitoring task to inform user about module execution state
                 IoTaskPool::get()
                     .spawn_local(async move {
                         match receiver.await {
