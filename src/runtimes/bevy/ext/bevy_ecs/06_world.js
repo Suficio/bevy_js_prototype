@@ -11,7 +11,7 @@
 
     static spawn(worldResourceId) {
       const id = new Uint8Array(8);
-      ops.op_world_entity_spawn(worldResourceId, id.buffer);
+      ops.op_world_entity_spawn(worldResourceId, id);
       return new Entity(worldResourceId, id);
     }
 

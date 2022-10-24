@@ -1,7 +1,11 @@
 use crate::{self as bjs};
-use bevy::{prelude::*, tasks::IoTaskPool};
-use bjs::{deno_core as dc, futures::channel::oneshot, v8};
-use std::{cell::RefCell, rc::Rc};
+use bevy::prelude::error;
+use bjs::{
+    deno_core as dc,
+    futures::{channel::oneshot, executor, future},
+    v8,
+};
+use std::{rc::Rc, task::Poll};
 
 /// Trait used to construct [JsRuntimes](bjs::JsRuntime)
 pub trait IntoRuntime {
@@ -9,7 +13,8 @@ pub trait IntoRuntime {
 }
 
 pub struct JsRuntime {
-    pub(crate) deno: Rc<RefCell<dc::JsRuntime>>,
+    pub deno: dc::JsRuntime,
+    pub pending_mod_evaluate: Option<bjs::ModuleId>,
 }
 
 impl JsRuntime {
@@ -17,7 +22,8 @@ impl JsRuntime {
     /// [RuntimeOptions](bjs::RuntimeOptions)
     pub fn new(options: bjs::RuntimeOptions) -> Self {
         Self {
-            deno: Rc::new(RefCell::new(dc::JsRuntime::new(options))),
+            deno: dc::JsRuntime::new(options),
+            pending_mod_evaluate: None,
         }
     }
 
@@ -27,73 +33,58 @@ impl JsRuntime {
         bjs::JsRuntimeBuilder::default()
     }
 
+    /// Executes a script on the [JsRuntime]
+    ///
+    /// # Safety
+    ///
+    /// Script must be executed in the context of a Bevy world
     pub fn execute_script(
         &mut self,
         name: &str,
         source_code: &str,
     ) -> Result<v8::Global<v8::Value>, bjs::AnyError> {
-        self.deno.borrow_mut().execute_script(name, source_code)
+        self.deno.execute_script(name, source_code)
     }
 
-    #[allow(clippy::await_holding_refcell_ref)]
-    pub fn execute_module(
-        &self,
-        specifier: bjs::ModuleSpecifier,
+    /// Loads a module and its dependencies for later execution
+    ///
+    /// To execute the loaded module call [JsRuntime::execute_module]
+    pub async fn load_module(
+        &mut self,
+        specifier: &bjs::ModuleSpecifier,
         source_code: Option<String>,
+    ) -> Result<(), bjs::AnyError> {
+        // Module will be evaluated by [drive_runtime]
+        let module_id = self.deno.load_main_module(specifier, source_code).await?;
+        self.pending_mod_evaluate = Some(module_id);
+        Ok(())
+    }
+
+    /// Executes a module after it has been loaded on the [JsRuntime]
+    ///
+    /// # Safety
+    ///
+    /// Module must be executed in the context of a Bevy world
+    pub fn execute_module(
+        &mut self,
+        module_id: bjs::ModuleId,
     ) -> oneshot::Receiver<Result<(), bjs::AnyError>> {
-        let (sender, receiver) = oneshot::channel();
+        self.deno.mod_evaluate(module_id)
+    }
 
-        let deno = self.deno.clone();
-        IoTaskPool::get()
-            .spawn_local(async move {
-                let mut deno = match deno.try_borrow_mut() {
-                    Ok(deno) => deno,
-                    Err(_) => {
-                        let err = bjs::AnyError::msg("Could not borrow Deno runtime");
-                        error!("{}", err);
-                        let _ = sender.send(Err(err));
-                        return;
-                    }
-                };
+    /// Polls the event loop of the [JsRuntime]
+    ///
+    /// # Safety
+    ///
+    /// Event loop must be polled in the context of a Bevy world
+    pub fn poll_runtime(&mut self) {
+        executor::block_on(future::poll_fn(move |cx| {
+            if let Poll::Ready(Err(err)) = self.deno.poll_event_loop(cx, false) {
+                error!("{}", err);
+            };
 
-                let module_id = match deno.load_main_module(&specifier, source_code).await {
-                    Ok(mid) => mid,
-                    Err(err) => {
-                        error!("Could not load module {}", &specifier);
-                        error!("{}", err);
-                        let _ = sender.send(Err(err));
-                        return;
-                    }
-                };
-
-                info!("Loaded module {}", &specifier);
-
-                // Spawn seperate task to pipe result so that we do not hold
-                // the borrow on `deno`.
-                let recv = deno.mod_evaluate(module_id);
-                IoTaskPool::get()
-                    .spawn(async move {
-                        // Receive socket may be dropped as user is not
-                        // listening to the final result of the module.
-                        match recv.await {
-                            Ok(res) => {
-                                if let Err(err) = &res {
-                                    error!("{}", err);
-                                }
-                                let _ = sender.send(res);
-                            }
-                            Err(_canceled) => {
-                                let err = bjs::AnyError::msg("Module evaluation was canceled");
-                                error!("{}", err);
-                                let _ = sender.send(Err(err));
-                            }
-                        };
-                    })
-                    .detach();
-            })
-            .detach();
-
-        receiver
+            Poll::Ready(())
+        }))
     }
 }
 
@@ -102,11 +93,11 @@ impl JsRuntime {
     /// Returns [InspectorInfo](bjs::inspector::InspectorInfo) necessary to
     /// register the inspector with the [JsRuntime]
     pub fn inspector(
-        &self,
+        &mut self,
         name: String,
         host: std::net::SocketAddr,
     ) -> bjs::inspector::InspectorInfo {
-        let inspector = self.deno.borrow_mut().inspector();
+        let inspector = self.deno.inspector();
         let mut inspector = inspector.borrow_mut();
         crate::inspector::InspectorInfo::new(
             host,
@@ -119,7 +110,7 @@ impl JsRuntime {
     }
 
     /// Registers inspector with the [JsRuntime]
-    pub fn register_inspector(&self, name: String, meta: &bjs::inspector::InspectorMeta) {
+    pub fn register_inspector(&mut self, name: String, meta: &bjs::inspector::InspectorMeta) {
         let info = self.inspector(name, meta.host);
         meta.register_inspector_tx
             .unbounded_send(info)

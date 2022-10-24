@@ -10,7 +10,7 @@ fn main() {
         .run();
 }
 
-fn setup_runtime(mut res: NonSendMut<bjs::JsRuntimeResource<BevyRuntime>>) {
+fn setup_runtime(res: NonSend<bjs::JsRuntimeResource<BevyRuntime>>) {
     res.execute_script("<anon>", "Deno.core.print('bevy_js running\\n');")
         .unwrap();
 

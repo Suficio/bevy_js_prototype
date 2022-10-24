@@ -40,7 +40,7 @@
           core.ops.op_type_registry_get_type_id_with_name(
             worldResourceId,
             typeName,
-            buffer.buffer
+            buffer
           )
         ) {
           return buffer;
@@ -64,8 +64,8 @@ ${err}`
         if (
           core.ops.op_type_registry_get_component_id_with_type_id(
             worldResourceId,
-            typeId.buffer,
-            buffer.buffer
+            typeId,
+            buffer
           )
         ) {
           return buffer;

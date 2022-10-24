@@ -28,9 +28,6 @@ const { Vec } = alloc.vec;
 const { Time } = Bevy.time.time;
 
 (async () => {
-  // TODO: Need to await one frame due to world not being lent
-  await Bevy.ecs.nextFrame();
-
   const world = new World(worldResourceId);
 
   /// Track texts by tracking entity ID

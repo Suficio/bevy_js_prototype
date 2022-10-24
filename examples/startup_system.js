@@ -17,9 +17,9 @@
 })();
 
 async function startup_system() {
-  Deno.core.print("startup system ran first\n");
+  console.log("startup system ran first");
 }
 
 async function normal_system(i) {
-  Deno.core.print(`normal system ran ${i + 1} time\n`);
+  console.log(`normal system ran ${i + 1} time`);
 }
