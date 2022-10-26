@@ -31,7 +31,6 @@
       this.worldResourceId = worldResourceId;
     }
 
-    // TODO: Could eventually return TypeRegistration but there is no need thus far
     static getTypeIdWithName(worldResourceId, typeName) {
       try {
         const buffer = new Uint8Array(8);

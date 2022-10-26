@@ -2,7 +2,6 @@ use crate as bjs;
 use bjs::{include_js_files, op, OpState};
 use std::rc::Rc;
 
-// mod component;
 mod entity;
 mod type_registry;
 mod world;
