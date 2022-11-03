@@ -100,23 +100,7 @@ ${err}`
       componentId() {
         return this.constructor.componentId;
       }
-
-      reflect() {
-        const obj = {};
-        obj[this.typeName()] = this;
-        return obj;
-      }
     };
-
-  // Call reflect method otherwise panic if not implemented
-  function unwrapReflect(reflectable) {
-    try {
-      return reflectable.reflect();
-    } catch (err) {
-      throw new Error(`Object must implement method "reflect" in order to be reflected:
-${err}`);
-    }
-  }
 
   class ReflectableObject extends Reflect(Object) {
     constructor(defaults, struct) {
@@ -169,7 +153,6 @@ ${err}`);
   }
   Object.assign(window.Bevy.ecs, {
     worldResourceId,
-    unwrapReflect,
     nextFrame,
     Bundle,
     Reflect,

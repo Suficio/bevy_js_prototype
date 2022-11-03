@@ -2,7 +2,7 @@
 
 ((window) => {
   const { core } = window.Deno;
-  const { unwrapReflect, worldResourceId } = window.Bevy.ecs;
+  const { worldResourceId } = window.Bevy.ecs;
 
   class Query {
     constructor() {}

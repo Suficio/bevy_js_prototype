@@ -2,7 +2,7 @@
 
 ((window) => {
   const { core } = window.Deno;
-  const { unwrapReflect, Bundle } = window.Bevy.ecs;
+  const { Bundle } = window.Bevy.ecs;
 
   class Entity extends Map {
     constructor(worldResourceId, id) {
@@ -33,13 +33,12 @@ ${err}`
           );
         }
       } else {
-        let reflected = unwrapReflect(maybeComponent);
         try {
           core.ops.op_entity_insert_component(
             worldResourceId,
             id,
             maybeComponent.typeId(),
-            reflected
+            maybeComponent
           );
         } catch (err) {
           throw new Error(
