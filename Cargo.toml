@@ -20,7 +20,7 @@ members = ["crates/*"]
 
 [workspace.dependencies]
 # TODO(https://github.com/bevyengine/bevy/pull/6121) Detached non-Send tasks don't run
-bevy = { git = "https://github.com/Suficio/bevy.git", branch = "query-state-with-state" }
+bevy = { git = "https://github.com/Suficio/bevy.git", branch = "js-prototype" }
 deno_core = "0.155.0"
 
 [dependencies]

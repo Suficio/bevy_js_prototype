@@ -2,10 +2,8 @@ use bevy::{
     ecs::{
         archetype::{Archetype, ArchetypeComponentId},
         component::ComponentId,
-        query::{
-            Access, FilteredAccess, QueryItem, ReadOnlyWorldQuery, WorldQuery, WorldQueryGats,
-        },
-        storage::{Table, Tables},
+        query::{Access, FilteredAccess, QueryItem, ReadOnlyWorldQuery, WorldQuery},
+        storage::Table,
     },
     prelude::*,
 };
@@ -17,14 +15,6 @@ pub struct VecPtr<T> {
     _phantom: PhantomData<T>,
 }
 
-impl<'w, T> WorldQueryGats<'w> for VecPtr<T>
-where
-    T: WorldQueryGats<'w>,
-{
-    type Item = Vec<T::Item>;
-    type Fetch = Vec<T::Fetch>;
-}
-
 /// SAFETY: each item in the vec is read only
 unsafe impl<T> ReadOnlyWorldQuery for VecPtr<T> where T: ReadOnlyWorldQuery {}
 
@@ -32,6 +22,8 @@ unsafe impl<T> WorldQuery for VecPtr<T>
 where
     T: WorldQuery,
 {
+    type Fetch<'w> = Vec<T::Fetch<'w>>;
+    type Item<'w> = Vec<T::Item<'w>>;
     type ReadOnly = VecPtr<T::ReadOnly>;
     type State = Vec<T::State>;
 
@@ -47,75 +39,56 @@ where
         state: &Vec<T::State>,
         last_change_tick: u32,
         change_tick: u32,
-    ) -> <Self as WorldQueryGats<'w>>::Fetch {
+    ) -> Self::Fetch<'w> {
         state
             .iter()
             .map(|state| T::init_fetch(world, state, last_change_tick, change_tick))
             .collect()
     }
 
+    unsafe fn clone_fetch<'w>(fetch: &Self::Fetch<'w>) -> Self::Fetch<'w> {
+        fetch.into_iter().map(|item| T::clone_fetch(item)).collect()
+    }
+
     #[inline]
     unsafe fn set_archetype<'w>(
-        fetch: &mut <Self as WorldQueryGats<'w>>::Fetch,
+        fetch: &mut Self::Fetch<'w>,
         state: &Vec<T::State>,
         archetype: &'w Archetype,
-        tables: &'w Tables,
+        table: &'w Table,
     ) {
         for (fetch, state) in fetch.iter_mut().zip(state.iter()) {
-            T::set_archetype(fetch, state, archetype, tables)
+            T::set_archetype(fetch, state, archetype, table)
         }
     }
 
     #[inline]
-    unsafe fn set_table<'w>(
-        fetch: &mut <Self as WorldQueryGats<'w>>::Fetch,
-        state: &Self::State,
-        table: &'w Table,
-    ) {
+    unsafe fn set_table<'w>(fetch: &mut Self::Fetch<'w>, state: &Self::State, table: &'w Table) {
         for (fetch, state) in fetch.iter_mut().zip(state.iter()) {
             T::set_table(fetch, state, table)
         }
     }
 
     #[inline]
-    unsafe fn archetype_fetch<'w>(
-        fetch: &mut <Self as WorldQueryGats<'w>>::Fetch,
-        archetype_index: usize,
-    ) -> <Self as WorldQueryGats<'w>>::Item {
+    unsafe fn fetch<'w>(
+        fetch: &mut Self::Fetch<'w>,
+        entity: Entity,
+        table_row: usize,
+    ) -> Self::Item<'w> {
         fetch
             .iter_mut()
-            .map(|fetch| T::archetype_fetch(fetch, archetype_index))
+            .map(|fetch| T::fetch(fetch, entity, table_row))
             .collect()
     }
 
     #[inline]
-    unsafe fn table_fetch<'w>(
-        fetch: &mut <Self as WorldQueryGats<'w>>::Fetch,
-        table_row: usize,
-    ) -> <Self as WorldQueryGats<'w>>::Item {
-        fetch
-            .iter_mut()
-            .map(|fetch| T::archetype_fetch(fetch, table_row))
-            .collect()
-    }
-
-    #[inline]
-    unsafe fn table_filter_fetch(
-        fetch: &mut <Self as WorldQueryGats<'_>>::Fetch,
+    unsafe fn filter_fetch<'w>(
+        fetch: &mut Self::Fetch<'w>,
+        entity: Entity,
         table_row: usize,
     ) -> bool {
         fetch.iter_mut().fold(true, |fold, fetch| {
-            fold && T::table_filter_fetch(fetch, table_row)
-        })
-    }
-
-    #[inline]
-    unsafe fn archetype_filter_fetch(
-        fetch: &mut <Self as WorldQueryGats<'_>>::Fetch,
-        archetype_index: usize,
-    ) -> bool {
-        fetch.iter_mut().fold(true, |fold, fetch| {
-            fold && T::archetype_filter_fetch(fetch, archetype_index)
+            fold && T::filter_fetch(fetch, entity, table_row)
         })
     }
 
