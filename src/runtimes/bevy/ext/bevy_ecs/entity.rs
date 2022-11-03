@@ -30,8 +30,6 @@ pub fn op_entity_insert_component(
     scope: &mut v8::HandleScope,
     world_resource_id: u32,
     entity_id: &[u8],
-    // TODO(https://github.com/bevyengine/bevy/issues/4597):
-    // Providing `type_id` necessary as long as component is dynamic
     type_id: &[u8],
     component: serde_v8::Value,
 ) -> Result<(), bjs::AnyError> {
@@ -40,11 +38,12 @@ pub fn op_entity_insert_component(
 
     let type_registry = world.resource::<AppTypeRegistry>().clone();
     let type_registry = type_registry.read();
+    let type_id = super::type_registry::bytes_to_type_id(type_id);
 
-    let component = bjs::runtimes::bevy::ext::deserialize(&type_registry, scope, component)?;
+    let component =
+        bjs::runtimes::bevy::ext::deserialize(&type_registry, type_id, scope, component)?;
     // TODO(https://github.com/bevyengine/bevy/issues/4597):
     // Lookup necessary as long as component is dynamic
-    let type_id = super::type_registry::bytes_to_type_id(type_id);
     let type_name = component.as_ref().type_name();
 
     // Verify `type_id` matches provided `component`
