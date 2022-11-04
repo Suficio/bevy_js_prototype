@@ -5,7 +5,7 @@
 
 const { worldResourceId } = Bevy.ecs;
 
-const { Entity, World } = Bevy.ecs;
+const { Entity, World, Query } = Bevy.ecs;
 const { Visibility, ComputedVisibility } = Bevy.render.view.visibility;
 const { FocusPolicy } = Bevy.ui.focus;
 const { TextBundle } = Bevy.ui.entity;
@@ -31,8 +31,8 @@ const { Time } = Bevy.time.time;
   const world = new World(worldResourceId);
 
   /// Track texts by tracking entity ID
-  const colorText = world.spawn();
-  const fpsText = world.spawn();
+  const colorText = world.spawnEmpty();
+  const fpsText = world.spawnEmpty();
 
   setup(colorText, fpsText);
 
@@ -40,6 +40,11 @@ const { Time } = Bevy.time.time;
     await Bevy.ecs.nextFrame();
     textColorSystem(colorText);
     textUpdateSystem(fpsText);
+
+    console.log(world.query(Transform));
+    console.log(world.query([Transform, GlobalTransform]));
+
+    return;
   }
 })();
 

@@ -22,9 +22,9 @@ pub struct ReadFetchSparse<'w> {
     sparse_set: Option<&'w ComponentSparseSet>,
 }
 
-unsafe impl ReadOnlyWorldQuery for &ComponentPtr {}
+unsafe impl ReadOnlyWorldQuery for ComponentPtr {}
 
-unsafe impl WorldQuery for &ComponentPtr {
+unsafe impl WorldQuery for ComponentPtr {
     type Fetch<'w> = ReadFetchSparse<'w>;
     type Item<'w> = Ptr<'w>;
     type ReadOnly = Self;

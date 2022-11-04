@@ -43,6 +43,8 @@
           )
         ) {
           return buffer;
+        } else {
+          return null;
         }
       } catch (err) {
         throw new Error(
@@ -54,7 +56,7 @@ ${err}`
 
     static getComponentId(worldResourceId, typeId) {
       if (typeId == null) {
-        return undefined;
+        return null;
       }
 
       try {
@@ -68,6 +70,8 @@ ${err}`
           )
         ) {
           return buffer;
+        } else {
+          return null;
         }
       } catch (err) {
         throw new Error(

@@ -34,16 +34,15 @@ mod tests {
         let mut world = World::new();
         let component_id = world.init_component::<A>();
 
-        let mut query = unsafe {
-            QueryState::<&ComponentPtr, ()>::new_with_state(&mut world, component_id, ())
-        };
+        let mut query =
+            unsafe { QueryState::<ComponentPtr, ()>::new_with_state(&mut world, component_id, ()) };
         let count = query.iter(&mut world).count();
         assert_eq!(count, 0);
 
         // Check dynamic VecPtr variations
 
         let mut query = unsafe {
-            QueryState::<VecPtr<&ComponentPtr>, ()>::new_with_state(
+            QueryState::<VecPtr<ComponentPtr>, ()>::new_with_state(
                 &mut world,
                 vec![component_id],
                 (),
@@ -64,17 +63,17 @@ mod tests {
         world.spawn(A);
 
         let mut query =
-            unsafe { QueryState::<&ComponentPtr, ()>::new_with_state(&mut world, a, ()) };
+            unsafe { QueryState::<ComponentPtr, ()>::new_with_state(&mut world, a, ()) };
         let count = query.iter(&mut world).count();
         assert_eq!(count, 2);
 
         let mut query =
-            unsafe { QueryState::<&ComponentPtr, ()>::new_with_state(&mut world, b, ()) };
+            unsafe { QueryState::<ComponentPtr, ()>::new_with_state(&mut world, b, ()) };
         let count = query.iter(&mut world).count();
         assert_eq!(count, 1);
 
         let mut query = unsafe {
-            QueryState::<(&ComponentPtr, &ComponentPtr), ()>::new_with_state(&mut world, (a, b), ())
+            QueryState::<(ComponentPtr, ComponentPtr), ()>::new_with_state(&mut world, (a, b), ())
         };
         let count = query.iter(&mut world).count();
         assert_eq!(count, 1);
@@ -82,19 +81,19 @@ mod tests {
         // Check dynamic VecPtr variations
 
         let mut query = unsafe {
-            QueryState::<VecPtr<&ComponentPtr>, ()>::new_with_state(&mut world, vec![a], ())
+            QueryState::<VecPtr<ComponentPtr>, ()>::new_with_state(&mut world, vec![a], ())
         };
         let count = query.iter(&mut world).count();
         assert_eq!(count, 2);
 
         let mut query = unsafe {
-            QueryState::<VecPtr<&ComponentPtr>, ()>::new_with_state(&mut world, vec![b], ())
+            QueryState::<VecPtr<ComponentPtr>, ()>::new_with_state(&mut world, vec![b], ())
         };
         let count = query.iter(&mut world).count();
         assert_eq!(count, 1);
 
         let mut query = unsafe {
-            QueryState::<VecPtr<&ComponentPtr>, ()>::new_with_state(&mut world, vec![a, b], ())
+            QueryState::<VecPtr<ComponentPtr>, ()>::new_with_state(&mut world, vec![a, b], ())
         };
         let count = query.iter(&mut world).count();
         assert_eq!(count, 1);
@@ -111,9 +110,8 @@ mod tests {
 
         world.spawn(Data("Hello, World!".to_string()));
 
-        let mut query = unsafe {
-            QueryState::<&ComponentPtr, ()>::new_with_state(&mut world, component_id, ())
-        };
+        let mut query =
+            unsafe { QueryState::<ComponentPtr, ()>::new_with_state(&mut world, component_id, ()) };
 
         for data in query.iter(&mut world) {
             let reflect_data = type_registry.get(std::any::TypeId::of::<Data>()).unwrap();
@@ -139,9 +137,8 @@ mod tests {
         world.spawn(Data("Hello, World!".to_string()));
         world.spawn(Data("Hello, World!".to_string()));
 
-        let mut query = unsafe {
-            QueryState::<&ComponentPtr, ()>::new_with_state(&mut world, component_id, ())
-        };
+        let mut query =
+            unsafe { QueryState::<ComponentPtr, ()>::new_with_state(&mut world, component_id, ()) };
 
         let res = query.iter_mut(&mut world).collect::<Vec<_>>();
         assert_eq!(res.len(), 3);
