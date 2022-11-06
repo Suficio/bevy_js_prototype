@@ -31,10 +31,9 @@
       this.worldResourceId = worldResourceId;
     }
 
-    // TODO: Could eventually return TypeRegistration but there is no need thus far
     static getTypeIdWithName(worldResourceId, typeName) {
       try {
-        const buffer = new Uint8Array(8);
+        const buffer = new ArrayBuffer(8);
         // Check if type registration exists
         if (
           core.ops.op_type_registry_get_type_id_with_name(
@@ -44,6 +43,8 @@
           )
         ) {
           return buffer;
+        } else {
+          return null;
         }
       } catch (err) {
         throw new Error(
@@ -55,11 +56,11 @@ ${err}`
 
     static getComponentId(worldResourceId, typeId) {
       if (typeId == null) {
-        return undefined;
+        return null;
       }
 
       try {
-        const buffer = new Uint8Array(8);
+        const buffer = new ArrayBuffer(8);
         // Check if component registration exists
         if (
           core.ops.op_type_registry_get_component_id_with_type_id(
@@ -69,6 +70,8 @@ ${err}`
           )
         ) {
           return buffer;
+        } else {
+          return null;
         }
       } catch (err) {
         throw new Error(

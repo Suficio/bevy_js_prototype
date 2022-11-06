@@ -3,7 +3,7 @@
 use crate as bjs;
 use bevy::{ecs::component::ComponentId, prelude::*};
 use bjs::{op, OpState};
-use std::{any::TypeId, mem, slice};
+use std::{any::TypeId, cell::RefCell, mem, rc::Rc, slice};
 
 pub(crate) fn type_id_to_bytes(type_id: &TypeId, out: &mut [u8]) {
     unsafe {
@@ -46,12 +46,12 @@ pub(crate) fn bytes_to_component_id(component_id: &[u8]) -> ComponentId {
 // TODO(https://github.com/denoland/deno/pull/16014): String fast ops
 #[op]
 fn op_type_registry_get_type_id_with_name(
-    state: &mut OpState,
+    state: Rc<RefCell<OpState>>,
     world_resource_id: u32,
     type_name: String,
     out: &mut [u8],
 ) -> bool {
-    let res = bjs::runtimes::unwrap_world_resource(state, world_resource_id);
+    let res = bjs::runtimes::unwrap_world_resource(&state.borrow(), world_resource_id);
     let world = res.borrow_world();
 
     let type_registry = world.resource::<AppTypeRegistry>().clone();

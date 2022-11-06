@@ -3,6 +3,7 @@ mod builder;
 pub mod inspector;
 pub mod lend;
 mod loader;
+mod query;
 mod resource;
 mod runtime;
 pub mod runtimes;
