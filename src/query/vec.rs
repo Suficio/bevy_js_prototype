@@ -10,7 +10,7 @@ use bevy::{
 
 use std::marker::PhantomData;
 
-/// Type used to query dense components
+/// Type used to query dynamic length components
 pub struct VecPtr<T> {
     _phantom: PhantomData<T>,
 }

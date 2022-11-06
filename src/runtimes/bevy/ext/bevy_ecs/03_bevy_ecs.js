@@ -1,6 +1,7 @@
 "use strict";
 ((window) => {
   const { core } = window.Deno;
+  const { ops } = core;
 
   // Need to instruct how to serialize BigInt
   BigInt.prototype.toJSON = function () {
@@ -32,26 +33,10 @@
     }
 
     static getTypeIdWithName(worldResourceId, typeName) {
-      try {
-        const buffer = new ArrayBuffer(8);
-        // Check if type registration exists
-        if (
-          core.ops.op_type_registry_get_type_id_with_name(
-            worldResourceId,
-            typeName,
-            buffer
-          )
-        ) {
-          return buffer;
-        } else {
-          return null;
-        }
-      } catch (err) {
-        throw new Error(
-          `Could not get type ID for type name: ${typeName}
-${err}`
-        );
-      }
+      return ops.op_type_registry_get_type_id_with_name(
+        worldResourceId,
+        typeName
+      );
     }
 
     static getComponentId(worldResourceId, typeId) {
@@ -59,26 +44,10 @@ ${err}`
         return null;
       }
 
-      try {
-        const buffer = new ArrayBuffer(8);
-        // Check if component registration exists
-        if (
-          core.ops.op_type_registry_get_component_id_with_type_id(
-            worldResourceId,
-            typeId,
-            buffer
-          )
-        ) {
-          return buffer;
-        } else {
-          return null;
-        }
-      } catch (err) {
-        throw new Error(
-          `Could not get component ID for type ID: ${typeId}
-${err}`
-        );
-      }
+      return ops.op_type_registry_get_component_id_with_type_id(
+        worldResourceId,
+        typeId
+      );
     }
 
     getTypeIdWithName(typeName) {

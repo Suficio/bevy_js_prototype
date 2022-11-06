@@ -1,16 +1,11 @@
 use crate as bjs;
 use bevy::prelude::*;
 use bjs::{op, serde_v8, v8, OpState};
-use std::{cell::RefCell, mem, rc::Rc, slice};
+use deno_core::ZeroCopyBuf;
+use std::{cell::RefCell, mem, rc::Rc};
 
-pub(crate) fn entity_to_bytes(entity: &Entity, out: &mut [u8]) {
-    let id = entity.to_bits();
-    unsafe {
-        out.copy_from_slice(slice::from_raw_parts(
-            (&id as *const u64) as *const u8,
-            mem::size_of::<u64>(),
-        ));
-    }
+pub(crate) fn entity_to_bytes(entity: &Entity) -> [u8; 8] {
+    entity.to_bits().to_ne_bytes()
 }
 
 // TODO: Return as reference to Entity
@@ -29,7 +24,8 @@ pub fn op_entity_insert_component(
     state: Rc<RefCell<OpState>>,
     scope: &mut v8::HandleScope,
     world_resource_id: u32,
-    entity_id: &[u8],
+    entity_id: ZeroCopyBuf,
+    // TODO: Pass constructor?
     type_id: &[u8],
     component: serde_v8::Value,
 ) -> Result<(), bjs::AnyError> {
@@ -68,7 +64,7 @@ pub fn op_entity_insert_component(
             ))
         })?;
 
-    let entity = bytes_to_entity(entity_id);
+    let entity = bytes_to_entity(entity_id.as_ref());
     component_impl.apply_or_insert(&mut world, entity, component.as_reflect());
 
     Ok(())
@@ -79,7 +75,8 @@ pub fn op_entity_get_component<'a>(
     state: Rc<RefCell<OpState>>,
     scope: &mut v8::HandleScope<'a>,
     world_resource_id: u32,
-    entity_id: &[u8],
+    entity_id: ZeroCopyBuf,
+    // TODO: Pass constructor
     type_id: &[u8],
 ) -> Result<serde_v8::Value<'a>, bjs::AnyError> {
     let res = bjs::runtimes::unwrap_world_resource(&state.borrow(), world_resource_id);
@@ -102,7 +99,7 @@ pub fn op_entity_get_component<'a>(
             )),
         })?;
 
-    let entity = bytes_to_entity(entity_id);
+    let entity = bytes_to_entity(entity_id.as_ref());
     let value = component_impl.reflect(&world, entity).ok_or_else(|| {
         // SAFE: TypeInfo is registered otherwise ReflectComponent lookup would error
         let type_info = type_registry.get_type_info(type_id).unwrap();
@@ -112,5 +109,5 @@ pub fn op_entity_get_component<'a>(
         ))
     })?;
 
-    bjs::runtimes::bevy::ext::serialize(&type_registry, scope, value)
+    bjs::runtimes::bevy::ext::serialize(&type_registry, scope, value).map(serde_v8::Value::from)
 }

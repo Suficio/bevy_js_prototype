@@ -3,12 +3,17 @@ use bevy::{prelude::*, reflect::ReflectFromPtr};
 use bjs::{op, serde_v8, v8, OpState};
 use std::{cell::RefCell, rc::Rc};
 
-#[op(fast)]
-pub fn op_world_entity_spawn(state: &mut OpState, world_resource_id: u32, out: &mut [u8]) {
+#[op(v8)]
+pub fn op_world_entity_spawn<'a>(
+    state: &mut OpState,
+    scope: &mut v8::HandleScope<'a>,
+    world_resource_id: u32,
+) -> serde_v8::Value<'a> {
     let res = bjs::runtimes::unwrap_world_resource(state, world_resource_id);
     let mut world = res.borrow_world_mut();
 
-    super::entity::entity_to_bytes(&world.spawn_empty().id(), out)
+    let id = super::entity::entity_to_bytes(&world.spawn_empty().id());
+    super::type_registry::array_buffer(scope, Box::new(id)).into()
 }
 
 #[op(v8)]
@@ -52,5 +57,5 @@ pub fn op_world_get_resource<'a>(
 
     // SAFE: TypeId is correct
     let value = unsafe { reflect_from_ptr.as_reflect_ptr(resource) };
-    bjs::runtimes::bevy::ext::serialize(&type_registry, scope, value)
+    bjs::runtimes::bevy::ext::serialize(&type_registry, scope, value).map(serde_v8::Value::from)
 }

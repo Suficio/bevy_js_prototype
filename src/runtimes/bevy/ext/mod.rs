@@ -23,7 +23,7 @@ pub fn serialize<'a>(
     registry: &TypeRegistryInternal,
     scope: &mut v8::HandleScope<'a>,
     value: &dyn Reflect,
-) -> Result<serde_v8::Value<'a>, bjs::AnyError> {
+) -> Result<v8::Local<'a, v8::Value>, bjs::AnyError> {
     let scope_ptr = std::cell::RefCell::new(scope);
     let value_serializer = serde_v8::Serializer::new(&scope_ptr);
 
@@ -32,7 +32,6 @@ pub fn serialize<'a>(
 
     TypedReflectSerializer::new(value, registry)
         .serialize(tracked)
-        .map(|value| serde_v8::Value { v8_value: value })
         .map_err(|err| bjs::AnyError::msg(format!("{}, occured at: {}", err, track.path())))
 }
 
