@@ -4,16 +4,17 @@
   const { core } = window.Deno;
   const { Bundle } = window.Bevy.ecs;
 
-  class Entity extends Map {
+  class Entity {
     constructor(worldResourceId, id) {
       if (worldResourceId == undefined) {
         throw new Error("World resource ID must be provided");
       }
-      if (id == undefined || !(id instanceof Uint8Array)) {
-        throw new Error("Entity ID must be provided and must be Uint8Array");
+      if (id == undefined || !(id instanceof ArrayBuffer)) {
+        throw new Error(
+          "Entity ID must be provided and must be an ArrayBuffer"
+        );
       }
 
-      super();
       this.worldResourceId = worldResourceId;
       this.id = id;
     }

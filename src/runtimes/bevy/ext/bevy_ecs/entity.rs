@@ -1,7 +1,7 @@
 use crate as bjs;
 use bevy::prelude::*;
 use bjs::{op, serde_v8, v8, OpState};
-use std::{mem, slice};
+use std::{cell::RefCell, mem, rc::Rc, slice};
 
 pub(crate) fn entity_to_bytes(entity: &Entity, out: &mut [u8]) {
     let id = entity.to_bits();
@@ -26,14 +26,14 @@ pub(crate) fn bytes_to_entity(entity_id: &[u8]) -> Entity {
 /// SAFETY: `type_id` must match provided `component`
 #[op(v8)]
 pub fn op_entity_insert_component(
-    state: &mut OpState,
+    state: Rc<RefCell<OpState>>,
     scope: &mut v8::HandleScope,
     world_resource_id: u32,
     entity_id: &[u8],
     type_id: &[u8],
     component: serde_v8::Value,
 ) -> Result<(), bjs::AnyError> {
-    let res = bjs::runtimes::unwrap_world_resource(state, world_resource_id);
+    let res = bjs::runtimes::unwrap_world_resource(&state.borrow(), world_resource_id);
     let mut world = res.borrow_world_mut();
 
     let type_registry = world.resource::<AppTypeRegistry>().clone();
@@ -74,14 +74,15 @@ pub fn op_entity_insert_component(
     Ok(())
 }
 
-#[op]
-pub fn op_entity_get_component(
-    state: &mut OpState,
+#[op(v8)]
+pub fn op_entity_get_component<'a>(
+    state: Rc<RefCell<OpState>>,
+    scope: &mut v8::HandleScope<'a>,
     world_resource_id: u32,
     entity_id: &[u8],
     type_id: &[u8],
-) -> Result<serde_json::Value, bjs::AnyError> {
-    let res = bjs::runtimes::unwrap_world_resource(state, world_resource_id);
+) -> Result<serde_v8::Value<'a>, bjs::AnyError> {
+    let res = bjs::runtimes::unwrap_world_resource(&state.borrow(), world_resource_id);
     let world = res.borrow_world();
 
     let type_registry = world.resource::<AppTypeRegistry>().clone();
@@ -111,5 +112,5 @@ pub fn op_entity_get_component(
         ))
     })?;
 
-    bjs::runtimes::bevy::ext::serialize(&type_registry, value)
+    bjs::runtimes::bevy::ext::serialize(&type_registry, scope, value)
 }

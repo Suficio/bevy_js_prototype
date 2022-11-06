@@ -1,13 +1,16 @@
+use std::{cell::RefCell, rc::Rc};
+
 use crate as bjs;
 use bevy::prelude::*;
-use bjs::{op, OpState};
+use bjs::{op, serde_v8, v8, OpState};
 
-#[op]
-fn op_time_delta(
-    state: &mut OpState,
+#[op(v8)]
+fn op_time_delta<'a>(
+    state: Rc<RefCell<OpState>>,
+    scope: &mut v8::HandleScope<'a>,
     r_world: bjs::ResourceId,
-) -> Result<serde_json::Value, bjs::AnyError> {
-    let res = bjs::runtimes::unwrap_world_resource(state, r_world);
+) -> Result<serde_v8::Value<'a>, bjs::AnyError> {
+    let res = bjs::runtimes::unwrap_world_resource(&state.borrow(), r_world);
     let world = res.borrow_world();
 
     let type_registry = world.resource::<AppTypeRegistry>().clone();
@@ -15,7 +18,7 @@ fn op_time_delta(
 
     let time = world.resource::<Time>();
     let duration: Box<dyn Reflect> = Box::new(time.delta());
-    bjs::runtimes::bevy::ext::serialize(&type_registry, duration.as_ref())
+    bjs::runtimes::bevy::ext::serialize(&type_registry, scope, duration.as_ref())
 }
 
 #[op(fast)]
@@ -36,12 +39,13 @@ fn op_time_seconds_since_startup(state: &mut OpState, r_world: bjs::ResourceId) 
     time.elapsed_seconds_f64()
 }
 
-#[op]
-fn op_time_since_startup(
-    state: &mut OpState,
+#[op(v8)]
+fn op_time_since_startup<'a>(
+    state: Rc<RefCell<OpState>>,
+    scope: &mut v8::HandleScope<'a>,
     r_world: bjs::ResourceId,
-) -> Result<serde_json::Value, bjs::AnyError> {
-    let res = bjs::runtimes::unwrap_world_resource(state, r_world);
+) -> Result<serde_v8::Value<'a>, bjs::AnyError> {
+    let res = bjs::runtimes::unwrap_world_resource(&state.borrow(), r_world);
     let world = res.borrow_world();
 
     let type_registry = world.resource::<AppTypeRegistry>().clone();
@@ -49,5 +53,5 @@ fn op_time_since_startup(
 
     let time = world.resource::<Time>();
     let duration: Box<dyn Reflect> = Box::new(time.delta());
-    bjs::runtimes::bevy::ext::serialize(&type_registry, duration.as_ref())
+    bjs::runtimes::bevy::ext::serialize(&type_registry, scope, duration.as_ref())
 }

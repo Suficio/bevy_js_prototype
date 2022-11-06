@@ -1,3 +1,5 @@
+use std::cell::RefCell;
+
 use crate as bjs;
 use bevy::reflect::{
     serde::{TypedReflectDeserializer, TypedReflectSerializer},
@@ -5,7 +7,7 @@ use bevy::reflect::{
 };
 use bjs::{
     serde::{de::DeserializeSeed, Serialize},
-    v8,
+    serde_v8, v8,
 };
 
 pub mod alloc;
@@ -19,22 +21,23 @@ pub mod bevy_ui;
 pub mod core;
 pub mod glam;
 
-pub fn serialize(
+pub fn serialize<'a>(
     registry: &TypeRegistryInternal,
+    scope: &mut v8::HandleScope<'a>,
     value: &dyn Reflect,
-) -> Result<serde_json::Value, bjs::AnyError> {
+) -> Result<serde_v8::Value<'a>, bjs::AnyError> {
     let reflect_serializer = TypedReflectSerializer::new(value, registry);
 
     // TODO: Serialize v8 object directly
-    // let scope_ptr = RefCell::new(scope);
-    // let value_serializer = serde_v8::Serializer::new(&scope_ptr);
-    let value_serializer = serde_json::value::Serializer;
+    let scope_ptr = RefCell::new(scope);
+    let value_serializer = serde_v8::Serializer::new(&scope_ptr);
 
     let mut track = serde_path_to_error::Track::new();
     let tracked = serde_path_to_error::Serializer::new(value_serializer, &mut track);
 
     reflect_serializer
         .serialize(tracked)
+        .map(|value| serde_v8::Value { v8_value: value })
         .map_err(|err| bjs::AnyError::msg(format!("{}, occured at: {}", err, track.path())))
 }
 
@@ -42,14 +45,14 @@ pub fn deserialize(
     registry: &TypeRegistryInternal,
     type_id: std::any::TypeId,
     scope: &mut v8::HandleScope,
-    value: bjs::serde_v8::Value,
+    value: serde_v8::Value,
 ) -> Result<Box<dyn Reflect>, bjs::AnyError> {
     let registration = registry.get(type_id).ok_or_else(|| {
         bjs::AnyError::msg(format!("Registration for type id: {:?} not found", type_id))
     })?;
 
     let reflect_deserializer = TypedReflectDeserializer::new(registration, registry);
-    let mut value_deserializer = bjs::serde_v8::Deserializer::new(scope, value.v8_value, None);
+    let mut value_deserializer = serde_v8::Deserializer::new(scope, value.v8_value, None);
 
     let mut track = serde_path_to_error::Track::new();
     let tracked = serde_path_to_error::Deserializer::new(&mut value_deserializer, &mut track);

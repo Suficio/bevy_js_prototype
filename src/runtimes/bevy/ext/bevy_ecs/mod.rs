@@ -1,6 +1,6 @@
 use crate as bjs;
 use bjs::{include_js_files, op, OpState};
-use std::rc::Rc;
+use std::{cell::RefCell, rc::Rc};
 
 mod entity;
 mod query;
@@ -21,6 +21,7 @@ pub fn init(resource: Rc<bjs::WorldResource>) -> bjs::Extension {
             entity::op_entity_insert_component::decl(),
             entity::op_entity_get_component::decl(),
             query::op_query_initialize::decl(),
+            query::op_query_iter::decl(),
             world::op_world_entity_spawn::decl(),
             world::op_world_get_resource::decl(),
             type_registry::op_type_registry_get_type_id_with_name::decl(),
@@ -35,8 +36,8 @@ pub fn init(resource: Rc<bjs::WorldResource>) -> bjs::Extension {
 
 /// Waits until world becomes available to read from
 #[op]
-async fn op_wait_for_frame(state: &mut OpState, world_resource_id: u32) {
-    bjs::runtimes::unwrap_world_resource(state, world_resource_id)
+async fn op_wait_for_frame(state: Rc<RefCell<OpState>>, world_resource_id: u32) {
+    bjs::runtimes::unwrap_world_resource(&state.borrow(), world_resource_id)
         .wait_for_frame()
         .await
 }

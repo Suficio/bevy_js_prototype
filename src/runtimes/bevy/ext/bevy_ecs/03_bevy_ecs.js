@@ -33,7 +33,7 @@
 
     static getTypeIdWithName(worldResourceId, typeName) {
       try {
-        const buffer = new Uint8Array(8);
+        const buffer = new ArrayBuffer(8);
         // Check if type registration exists
         if (
           core.ops.op_type_registry_get_type_id_with_name(
@@ -60,7 +60,7 @@ ${err}`
       }
 
       try {
-        const buffer = new Uint8Array(8);
+        const buffer = new ArrayBuffer(8);
         // Check if component registration exists
         if (
           core.ops.op_type_registry_get_component_id_with_type_id(

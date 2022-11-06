@@ -40,11 +40,6 @@ const { Time } = Bevy.time.time;
     await Bevy.ecs.nextFrame();
     textColorSystem(colorText);
     textUpdateSystem(fpsText);
-
-    console.log(world.query(Transform));
-    console.log(world.query([Transform, GlobalTransform]));
-
-    return;
   }
 })();
 

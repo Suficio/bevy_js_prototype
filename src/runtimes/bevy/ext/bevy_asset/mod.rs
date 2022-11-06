@@ -1,3 +1,5 @@
+use std::{cell::RefCell, rc::Rc};
+
 use crate as bjs;
 use bevy::{asset::HandleId, prelude::*};
 use bjs::{include_js_files, op, OpState};
@@ -15,13 +17,13 @@ pub fn init() -> bjs::Extension {
 
 #[op]
 pub fn op_asset_server_load(
-    state: &mut OpState,
+    state: Rc<RefCell<OpState>>,
     r_world: bjs::ResourceId,
     path: String,
 ) -> Result<HandleId, bjs::AnyError> {
-    let res = bjs::runtimes::unwrap_world_resource(state, r_world);
+    let res = bjs::runtimes::unwrap_world_resource(&state.borrow(), r_world);
 
-    let world = res.borrow_world_mut();
+    let world = res.borrow_world();
 
     let asset_server = world
         .get_resource::<AssetServer>()
