@@ -31,10 +31,6 @@ ${err}`
       return new Query(worldResourceId, fetch, null);
     }
 
-    static queryFiltered(worldResourceId, fetch, filter) {
-      return new Query(worldResourceId, fetch, filter);
-    }
-
     static spawnEmpty(worldResourceId) {
       const id = new ArrayBuffer(8);
       ops.op_world_entity_spawn(worldResourceId, id);
@@ -51,10 +47,6 @@ ${err}`
 
     query(fetch) {
       return World.query(this.worldResourceId, fetch);
-    }
-
-    queryFiltered(fetch, filter) {
-      return World.queryFiltered(this.worldResourceId, fetch, filter);
     }
 
     spawnEmpty() {

@@ -1,8 +1,7 @@
-use std::{cell::RefCell, rc::Rc};
-
 use crate as bjs;
 use bevy::prelude::*;
 use bjs::{op, serde_v8, v8, OpState};
+use std::{cell::RefCell, rc::Rc};
 
 #[op(v8)]
 fn op_time_delta<'a>(

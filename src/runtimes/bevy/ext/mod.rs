@@ -1,5 +1,3 @@
-use std::cell::RefCell;
-
 use crate as bjs;
 use bevy::reflect::{
     serde::{TypedReflectDeserializer, TypedReflectSerializer},
@@ -26,16 +24,13 @@ pub fn serialize<'a>(
     scope: &mut v8::HandleScope<'a>,
     value: &dyn Reflect,
 ) -> Result<serde_v8::Value<'a>, bjs::AnyError> {
-    let reflect_serializer = TypedReflectSerializer::new(value, registry);
-
-    // TODO: Serialize v8 object directly
-    let scope_ptr = RefCell::new(scope);
+    let scope_ptr = std::cell::RefCell::new(scope);
     let value_serializer = serde_v8::Serializer::new(&scope_ptr);
 
     let mut track = serde_path_to_error::Track::new();
     let tracked = serde_path_to_error::Serializer::new(value_serializer, &mut track);
 
-    reflect_serializer
+    TypedReflectSerializer::new(value, registry)
         .serialize(tracked)
         .map(|value| serde_v8::Value { v8_value: value })
         .map_err(|err| bjs::AnyError::msg(format!("{}, occured at: {}", err, track.path())))
@@ -51,13 +46,12 @@ pub fn deserialize(
         bjs::AnyError::msg(format!("Registration for type id: {:?} not found", type_id))
     })?;
 
-    let reflect_deserializer = TypedReflectDeserializer::new(registration, registry);
     let mut value_deserializer = serde_v8::Deserializer::new(scope, value.v8_value, None);
 
     let mut track = serde_path_to_error::Track::new();
     let tracked = serde_path_to_error::Deserializer::new(&mut value_deserializer, &mut track);
 
-    reflect_deserializer
+    TypedReflectDeserializer::new(registration, registry)
         .deserialize(tracked)
         .map_err(|err| bjs::AnyError::msg(format!("{}, occured at: {}", err, track.path())))
 }

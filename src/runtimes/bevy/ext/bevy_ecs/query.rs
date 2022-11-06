@@ -1,5 +1,3 @@
-use std::{any::TypeId, cell::RefCell, rc::Rc};
-
 use crate::{
     self as bjs,
     query::{ComponentPtr, VecPtr},
@@ -13,6 +11,7 @@ use bevy::{
     reflect::ReflectFromPtr,
 };
 use bjs::{op, serde_v8, v8, OpState};
+use std::{any::TypeId, cell::RefCell, rc::Rc};
 
 struct QueryStateResource<Q: WorldQuery, F: ReadOnlyWorldQuery = ()> {
     state: RefCell<QueryState<Q, F>>,

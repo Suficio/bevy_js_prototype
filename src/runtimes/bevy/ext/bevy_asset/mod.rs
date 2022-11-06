@@ -1,8 +1,7 @@
-use std::{cell::RefCell, rc::Rc};
-
 use crate as bjs;
 use bevy::{asset::HandleId, prelude::*};
 use bjs::{include_js_files, op, OpState};
+use std::{cell::RefCell, rc::Rc};
 
 pub fn init() -> bjs::Extension {
     bjs::Extension::builder()

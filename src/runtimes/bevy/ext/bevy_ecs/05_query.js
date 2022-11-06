@@ -6,15 +6,15 @@
 
   class Query {
     constructor(worldResourceId, fetch, filter = null) {
-      if (filter != null) {
-        throw new Error("Filter in Query not supported");
-      }
-
       this.worldResourceId = worldResourceId;
       this.resourceId = Query.initialize(worldResourceId, fetch, filter);
     }
 
     static initialize(worldResourceId, fetch, filter = null) {
+      if (filter != null) {
+        throw new Error("Filter in Query not supported");
+      }
+
       return ops.op_query_initialize(worldResourceId, fetch, filter);
     }
 

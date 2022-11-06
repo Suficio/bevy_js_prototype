@@ -1,8 +1,7 @@
-use std::{cell::RefCell, rc::Rc};
-
 use crate as bjs;
 use bevy::{prelude::*, reflect::ReflectFromPtr};
 use bjs::{op, serde_v8, v8, OpState};
+use std::{cell::RefCell, rc::Rc};
 
 #[op(fast)]
 pub fn op_world_entity_spawn(state: &mut OpState, world_resource_id: u32, out: &mut [u8]) {

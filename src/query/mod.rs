@@ -4,6 +4,7 @@ mod vec;
 pub use ptr::ComponentPtr;
 pub use vec::VecPtr;
 
+// TODO: Align with Bevy
 #[allow(unreachable_code)]
 pub(crate) unsafe fn debug_checked_unreachable() -> ! {
     #[cfg(debug_assertions)]
