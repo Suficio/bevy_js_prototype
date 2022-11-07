@@ -38,7 +38,6 @@ ${err}`
           core.ops.op_entity_insert_component(
             worldResourceId,
             id,
-            maybeComponent.typeId(),
             maybeComponent
           );
         } catch (err) {
@@ -53,20 +52,7 @@ ${err}`
     }
 
     static get(worldResourceId, id, constructor) {
-      try {
-        let res = core.ops.op_entity_get_component(
-          worldResourceId,
-          id,
-          constructor.typeId
-        );
-
-        return new constructor(res);
-      } catch (err) {
-        throw new Error(
-          `Could not get component: ${constructor.typeName} from entity: ${id}
-${err}`
-        );
-      }
+      return core.ops.op_entity_get_component(worldResourceId, id, constructor);
     }
 
     insert(maybeComponent) {

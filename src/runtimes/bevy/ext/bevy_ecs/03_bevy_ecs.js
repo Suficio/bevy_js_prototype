@@ -59,29 +59,14 @@
     }
   }
 
-  const Reflect = (Base) =>
-    class extends Base {
-      typeName() {
-        return this.constructor.typeName;
-      }
-
-      typeId() {
-        return this.constructor.typeId;
-      }
-
-      componentId() {
-        return this.constructor.componentId;
-      }
-    };
-
-  class ReflectableObject extends Reflect(Object) {
+  class ReflectableObject extends Object {
     constructor(defaults, struct) {
       super();
       Object.assign(this, defaults, struct);
     }
   }
 
-  class ReflectableArray extends Reflect(Array) {
+  class ReflectableArray extends Array {
     constructor(defaults, seq) {
       super();
 
@@ -93,14 +78,14 @@
     }
   }
 
-  class ReflectableEnum extends Reflect(Object) {
+  class ReflectableEnum extends Object {
     constructor(type, value) {
       super();
       this[type] = value;
     }
   }
 
-  class ReflectableUnit extends Reflect(String) {
+  class ReflectableUnit extends String {
     constructor(value) {
       super(value);
     }
