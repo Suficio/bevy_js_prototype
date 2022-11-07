@@ -20,7 +20,7 @@ members = ["crates/*"]
 
 [workspace.dependencies]
 # TODO(https://github.com/bevyengine/bevy/pull/6240) QueryState::new_with_state
-bevy = { git = "https://github.com/Suficio/bevy.git", rev = "75742e179a74b55fca0cb3ee0824e0b7d760ea99" }
+bevy = { git = "https://github.com/Suficio/bevy.git", rev = "07089365f5cf469e4ac0ac0cc2aee9df18ee4c09" }
 deno_core = "0.155.0"
 
 [dependencies]

@@ -32,8 +32,7 @@ ${err}`
     }
 
     static spawnEmpty(worldResourceId) {
-      const id = new ArrayBuffer(8);
-      ops.op_world_entity_spawn(worldResourceId, id);
+      const id = ops.op_world_entity_spawn(worldResourceId);
       return new Entity(worldResourceId, id);
     }
 

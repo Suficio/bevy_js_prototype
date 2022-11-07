@@ -23,7 +23,7 @@ pub fn serialize<'a>(
     registry: &TypeRegistryInternal,
     scope: &mut v8::HandleScope<'a>,
     value: &dyn Reflect,
-) -> Result<serde_v8::Value<'a>, bjs::AnyError> {
+) -> Result<v8::Local<'a, v8::Value>, bjs::AnyError> {
     let scope_ptr = std::cell::RefCell::new(scope);
     let value_serializer = serde_v8::Serializer::new(&scope_ptr);
 
@@ -32,21 +32,20 @@ pub fn serialize<'a>(
 
     TypedReflectSerializer::new(value, registry)
         .serialize(tracked)
-        .map(|value| serde_v8::Value { v8_value: value })
         .map_err(|err| bjs::AnyError::msg(format!("{}, occured at: {}", err, track.path())))
 }
 
-pub fn deserialize(
+pub fn deserialize<'a>(
     registry: &TypeRegistryInternal,
     type_id: std::any::TypeId,
-    scope: &mut v8::HandleScope,
-    value: serde_v8::Value,
+    scope: &mut v8::HandleScope<'a>,
+    value: v8::Local<'a, v8::Value>,
 ) -> Result<Box<dyn Reflect>, bjs::AnyError> {
     let registration = registry.get(type_id).ok_or_else(|| {
         bjs::AnyError::msg(format!("Registration for type id: {:?} not found", type_id))
     })?;
 
-    let mut value_deserializer = serde_v8::Deserializer::new(scope, value.v8_value, None);
+    let mut value_deserializer = serde_v8::Deserializer::new(scope, value, None);
 
     let mut track = serde_path_to_error::Track::new();
     let tracked = serde_path_to_error::Deserializer::new(&mut value_deserializer, &mut track);

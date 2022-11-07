@@ -18,6 +18,7 @@ fn op_time_delta<'a>(
     let time = world.resource::<Time>();
     let duration: Box<dyn Reflect> = Box::new(time.delta());
     bjs::runtimes::bevy::ext::serialize(&type_registry, scope, duration.as_ref())
+        .map(serde_v8::Value::from)
 }
 
 #[op(fast)]
@@ -53,4 +54,5 @@ fn op_time_since_startup<'a>(
     let time = world.resource::<Time>();
     let duration: Box<dyn Reflect> = Box::new(time.delta());
     bjs::runtimes::bevy::ext::serialize(&type_registry, scope, duration.as_ref())
+        .map(serde_v8::Value::from)
 }

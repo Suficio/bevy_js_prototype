@@ -1,4 +1,3 @@
-use super::debug_checked_unreachable;
 use bevy::{
     ecs::{
         archetype::{Archetype, ArchetypeComponentId},
@@ -10,7 +9,7 @@ use bevy::{
     ptr::Ptr,
 };
 
-/// Type used to query non-dense components
+/// Type used to query components
 pub struct ComponentPtr;
 
 #[doc(hidden)]
@@ -96,13 +95,13 @@ unsafe impl WorldQuery for ComponentPtr {
         match fetch.storage_type {
             StorageType::Table => fetch
                 .table_components
-                .unwrap_or_else(|| debug_checked_unreachable())
+                .debug_checked_unwrap()
                 .byte_add(table_row * fetch.component_size),
             StorageType::SparseSet => fetch
                 .sparse_set
-                .unwrap_or_else(|| debug_checked_unreachable())
+                .debug_checked_unwrap()
                 .get(entity)
-                .unwrap_or_else(|| debug_checked_unreachable()),
+                .debug_checked_unwrap(),
         }
     }
 
@@ -137,5 +136,39 @@ unsafe impl WorldQuery for ComponentPtr {
         set_contains_id: &impl Fn(ComponentId) -> bool,
     ) -> bool {
         set_contains_id(component_id)
+    }
+}
+
+trait DebugCheckedUnwrap {
+    type Item;
+    unsafe fn debug_checked_unwrap(self) -> Self::Item;
+}
+
+#[cfg(debug_assertions)]
+impl<T> DebugCheckedUnwrap for Option<T> {
+    type Item = T;
+
+    #[inline(always)]
+    #[track_caller]
+    unsafe fn debug_checked_unwrap(self) -> Self::Item {
+        if let Some(inner) = self {
+            inner
+        } else {
+            unreachable!()
+        }
+    }
+}
+
+#[cfg(not(debug_assertions))]
+impl<T> DebugCheckedUnwrap for Option<T> {
+    type Item = T;
+
+    #[inline(always)]
+    unsafe fn debug_checked_unwrap(self) -> Self::Item {
+        if let Some(inner) = self {
+            inner
+        } else {
+            std::hint::unreachable_unchecked()
+        }
     }
 }

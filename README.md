@@ -9,9 +9,10 @@ Prototype JavaScript itegration with the Bevy game engine that allows you to wri
 
 That being said, we already have:
 
-- Bevy and Deno (JavaScript engine) integration running on Bevy's task pools and in lockstep with the World.
-- Ability to create Entities and assign Components to them in JavaScript
-- Automatic generation of the majority of Bevy reflectable types
+- Direct integration between JS and Bevy Worlds
+- Ability to manage Entities and their Components
+- Query support
+- Automatic generation of Bevy `Reflect` types
 - In-browser Deno inspector for easy debugging
 
 ---
@@ -20,18 +21,15 @@ I intend to develop the feature set of this prototype, by replicating relevant B
 
 The nearest features you can expect:
 
+- Component registration on the JS side
 - JavaScript file loading via Bevy asset server with built-in hot-reloading
-- Query support, potentially some automatic entity state synchronization
-- Quality of life features like Bevy bundles
 - TypeScript, hopefully
 
 ---
 
 Sounds good, what are the current limitations?
 
-- No Query support
-- Waiting on features on Bevy and Deno side
-- General lack of possibilities :)
+- Waiting on Bevy features that would allow dynamic queries, this is currently worked around using a custom fork.
 
 ## Getting started
 

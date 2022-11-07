@@ -3,6 +3,7 @@ use bjs::{include_js_files, op, OpState};
 use std::{cell::RefCell, rc::Rc};
 
 mod entity;
+mod keys;
 mod query;
 mod type_registry;
 mod world;
@@ -29,6 +30,8 @@ pub fn init(resource: Rc<bjs::WorldResource>) -> bjs::Extension {
         ])
         .state(move |state| {
             state.resource_table.add_rc(resource.clone());
+            state.put(keys::KeyCache::default());
+
             Ok(())
         })
         .build()

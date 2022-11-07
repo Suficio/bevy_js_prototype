@@ -19,8 +19,8 @@
     }
 
     static iter(worldResourceId, queryResourceId, callbackFn) {
-      ops.op_query_iter(worldResourceId, queryResourceId, (entity, ...args) =>
-        callbackFn(new Entity(worldResourceId, entity), ...args)
+      ops.op_query_iter(worldResourceId, queryResourceId, (entity, args) =>
+        callbackFn(new Entity(worldResourceId, entity), args)
       );
     }
 
