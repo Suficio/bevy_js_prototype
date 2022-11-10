@@ -18,10 +18,18 @@
       return ops.op_query_initialize(worldResourceId, fetch, filter);
     }
 
+    static drop(resourceId) {
+      return ops.op_query_drop(resourceId);
+    }
+
     static iter(worldResourceId, queryResourceId, callbackFn) {
       ops.op_query_iter(worldResourceId, queryResourceId, (entity, args) =>
         callbackFn(new Entity(worldResourceId, entity), args)
       );
+    }
+
+    drop() {
+      return Query.drop(this.resourceId);
     }
 
     iter(callbackFn) {

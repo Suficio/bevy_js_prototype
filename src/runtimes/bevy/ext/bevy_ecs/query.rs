@@ -82,6 +82,21 @@ pub fn op_query_initialize(
     Ok(state.resource_table.add(query_state_resource))
 }
 
+#[op(fast)]
+pub fn op_query_drop(state: &mut OpState, query_resource_id: u32) -> Result<(), bjs::AnyError> {
+    // We only support one type of query therefore the [QueryStateResource]
+    // type will always be correct.
+    if state
+        .resource_table
+        .get::<QueryStateResource<(Entity, VecPtr<ComponentPtr>), ()>>(query_resource_id)
+        .is_err()
+    {
+        return Err(bjs::AnyError::msg("Resource was not a valid Query"));
+    }
+
+    state.resource_table.close(query_resource_id)
+}
+
 #[op(v8)]
 pub fn op_query_iter(
     state: Rc<RefCell<OpState>>,
@@ -100,11 +115,12 @@ pub fn op_query_iter(
 
     // We only support one type of query therefore the [QueryStateResource]
     // type will always be correct.
-    let query_state = state
+    let Ok(query_state) = state
         .borrow()
         .resource_table
-        .get::<QueryStateResource<(Entity, VecPtr<ComponentPtr>), ()>>(query_resource_id)
-        .unwrap();
+        .get::<QueryStateResource<(Entity, VecPtr<ComponentPtr>), ()>>(query_resource_id) else {
+        return Err(bjs::AnyError::msg("Query resource was not instantiated or dropped"));
+    };
 
     let Ok(callback_fn) = v8::Local::<v8::Function>::try_from(callback_fn.v8_value) else {
         return Err(bjs::AnyError::msg("Provided callback is not a function"));
