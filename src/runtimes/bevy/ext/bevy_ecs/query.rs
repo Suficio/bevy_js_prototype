@@ -1,4 +1,4 @@
-use super::keys::{unwrap_component_id, unwrap_function, unwrap_type_id, KeyCache};
+use super::keys::{self, KeyCache};
 use crate::{
     self as bjs,
     query::{ComponentPtr, VecPtr},
@@ -50,14 +50,21 @@ pub fn op_query_initialize(
     let mut constructors = Vec::new();
     let mut fetch_parameters = Vec::new();
     for value in parameters {
-        let constructor = unwrap_function(value)?;
+        let constructor = keys::unwrap_function(value)?;
 
         // TODO: TypeId may not be available for dynamically registered components
         // need to fallback to `ComponentId` implementation
-        let type_id = unwrap_type_id(scope, key_cache, constructor.into())?;
+        let type_id = keys::unwrap_type_id(scope, key_cache, constructor.into()).unwrap();
         let reflect_from_ptr = registry.get_type_data::<ReflectFromPtr>(type_id).unwrap();
 
-        let component_id = unwrap_component_id(scope, &world, key_cache, constructor.into())?;
+        let component_id = keys::unwrap_component_id(scope, &world, key_cache, constructor.into())
+            .ok_or_else(|| {
+                bjs::AnyError::msg(
+                    "Object must define `componentId` field and it must be an `ArrayBuffer`.
+                Component may not have been initialized with `World::init_component`."
+                        .to_string(),
+                )
+            })?;
 
         constructors.push((reflect_from_ptr.clone(), v8::Weak::new(scope, constructor)));
         fetch_parameters.push(component_id);
@@ -91,7 +98,7 @@ pub fn op_query_drop(state: &mut OpState, query_resource_id: u32) -> Result<(), 
         .get::<QueryStateResource<(Entity, VecPtr<ComponentPtr>), ()>>(query_resource_id)
         .is_err()
     {
-        return Err(bjs::AnyError::msg("Resource was not a valid Query"));
+        return Err(bjs::AnyError::msg("Resource was not a valid `Query`"));
     }
 
     state.resource_table.close(query_resource_id)

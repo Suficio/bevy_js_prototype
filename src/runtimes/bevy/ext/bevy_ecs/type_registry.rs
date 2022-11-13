@@ -73,7 +73,7 @@ fn op_type_registry_get_type_id_with_name<'a>(
         .map(|s| serde_v8::to_utf8(s, scope))
         .ok_or_else(|| {
             bjs::AnyError::msg(format!(
-                "Provided type name must be a String or StringObject",
+                "Provided type name must be a `String` or `StringObject`",
             ))
         })?;
 

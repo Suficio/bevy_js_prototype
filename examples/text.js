@@ -27,25 +27,30 @@ const { Color } = Bevy.render.color;
 const { Vec } = alloc.vec;
 const { Time } = Bevy.time.time;
 
+class ColorText {}
+class FpsText {}
+
 (async () => {
   const world = new World(worldResourceId);
 
   /// Track texts by tracking entity ID
-  const colorText = world.spawnEmpty();
-  const fpsText = world.spawnEmpty();
-
-  setup(colorText, fpsText);
+  const { colorText, fpsText } = setup(world);
 
   while (true) {
     await Bevy.ecs.nextFrame();
+
+    // TODO: Filtered Query
+
     textColorSystem(colorText);
     textUpdateSystem(fpsText);
+
+    return;
   }
 })();
 
-function setup(colorText, fpsText) {
+function setup(world) {
   // Text with one section
-  colorText.insert(
+  const colorText = world.spawn([
     TextBundle.fromSection(
       "hello\nbevy_js!",
       new TextStyle({
@@ -63,11 +68,12 @@ function setup(colorText, fpsText) {
             right: Val.Px(15.0),
           }),
         })
-      )
-  );
+      ),
+    new ColorText(),
+  ]);
 
   // Text with multiple sections
-  fpsText.insert(
+  const fpsText = world.spawn([
     TextBundle.fromSections([
       new TextSection({
         value: "FPS: ",
@@ -84,8 +90,11 @@ function setup(colorText, fpsText) {
           color: Color.Gold(),
         })
       ),
-    ])
-  );
+    ]),
+    new FpsText(),
+  ]);
+
+  return { colorText, fpsText };
 }
 
 function textColorSystem(colorText) {

@@ -19,8 +19,10 @@ inspector = ["tide", "tide-websockets"]
 members = ["crates/*"]
 
 [workspace.dependencies]
+# Bevy 0.9.0
 # TODO(https://github.com/bevyengine/bevy/pull/6240) QueryState::new_with_state
-bevy = { git = "https://github.com/Suficio/bevy.git", rev = "07089365f5cf469e4ac0ac0cc2aee9df18ee4c09" }
+# TODO(https://github.com/bevyengine/bevy/pull/5602) bevy_ecs: add untyped methods for inserting components and bundles
+bevy = { git = "https://github.com/Suficio/bevy.git", rev = "ba5e4b5efbefd7f7d1c20088224ee975016d0867" }
 deno_core = "0.155.0"
 
 [dependencies]
