@@ -31,6 +31,12 @@ ${err}`
       return new Query(worldResourceId, fetch, null);
     }
 
+    static spawn(worldResourceId, maybeBundle) {
+      let entity = World.spawnEmpty(worldResourceId);
+      entity.insert(maybeBundle);
+      return entity;
+    }
+
     static spawnEmpty(worldResourceId) {
       const id = ops.op_world_entity_spawn(worldResourceId);
       return new Entity(worldResourceId, id);
@@ -46,6 +52,10 @@ ${err}`
 
     query(fetch) {
       return World.query(this.worldResourceId, fetch);
+    }
+
+    spawn(maybeBundle) {
+      return World.spawn(this.worldResourceId, maybeBundle);
     }
 
     spawnEmpty() {

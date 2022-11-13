@@ -2,7 +2,7 @@
 
 ((window) => {
   const { core } = window.Deno;
-  const { Bundle } = window.Bevy.ecs;
+  const { Bundle, ReflectableArray } = window.Bevy.ecs;
 
   class Entity {
     constructor(worldResourceId, id) {
@@ -19,35 +19,8 @@
       this.id = id;
     }
 
-    static insert(worldResourceId, id, maybeComponent) {
-      if (maybeComponent instanceof Bundle) {
-        try {
-          for (const component of Object.values(maybeComponent)) {
-            this.insert(worldResourceId, id, component);
-          }
-        } catch (err) {
-          throw new Error(
-            `Could not insert bundle: ${maybeComponent.bundleName()} into entity: ${
-              this.entity
-            }
-${err}`
-          );
-        }
-      } else {
-        try {
-          core.ops.op_entity_insert_component(
-            worldResourceId,
-            id,
-            maybeComponent
-          );
-        } catch (err) {
-          throw new Error(
-            `Could not insert component: ${maybeComponent.typeName()} into entity: ${id}
-${err}`
-          );
-        }
-      }
-
+    static insert(worldResourceId, id, maybeBundle) {
+      recursiveInsert(worldResourceId, id, maybeBundle);
       return this;
     }
 
@@ -55,12 +28,31 @@ ${err}`
       return core.ops.op_entity_get_component(worldResourceId, id, constructor);
     }
 
-    insert(maybeComponent) {
-      return Entity.insert(this.worldResourceId, this.id, maybeComponent);
+    insert(component) {
+      return Entity.insert(this.worldResourceId, this.id, component);
     }
 
     get(constructor) {
       return Entity.get(this.worldResourceId, this.id, constructor);
+    }
+  }
+
+  function recursiveInsert(worldResourceId, id, maybeBundle) {
+    if (maybeBundle instanceof Bundle) {
+      for (const component of Object.values(maybeBundle)) {
+        recursiveInsert(worldResourceId, id, component);
+      }
+    } else if (
+      // `ReflectableArray` must be ruled out as it is also an instance of
+      // `Array`
+      !(maybeBundle instanceof ReflectableArray) &&
+      maybeBundle instanceof Array
+    ) {
+      for (const component of maybeBundle) {
+        recursiveInsert(worldResourceId, id, component);
+      }
+    } else {
+      core.ops.op_entity_insert_component(worldResourceId, id, maybeBundle);
     }
   }
 
