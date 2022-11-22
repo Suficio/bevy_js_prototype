@@ -13,7 +13,9 @@ pub fn op_world_entity_spawn<'a>(
     let mut world = res.borrow_world_mut();
 
     let id = super::entity::entity_to_bytes(&world.spawn_empty().id());
-    super::type_registry::array_buffer(scope, Box::new(id)).into()
+    let id: v8::Local<v8::Value> = super::type_registry::array_buffer(scope, Box::new(id)).into();
+
+    id.into()
 }
 
 #[op(v8)]

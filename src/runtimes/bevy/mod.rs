@@ -9,6 +9,7 @@ pub fn init() -> bjs::Extension {
         .js(include_js_files!(
             prefix "bevy",
             "./03_console.js",
+            "./99_main.js",
         ))
         .build()
 }

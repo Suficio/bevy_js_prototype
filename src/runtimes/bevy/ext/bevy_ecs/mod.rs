@@ -23,6 +23,7 @@ pub fn init(resource: Rc<bjs::WorldResource>) -> bjs::Extension {
             entity::op_entity_get_component::decl(),
             query::op_query_initialize::decl(),
             query::op_query_iter::decl(),
+            query::op_query_drop::decl(),
             world::op_world_entity_spawn::decl(),
             world::op_world_get_resource::decl(),
             type_registry::op_type_registry_get_type_id_with_name::decl(),

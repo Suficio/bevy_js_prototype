@@ -5,21 +5,21 @@
 // world, thus we demonstrate how to implement similar behaviour.
 
 (async () => {
-  await startup_system();
+  startup_system();
 
   // [normal_system] runs in lockstep with Bevy frames.
   // Note that [startup_system] blocks on the await, therefore, [normal_frame]
   // will only run during the first four frames after [startup_system].
   for (let i = 0; i < 4; i++) {
     await Bevy.ecs.nextFrame();
-    await normal_system(i);
+    normal_system(i);
   }
 })();
 
-async function startup_system() {
+function startup_system() {
   console.log("startup system ran first");
 }
 
-async function normal_system(i) {
+function normal_system(i) {
   console.log(`normal system ran ${i + 1} time`);
 }

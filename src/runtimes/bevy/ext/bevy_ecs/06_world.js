@@ -27,8 +27,8 @@ ${err}`
       }
     }
 
-    static query(worldResourceId, fetch) {
-      return new Query(worldResourceId, fetch, null);
+    static query(worldResourceId, fetch, filter = null) {
+      return new Query(worldResourceId, fetch, filter);
     }
 
     static spawn(worldResourceId, maybeBundle) {
@@ -50,8 +50,8 @@ ${err}`
       return World.getResource(this.worldResourceId, constructor);
     }
 
-    query(fetch) {
-      return World.query(this.worldResourceId, fetch);
+    query(fetch, filter = null) {
+      return World.query(this.worldResourceId, fetch, filter);
     }
 
     spawn(maybeBundle) {

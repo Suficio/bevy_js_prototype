@@ -43,8 +43,6 @@ class FpsText {}
 
     textColorSystem(colorText);
     textUpdateSystem(fpsText);
-
-    return;
   }
 })();
 

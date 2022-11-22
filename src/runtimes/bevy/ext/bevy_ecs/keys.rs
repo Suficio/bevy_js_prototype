@@ -4,7 +4,7 @@ use bevy::{
     prelude::*,
     utils::HashMap,
 };
-use bjs::{serde_v8, v8};
+use bjs::v8;
 use std::{mem, slice};
 
 fn bundle_id_to_bytes(bundle_id: &BundleId) -> [u8; 8] {
@@ -80,8 +80,13 @@ pub fn unwrap_type_id(
     let key_type_id = key_cache.get(scope, "typeId").into();
     object
         .get(scope, key_type_id)
-        .and_then(|id| serde_v8::from_v8::<serde_v8::ZeroCopyBuf>(scope, id).ok())
-        .map(|type_id| super::type_registry::bytes_to_type_id(type_id.as_ref()))
+        .and_then(|id| v8::Local::<v8::ArrayBuffer>::try_from(id).ok())
+        .map(|type_id| super::type_registry::bytes_to_type_id(as_slice(type_id)))
+}
+
+pub fn as_slice<'s>(buffer: v8::Local<'s, v8::ArrayBuffer>) -> &'s [u8] {
+    let store = buffer.get_backing_store();
+    unsafe { &*(&store[0..buffer.byte_length()] as *const _ as *const [u8]) }
 }
 
 /// Extracts `ComponentId` from a Bevy type constructior in JS
@@ -95,8 +100,7 @@ pub fn unwrap_component_id(
     let key_component_id = key_cache.get(scope, "componentId").into();
     object
         .get(scope, key_component_id)
-        // TODO: Don't use serde Deserialize intermediate
-        .and_then(|id| serde_v8::from_v8::<serde_v8::ZeroCopyBuf>(scope, id).ok())
+        .and_then(|id| v8::Local::<v8::ArrayBuffer>::try_from(id).ok())
         .or_else(|| {
             // We can fallback here to query `ComponentId` based on `TypeId`
             //
@@ -109,12 +113,9 @@ pub fn unwrap_component_id(
             // before plugin initialization.
             unwrap_type_id(scope, key_cache, object)
                 .and_then(|type_id| world.components().get_id(type_id))
-                .and_then(|component_id| {
-                    let value = update_component_id(scope, key_cache, object, component_id);
-                    Some(serde_v8::from_v8::<serde_v8::ZeroCopyBuf>(scope, value).unwrap())
-                })
+                .map(|component_id| update_component_id(scope, key_cache, object, component_id))
         })
-        .map(|buffer| super::type_registry::bytes_to_component_id(buffer.as_ref()))
+        .map(|buffer| super::type_registry::bytes_to_component_id(as_slice(buffer)))
 }
 
 pub fn unwrap_bundle_id(
@@ -125,9 +126,8 @@ pub fn unwrap_bundle_id(
     let key_bundle_id = key_cache.get(scope, "bundleId").into();
     object
         .get(scope, key_bundle_id)
-        // TODO: Don't use serde Deserialize intermediate
-        .and_then(|id| serde_v8::from_v8::<serde_v8::ZeroCopyBuf>(scope, id).ok())
-        .map(|buffer| bytes_to_bundle_id(buffer.as_ref()))
+        .and_then(|id| v8::Local::<v8::ArrayBuffer>::try_from(id).ok())
+        .map(|buffer| bytes_to_bundle_id(as_slice(buffer)))
 }
 
 pub fn update_component_id<'a>(
@@ -135,14 +135,14 @@ pub fn update_component_id<'a>(
     key_cache: &mut KeyCache,
     constructor: v8::Local<v8::Object>,
     component_id: ComponentId,
-) -> v8::Local<'a, v8::Value> {
+) -> v8::Local<'a, v8::ArrayBuffer> {
     let key_component_id = key_cache.get(scope, "componentId").into();
 
     let component_id = super::type_registry::component_id_to_bytes(&component_id);
     let value = super::type_registry::array_buffer(scope, Box::new(component_id));
 
     // Replace `ComponentId` with new `ArrayBuffer`
-    constructor.set(scope, key_component_id, value);
+    constructor.set(scope, key_component_id, value.into());
     value
 }
 
@@ -151,13 +151,13 @@ pub fn update_bundle_id<'a>(
     key_cache: &mut KeyCache,
     constructor: v8::Local<v8::Object>,
     bundle_id: BundleId,
-) -> v8::Local<'a, v8::Value> {
+) -> v8::Local<'a, v8::ArrayBuffer> {
     let key_bundle_id = key_cache.get(scope, "bundleId").into();
 
     let bundle_id = bundle_id_to_bytes(&bundle_id);
     let value = super::type_registry::array_buffer(scope, Box::new(bundle_id));
 
     // Replace `BundleId` with new `ArrayBuffer`
-    constructor.set(scope, key_bundle_id, value);
+    constructor.set(scope, key_bundle_id, value.into());
     value
 }

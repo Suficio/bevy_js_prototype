@@ -161,7 +161,7 @@ pub fn op_query_iter(
 
         // Create array from arguments, ensures that calls are monomorphic
         let args = v8::Array::new_with_elements(scope, elements.as_slice());
-        callback_fn.call(scope, this, &[entity, args.into()]);
+        callback_fn.call(scope, this, &[entity.into(), args.into()]);
     }
 
     Ok(())

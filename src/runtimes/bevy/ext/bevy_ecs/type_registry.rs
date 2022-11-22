@@ -47,9 +47,9 @@ pub(crate) fn bytes_to_component_id(component_id: &[u8]) -> ComponentId {
 pub(crate) fn array_buffer<'a>(
     scope: &mut v8::HandleScope<'a>,
     id: Box<[u8]>,
-) -> v8::Local<'a, v8::Value> {
+) -> v8::Local<'a, v8::ArrayBuffer> {
     let backing_store = v8::ArrayBuffer::new_backing_store_from_boxed_slice(id);
-    v8::ArrayBuffer::with_backing_store(scope, &backing_store.make_shared()).into()
+    v8::ArrayBuffer::with_backing_store(scope, &backing_store.make_shared())
 }
 
 /// Returns [TypeId] from type registration in [AppTypeRegistry] from the type
@@ -77,10 +77,10 @@ fn op_type_registry_get_type_id_with_name<'a>(
             ))
         })?;
 
-    let type_id = registry
+    let type_id: v8::Local<v8::Value> = registry
         .get_with_name(&type_name)
         .map(TypeRegistration::type_id)
-        .map(|type_id| array_buffer(scope, Box::new(type_id_to_bytes(&type_id))))
+        .map(|type_id| array_buffer(scope, Box::new(type_id_to_bytes(&type_id))).into())
         .unwrap_or_else(|| v8::null(scope).into());
 
     Ok(type_id.into())
@@ -103,10 +103,13 @@ fn op_type_registry_get_component_id_with_type_id<'a>(
     let res = bjs::runtimes::unwrap_world_resource(&state.borrow(), world_resource_id);
     let world = res.borrow_world();
 
-    world
+    let component_id: v8::Local<v8::Value> = world
         .components()
         .get_id(bytes_to_type_id(type_id.as_ref()))
-        .map(|component_id| array_buffer(scope, Box::new(component_id_to_bytes(&component_id))))
-        .unwrap_or_else(|| v8::null(scope).into())
-        .into()
+        .map(|component_id| {
+            array_buffer(scope, Box::new(component_id_to_bytes(&component_id))).into()
+        })
+        .unwrap_or_else(|| v8::null(scope).into());
+
+    component_id.into()
 }
