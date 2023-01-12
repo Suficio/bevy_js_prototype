@@ -22,7 +22,13 @@ impl<T> RefLend<T> {
     }
 
     /// Borrows lent reference if one exists or can be borrowed
-    pub fn borrow(&self) -> Option<Ref<&T>> {
+    pub fn borrow(&self) -> Ref<&T> {
+        self.try_borrow()
+            .expect("Was not lent or a mutable borrow exists")
+    }
+
+    /// Borrows lent reference if one exists or can be borrowed
+    pub fn try_borrow(&self) -> Option<Ref<&T>> {
         unsafe {
             match self.0.try_borrow() {
                 Ok(r) => match Ref::filter_map(r, Option::as_ref) {
@@ -34,8 +40,14 @@ impl<T> RefLend<T> {
         }
     }
 
+    /// Borrows lent reference if one exists or can be borrowed
+    pub fn borrow_mut(&self) -> RefMut<&mut T> {
+        self.try_borrow_mut()
+            .expect("Was not lent or a mutable borrow exists")
+    }
+
     /// Mutably borrows reference if one exists or can be borrowed
-    pub fn borrow_mut(&self) -> Option<RefMut<&mut T>> {
+    pub fn try_borrow_mut(&self) -> Option<RefMut<&mut T>> {
         unsafe {
             match self.0.try_borrow_mut() {
                 Ok(r) => match RefMut::filter_map(r, Option::as_mut) {
@@ -57,18 +69,18 @@ mod tests {
         let lend = RefLend::<String>::default();
         let mut string = "Hello, World!".to_string();
 
-        assert!(lend.borrow().is_none());
+        assert!(lend.try_borrow().is_none());
 
         lend.scope(&mut string, || {
-            let string = lend.borrow().unwrap();
+            let string = lend.try_borrow().unwrap();
             assert_eq!(*string, "Hello, World!");
 
-            assert!(lend.borrow().is_some());
-            assert!(lend.borrow_mut().is_none());
+            assert!(lend.try_borrow().is_some());
+            assert!(lend.try_borrow_mut().is_none());
         });
 
         // Out of Lend scope
-        assert!(lend.borrow().is_none());
+        assert!(lend.try_borrow().is_none());
     }
 
     #[test]
@@ -77,11 +89,11 @@ mod tests {
         let mut string = "Hello, World!".to_string();
 
         lend.scope(&mut string, || {
-            let string = lend.borrow_mut().unwrap();
+            let string = lend.try_borrow_mut().unwrap();
             assert_eq!(*string, "Hello, World!");
 
-            assert!(lend.borrow().is_none());
-            assert!(lend.borrow_mut().is_none());
+            assert!(lend.try_borrow().is_none());
+            assert!(lend.try_borrow_mut().is_none());
         });
     }
 }

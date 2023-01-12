@@ -10,7 +10,7 @@ pub fn op_world_entity_spawn<'a>(
     world_resource_id: u32,
 ) -> serde_v8::Value<'a> {
     let res = bjs::runtimes::unwrap_world_resource(state, world_resource_id);
-    let mut world = res.borrow_world_mut();
+    let mut world = res.world().borrow_mut();
 
     let id = super::entity::entity_to_bytes(&world.spawn_empty().id());
     let id: v8::Local<v8::Value> = super::type_registry::array_buffer(scope, Box::new(id)).into();
@@ -26,7 +26,7 @@ pub fn op_world_get_resource<'a>(
     type_name: String,
 ) -> Result<serde_v8::Value<'a>, bjs::AnyError> {
     let res = bjs::runtimes::unwrap_world_resource(&state.borrow(), r_world);
-    let world = res.borrow_world();
+    let world = res.world().borrow();
 
     let type_registry = world.resource::<AppTypeRegistry>().clone();
     let type_registry = type_registry.read();

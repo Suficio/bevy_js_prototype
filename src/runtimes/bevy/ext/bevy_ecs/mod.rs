@@ -21,6 +21,7 @@ pub fn init(resource: Rc<bjs::WorldResource>) -> bjs::Extension {
             op_wait_for_frame::decl(),
             entity::op_entity_insert_component::decl(),
             entity::op_entity_get_component::decl(),
+            query::op_declare_filters::decl(),
             query::op_query_initialize::decl(),
             query::op_query_iter::decl(),
             query::op_query_drop::decl(),

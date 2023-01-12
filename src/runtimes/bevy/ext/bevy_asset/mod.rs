@@ -21,8 +21,7 @@ pub fn op_asset_server_load(
     path: String,
 ) -> Result<HandleId, bjs::AnyError> {
     let res = bjs::runtimes::unwrap_world_resource(&state.borrow(), r_world);
-
-    let world = res.borrow_world();
+    let world = res.world().borrow();
 
     let asset_server = world
         .get_resource::<AssetServer>()

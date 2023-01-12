@@ -1,10 +1,7 @@
 use crate as bjs;
 use bevy::prelude::*;
 use bjs::{futures::channel::oneshot, lend::RefLend};
-use std::{
-    cell::{Ref, RefCell, RefMut},
-    rc::Rc,
-};
+use std::{cell::RefCell, rc::Rc};
 
 /// Shared resource that gets passed to Deno ops
 #[derive(Default)]
@@ -16,22 +13,8 @@ pub struct WorldResource {
 }
 
 impl WorldResource {
-    pub fn try_borrow_world(&self) -> Option<Ref<&World>> {
-        self.world.borrow()
-    }
-
-    pub fn try_borrow_world_mut(&self) -> Option<RefMut<&mut World>> {
-        self.world.borrow_mut()
-    }
-
-    pub fn borrow_world(&self) -> Ref<&World> {
-        self.try_borrow_world()
-            .expect("World was not lent to JS runtime or a mutable borrow exists")
-    }
-
-    pub fn borrow_world_mut(&self) -> RefMut<&mut World> {
-        self.try_borrow_world_mut()
-            .expect("World was not lent to JS runtime or another mutable borrow exists")
+    pub fn world(&self) -> &RefLend<World> {
+        &self.world
     }
 }
 

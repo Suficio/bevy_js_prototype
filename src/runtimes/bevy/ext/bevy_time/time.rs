@@ -10,7 +10,7 @@ fn op_time_delta<'a>(
     r_world: bjs::ResourceId,
 ) -> Result<serde_v8::Value<'a>, bjs::AnyError> {
     let res = bjs::runtimes::unwrap_world_resource(&state.borrow(), r_world);
-    let world = res.borrow_world();
+    let world = res.world().borrow();
 
     let type_registry = world.resource::<AppTypeRegistry>().clone();
     let type_registry = type_registry.read();
@@ -24,7 +24,7 @@ fn op_time_delta<'a>(
 #[op(fast)]
 fn op_time_delta_seconds(state: &mut OpState, r_world: bjs::ResourceId) -> f32 {
     let res = bjs::runtimes::unwrap_world_resource(state, r_world);
-    let world = res.borrow_world();
+    let world = res.world().borrow();
 
     let time = world.resource::<Time>();
     time.delta_seconds()
@@ -33,7 +33,7 @@ fn op_time_delta_seconds(state: &mut OpState, r_world: bjs::ResourceId) -> f32 {
 #[op(fast)]
 fn op_time_seconds_since_startup(state: &mut OpState, r_world: bjs::ResourceId) -> f64 {
     let res = bjs::runtimes::unwrap_world_resource(state, r_world);
-    let world = res.borrow_world();
+    let world = res.world().borrow();
 
     let time = world.resource::<Time>();
     time.elapsed_seconds_f64()
@@ -46,7 +46,7 @@ fn op_time_since_startup<'a>(
     r_world: bjs::ResourceId,
 ) -> Result<serde_v8::Value<'a>, bjs::AnyError> {
     let res = bjs::runtimes::unwrap_world_resource(&state.borrow(), r_world);
-    let world = res.borrow_world();
+    let world = res.world().borrow();
 
     let type_registry = world.resource::<AppTypeRegistry>().clone();
     let type_registry = type_registry.read();

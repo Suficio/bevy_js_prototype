@@ -4,6 +4,18 @@
   const { ops } = window.Deno.core;
   const { Entity } = window.Bevy.ecs;
 
+  class With {
+    constructor(componentType) {
+      this.componentType = componentType;
+    }
+  }
+
+  class Without {
+    constructor(componentType) {
+      this.componentType = componentType;
+    }
+  }
+
   class Query {
     constructor(worldResourceId, fetch, filter = null) {
       this.worldResourceId = worldResourceId;
@@ -11,10 +23,6 @@
     }
 
     static initialize(worldResourceId, fetch, filter = null) {
-      if (filter != null) {
-        throw new Error("Filter in Query not supported");
-      }
-
       return ops.op_query_initialize(worldResourceId, fetch, filter);
     }
 
@@ -37,5 +45,8 @@
     }
   }
 
-  Object.assign(window.Bevy.ecs, { Query });
+  // Declare filters so Rust side can identify the filter types
+  ops.op_declare_filters(With, Without);
+
+  Object.assign(window.Bevy.ecs, { Query, With, Without });
 })(globalThis);

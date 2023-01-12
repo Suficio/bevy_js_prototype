@@ -1,16 +1,28 @@
+mod filter;
 mod ptr;
 mod vec;
 
+use crate::v8;
+use bevy::prelude::*;
+
+pub use filter::Filter;
 pub use ptr::ComponentPtr;
 pub use vec::VecPtr;
+
+/// Maintains a [v8::Map] that stores all dynamic [Components](Component)
+/// associated with the [Entity].
+#[derive(Component)]
+pub(crate) struct ComponentExt(pub v8::Global<v8::Value>);
+
+// SAFETY: [ComponentExt] is only ever accessed from the thread associated with
+// the v8 instance.
+unsafe impl Send for ComponentExt {}
+unsafe impl Sync for ComponentExt {}
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use bevy::{
-        prelude::*,
-        reflect::{ReflectFromPtr, TypeRegistry},
-    };
+    use bevy::reflect::{ReflectFromPtr, TypeRegistry};
 
     #[derive(Component)]
     struct A;
@@ -90,6 +102,42 @@ mod tests {
         };
         let count = query.iter(&mut world).count();
         assert_eq!(count, 1);
+
+        // Check filtered variations
+
+        let mut query = unsafe {
+            QueryState::<ComponentPtr, Filter>::new_with_state(&mut world, a, Filter::With(b))
+        };
+        let count = query.iter(&mut world).count();
+        assert_eq!(count, 1);
+
+        let mut query = unsafe {
+            QueryState::<ComponentPtr, Filter>::new_with_state(&mut world, b, Filter::With(a))
+        };
+        let count = query.iter(&mut world).count();
+        assert_eq!(count, 1);
+
+        let mut query = unsafe {
+            QueryState::<ComponentPtr, VecPtr<Filter>>::new_with_state(
+                &mut world,
+                b,
+                vec![Filter::With(a), Filter::With(b)],
+            )
+        };
+        let count = query.iter(&mut world).count();
+        assert_eq!(count, 1);
+
+        let mut query = unsafe {
+            QueryState::<ComponentPtr, Filter>::new_with_state(&mut world, a, Filter::Without(b))
+        };
+        let count = query.iter(&mut world).count();
+        assert_eq!(count, 1);
+
+        let mut query = unsafe {
+            QueryState::<ComponentPtr, Filter>::new_with_state(&mut world, b, Filter::Without(a))
+        };
+        let count = query.iter(&mut world).count();
+        assert_eq!(count, 0);
     }
 
     #[test]

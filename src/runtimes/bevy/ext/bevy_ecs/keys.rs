@@ -1,7 +1,10 @@
-use crate as bjs;
+use crate::{self as bjs, lend::RefLend, query::ComponentExt};
 use bevy::{
-    ecs::{bundle::BundleId, component::ComponentId},
-    prelude::*,
+    ecs::{
+        bundle::BundleId,
+        component::{ComponentDescriptor, ComponentId},
+    },
+    prelude::World,
     utils::HashMap,
 };
 use bjs::v8;
@@ -57,10 +60,11 @@ pub fn unwrap_function<'a>(
     value: v8::Local<'a, v8::Value>,
 ) -> Result<v8::Local<'a, v8::Function>, bjs::AnyError> {
     v8::Local::<v8::Function>::try_from(value)
-        .map_err(|_| bjs::AnyError::msg("`Query` parameters must be functions".to_string()))
+        .map_err(|_| bjs::AnyError::msg("`Query` parameters must be functions"))
 }
 
-pub fn unwrap_constructor<'a>(
+/// Extracts field `constructor` from a JS project
+pub fn extract_constructor<'a>(
     scope: &mut v8::HandleScope<'a>,
     key_cache: &mut KeyCache,
     object: v8::Local<v8::Object>,
@@ -68,11 +72,12 @@ pub fn unwrap_constructor<'a>(
     let key_constructor = key_cache.get(scope, "constructor").into();
     object
         .get(scope, key_constructor)
-        .ok_or_else(|| bjs::AnyError::msg("Object must define `constructor` field".to_string()))
+        .ok_or_else(|| bjs::AnyError::msg("Object must define `constructor` field"))
         .and_then(|value| unwrap_function(value))
 }
 
-pub fn unwrap_type_id(
+/// Extracts field `typeId` from a JS object
+pub fn extract_type_id(
     scope: &mut v8::HandleScope,
     key_cache: &mut KeyCache,
     object: v8::Local<v8::Object>,
@@ -84,50 +89,71 @@ pub fn unwrap_type_id(
         .map(|type_id| super::type_registry::bytes_to_type_id(as_slice(type_id)))
 }
 
-pub fn as_slice<'s>(buffer: v8::Local<'s, v8::ArrayBuffer>) -> &'s [u8] {
-    let store = buffer.get_backing_store();
-    unsafe { &*(&store[0..buffer.byte_length()] as *const _ as *const [u8]) }
-}
-
-/// Extracts `ComponentId` from a Bevy type constructior in JS
-pub fn unwrap_component_id(
+/// Extracts field `componentId` from a JS object
+///
+/// Will attempt to lazily extract `componentId` based on the `typeId`
+pub fn extract_component_id(
     scope: &mut v8::HandleScope,
-    world: &World,
+    world: &RefLend<World>,
     key_cache: &mut KeyCache,
     object: v8::Local<v8::Object>,
-) -> Option<ComponentId> {
+) -> Result<ComponentId, bjs::AnyError> {
     // Check if object defines `ComponentId`
     let key_component_id = key_cache.get(scope, "componentId").into();
     object
         .get(scope, key_component_id)
         .and_then(|id| v8::Local::<v8::ArrayBuffer>::try_from(id).ok())
-        .or_else(|| {
-            // We can fallback here to query `ComponentId` based on `TypeId`
-            //
-            // TODO: This becomes unnecessary when JS can initialize components
-            // by itself, but otherwise functions as a late `ComponentId`
-            // initialization.
-            //
-            // TODO: More importantly this is unnecessary if
-            // `World::init_component` of startup systems is allowed to run
-            // before plugin initialization.
-            unwrap_type_id(scope, key_cache, object)
-                .and_then(|type_id| world.components().get_id(type_id))
-                .map(|component_id| update_component_id(scope, key_cache, object, component_id))
-        })
         .map(|buffer| super::type_registry::bytes_to_component_id(as_slice(buffer)))
+        .or_else(|| {
+            // Lazily initialize `ComponentId` if `TypeId` is defined or
+            // initialize new dynamic component
+            let component_id = match extract_type_id(scope, key_cache, object) {
+                Some(type_id) => world
+                    .try_borrow()
+                    .and_then(|world| world.components().get_id(type_id)),
+                None => world.try_borrow_mut().map(|mut world| {
+                    let descriptor = ComponentDescriptor::new::<ComponentExt>();
+                    world.init_component_with_descriptor(descriptor)
+                }),
+            };
+
+            if let Some(component_id) = component_id {
+                update_component_id(scope, key_cache, object, component_id);
+            }
+
+            component_id
+        })
+        .ok_or_else(|| {
+            bjs::AnyError::msg("Component was not initialized, call `world::init_component`")
+        })
 }
 
-pub fn unwrap_bundle_id(
+/// Extracts field `bundleId` from a JS object
+pub fn extract_bundle_id(
     scope: &mut v8::HandleScope,
+    world: &RefLend<World>,
     key_cache: &mut KeyCache,
     object: v8::Local<v8::Object>,
-) -> Option<BundleId> {
+) -> Result<BundleId, bjs::AnyError> {
     let key_bundle_id = key_cache.get(scope, "bundleId").into();
     object
         .get(scope, key_bundle_id)
         .and_then(|id| v8::Local::<v8::ArrayBuffer>::try_from(id).ok())
         .map(|buffer| bytes_to_bundle_id(as_slice(buffer)))
+        .or_else(|| {
+            extract_component_id(scope, world, key_cache, object)
+                .ok()
+                .and_then(|component_id| {
+                    world.try_borrow_mut().map(|mut world| {
+                        let bundle_id = world.init_dynamic_bundle(vec![component_id]).id();
+                        update_bundle_id(scope, key_cache, object, bundle_id);
+                        bundle_id
+                    })
+                })
+        })
+        .ok_or_else(|| {
+            bjs::AnyError::msg("Component was not initialized, call `world::init_component`")
+        })
 }
 
 pub fn update_component_id<'a>(
@@ -160,4 +186,9 @@ pub fn update_bundle_id<'a>(
     // Replace `BundleId` with new `ArrayBuffer`
     constructor.set(scope, key_bundle_id, value.into());
     value
+}
+
+pub fn as_slice<'s>(buffer: v8::Local<'s, v8::ArrayBuffer>) -> &'s [u8] {
+    let store = buffer.get_backing_store();
+    unsafe { &*(&store[0..buffer.byte_length()] as *const _ as *const [u8]) }
 }

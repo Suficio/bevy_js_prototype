@@ -62,7 +62,7 @@ fn op_type_registry_get_type_id_with_name<'a>(
     type_name: serde_v8::Value,
 ) -> Result<serde_v8::Value<'a>, bjs::AnyError> {
     let res = bjs::runtimes::unwrap_world_resource(&state.borrow(), world_resource_id);
-    let world = res.borrow_world();
+    let world = res.world().borrow();
 
     let registry = world.resource::<AppTypeRegistry>().clone();
     let registry = registry.read();
@@ -101,7 +101,7 @@ fn op_type_registry_get_component_id_with_type_id<'a>(
     type_id: ZeroCopyBuf,
 ) -> serde_v8::Value<'a> {
     let res = bjs::runtimes::unwrap_world_resource(&state.borrow(), world_resource_id);
-    let world = res.borrow_world();
+    let world = res.world().borrow();
 
     let component_id: v8::Local<v8::Value> = world
         .components()
