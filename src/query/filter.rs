@@ -3,7 +3,7 @@ use bevy::{
         archetype::{Archetype, ArchetypeComponentId},
         component::ComponentId,
         query::{Access, FilteredAccess, ReadOnlyWorldQuery, WorldQuery},
-        storage::Table,
+        storage::{Table, TableRow},
     },
     prelude::*,
 };
@@ -51,7 +51,7 @@ unsafe impl WorldQuery for Filter {
     unsafe fn fetch<'w>(
         _fetch: &mut Self::Fetch<'w>,
         _entity: Entity,
-        _table_row: usize,
+        _table_row: TableRow,
     ) -> Self::Item<'w> {
     }
 

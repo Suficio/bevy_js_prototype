@@ -20,6 +20,7 @@ pub fn init(resource: Rc<bjs::WorldResource>) -> bjs::Extension {
         .ops(vec![
             op_wait_for_frame::decl(),
             entity::op_entity_insert_component::decl(),
+            entity::op_entity_delegated_insert_component::decl(),
             entity::op_entity_get_component::decl(),
             query::op_declare_filters::decl(),
             query::op_query_initialize::decl(),
@@ -39,8 +40,8 @@ pub fn init(resource: Rc<bjs::WorldResource>) -> bjs::Extension {
         .build()
 }
 
-/// Waits until world becomes available to read from
 #[op]
+#[allow(clippy::await_holding_refcell_ref)]
 async fn op_wait_for_frame(state: Rc<RefCell<OpState>>, world_resource_id: u32) {
     bjs::runtimes::unwrap_world_resource(&state.borrow(), world_resource_id)
         .wait_for_frame()

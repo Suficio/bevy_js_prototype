@@ -3,7 +3,7 @@ use bevy::{
         archetype::{Archetype, ArchetypeComponentId},
         component::{ComponentId, StorageType},
         query::{Access, FilteredAccess, ReadOnlyWorldQuery, WorldQuery},
-        storage::{ComponentSparseSet, Table},
+        storage::{ComponentSparseSet, Table, TableRow},
     },
     prelude::*,
     ptr::Ptr,
@@ -13,7 +13,7 @@ use bevy::{
 pub struct ComponentPtr;
 
 #[doc(hidden)]
-pub struct ReadFetchSparse<'w> {
+pub struct ReadFetch<'w> {
     storage_type: StorageType,
     component_size: usize,
 
@@ -24,7 +24,7 @@ pub struct ReadFetchSparse<'w> {
 unsafe impl ReadOnlyWorldQuery for ComponentPtr {}
 
 unsafe impl WorldQuery for ComponentPtr {
-    type Fetch<'w> = ReadFetchSparse<'w>;
+    type Fetch<'w> = ReadFetch<'w>;
     type Item<'w> = Ptr<'w>;
     type ReadOnly = Self;
     type State = ComponentId;
@@ -38,11 +38,11 @@ unsafe impl WorldQuery for ComponentPtr {
         &component_id: &ComponentId,
         _last_change_tick: u32,
         _change_tick: u32,
-    ) -> ReadFetchSparse<'w> {
+    ) -> ReadFetch<'w> {
         let component_info = world.components().get_info(component_id).unwrap();
         let storage_type = component_info.storage_type();
 
-        ReadFetchSparse {
+        ReadFetch {
             storage_type,
             component_size: component_info.layout().size(),
 
@@ -53,7 +53,7 @@ unsafe impl WorldQuery for ComponentPtr {
     }
 
     unsafe fn clone_fetch<'w>(fetch: &Self::Fetch<'w>) -> Self::Fetch<'w> {
-        ReadFetchSparse {
+        ReadFetch {
             storage_type: fetch.storage_type,
             component_size: fetch.component_size,
 
@@ -67,7 +67,7 @@ unsafe impl WorldQuery for ComponentPtr {
 
     #[inline]
     unsafe fn set_archetype<'w>(
-        fetch: &mut ReadFetchSparse<'w>,
+        fetch: &mut ReadFetch<'w>,
         component_id: &ComponentId,
         _archetype: &'w Archetype,
         table: &'w Table,
@@ -79,7 +79,7 @@ unsafe impl WorldQuery for ComponentPtr {
 
     #[inline]
     unsafe fn set_table<'w>(
-        fetch: &mut ReadFetchSparse<'w>,
+        fetch: &mut ReadFetch<'w>,
         &component_id: &ComponentId,
         table: &'w Table,
     ) {
@@ -90,18 +90,14 @@ unsafe impl WorldQuery for ComponentPtr {
     unsafe fn fetch<'w>(
         fetch: &mut Self::Fetch<'w>,
         entity: Entity,
-        table_row: usize,
+        table_row: TableRow,
     ) -> Self::Item<'w> {
         match fetch.storage_type {
             StorageType::Table => fetch
                 .table_components
-                .debug_checked_unwrap()
-                .byte_add(table_row * fetch.component_size),
-            StorageType::SparseSet => fetch
-                .sparse_set
-                .debug_checked_unwrap()
-                .get(entity)
-                .debug_checked_unwrap(),
+                .unwrap()
+                .byte_add(table_row.index() * fetch.component_size),
+            StorageType::SparseSet => fetch.sparse_set.unwrap().get(entity).unwrap(),
         }
     }
 
@@ -136,39 +132,5 @@ unsafe impl WorldQuery for ComponentPtr {
         set_contains_id: &impl Fn(ComponentId) -> bool,
     ) -> bool {
         set_contains_id(component_id)
-    }
-}
-
-trait DebugCheckedUnwrap {
-    type Item;
-    unsafe fn debug_checked_unwrap(self) -> Self::Item;
-}
-
-#[cfg(debug_assertions)]
-impl<T> DebugCheckedUnwrap for Option<T> {
-    type Item = T;
-
-    #[inline(always)]
-    #[track_caller]
-    unsafe fn debug_checked_unwrap(self) -> Self::Item {
-        if let Some(inner) = self {
-            inner
-        } else {
-            unreachable!()
-        }
-    }
-}
-
-#[cfg(not(debug_assertions))]
-impl<T> DebugCheckedUnwrap for Option<T> {
-    type Item = T;
-
-    #[inline(always)]
-    unsafe fn debug_checked_unwrap(self) -> Self::Item {
-        if let Some(inner) = self {
-            inner
-        } else {
-            std::hint::unreachable_unchecked()
-        }
     }
 }

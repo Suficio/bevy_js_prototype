@@ -2,7 +2,7 @@
 
 use crate as bjs;
 use bevy::{ecs::component::ComponentId, prelude::*, reflect::TypeRegistration};
-use bjs::{op, serde_v8, v8, OpState};
+use bjs::{anyhow::anyhow, op, serde_v8, v8, OpState};
 use deno_core::ZeroCopyBuf;
 use std::{any::TypeId, cell::RefCell, mem, rc::Rc, slice};
 
@@ -71,11 +71,7 @@ fn op_type_registry_get_type_id_with_name<'a>(
         .v8_value
         .to_string(scope)
         .map(|s| serde_v8::to_utf8(s, scope))
-        .ok_or_else(|| {
-            bjs::AnyError::msg(format!(
-                "Provided type name must be a `String` or `StringObject`",
-            ))
-        })?;
+        .ok_or_else(|| anyhow!("Provided type name must be a `String` or `StringObject`",))?;
 
     let type_id: v8::Local<v8::Value> = registry
         .get_with_name(&type_name)

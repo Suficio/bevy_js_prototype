@@ -4,7 +4,7 @@ use crate::{
     lend::RefLend,
     query::{ComponentExt, ComponentPtr, Filter, VecPtr},
 };
-use bevy::{prelude::*, ptr::Ptr, reflect::ReflectFromPtr};
+use bevy::{ecs::world::EntityMut, prelude::*, ptr::Ptr, reflect::ReflectFromPtr};
 use bjs::{op, serde_v8, v8, OpState};
 use std::{cell::RefCell, rc::Rc};
 
@@ -23,7 +23,7 @@ impl FilterResource {
         key_cache: &mut KeyCache,
         filter: v8::Local<v8::Object>,
     ) -> Result<Filter, bjs::AnyError> {
-        let function = keys::extract_constructor(scope, key_cache, filter)?;
+        let function = keys::unwrap_constructor(scope, key_cache, filter)?;
 
         let key = key_cache.get(scope, "componentType").into();
         let component = filter
@@ -31,7 +31,7 @@ impl FilterResource {
             .ok_or_else(|| bjs::AnyError::msg("Filter parameter must define `componentType` field"))
             .and_then(keys::unwrap_object)?;
 
-        let component_id = keys::extract_component_id(scope, world, key_cache, component)?;
+        let component_id = keys::try_extract_component_id(scope, world, key_cache, component)?;
 
         if function == self.with.to_local(scope).unwrap() {
             Ok(Filter::With(component_id))
@@ -46,9 +46,13 @@ impl FilterResource {
 }
 
 /// Caches [QueryState] as a Deno [Resource]
-struct QueryStateResource {
+#[allow(clippy::type_complexity)]
+pub struct QueryStateResource {
     state: RefCell<QueryState<(Entity, VecPtr<ComponentPtr>), VecPtr<Filter>>>,
     constructors: Vec<Option<(ReflectFromPtr, v8::Weak<v8::Function>)>>,
+    /// Allows `QueryStateResource` to delegate mutable access to the entity
+    /// it is currently iterating upon.
+    pub(crate) delegated_entity: RefLend<EntityMut<'static>>,
 }
 
 impl bjs::Resource for QueryStateResource {}
@@ -64,7 +68,8 @@ pub fn op_declare_filters(
         with: v8::Weak::new(scope, keys::unwrap_function(with.v8_value)?),
         without: v8::Weak::new(scope, keys::unwrap_function(without.v8_value)?),
     };
-    Ok(state.put(res))
+    state.put(res);
+    Ok(())
 }
 
 #[op(v8)]
@@ -77,9 +82,6 @@ pub fn op_query_initialize(
 ) -> Result<u32, bjs::AnyError> {
     let res = bjs::runtimes::unwrap_world_resource(state, world_resource_id);
     let world = res.world();
-
-    let registry = world.borrow().resource::<AppTypeRegistry>().clone();
-    let registry = registry.read();
 
     let filter_cache = state.borrow::<FilterResource>().clone();
     let key_cache = state.borrow_mut::<KeyCache>();
@@ -104,13 +106,19 @@ pub fn op_query_initialize(
         // Expect type constructor as fetch parameter
         let constructor = keys::unwrap_function(value)?;
 
-        let component_id = keys::extract_component_id(scope, world, key_cache, constructor.into())?;
+        let component_id =
+            keys::try_extract_component_id(scope, world, key_cache, constructor.into())?;
 
         // TypeId may not be available for dynamically registered components
         // need to fallback to `ComponentId` implementation
-        match keys::extract_type_id(scope, key_cache, constructor.into()) {
+        match keys::unwrap_type_id(scope, key_cache, constructor.into()) {
             Some(type_id) => {
-                let reflect_from_ptr = registry.get_type_data::<ReflectFromPtr>(type_id).unwrap();
+                let type_registry = world.borrow().resource::<AppTypeRegistry>().clone();
+                let type_registry = type_registry.read();
+
+                let reflect_from_ptr = type_registry
+                    .get_type_data::<ReflectFromPtr>(type_id)
+                    .unwrap();
                 constructors.push(Some((
                     reflect_from_ptr.clone(),
                     v8::Weak::new(scope, constructor),
@@ -143,6 +151,7 @@ pub fn op_query_initialize(
     let query_state_resource = QueryStateResource {
         state: RefCell::new(query_state),
         constructors,
+        delegated_entity: RefLend::default(),
     };
 
     Ok(state.resource_table.add(query_state_resource))

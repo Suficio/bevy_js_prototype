@@ -11,12 +11,12 @@ pub struct JsRuntimeResource<R> {
 
 impl<R: bjs::IntoRuntime> FromWorld for JsRuntimeResource<R> {
     fn from_world(world: &mut World) -> Self {
-        let runtime = world.resource_scope(|world, resource: Mut<bjs::WorldResourceExt>| {
-            let resource = resource.inner();
-            // Runtime must be initialized in a Bevy context
-            let runtime = resource.lend(world, || R::into_runtime(resource.clone()));
-            runtime
-        });
+        let resource = world
+            .non_send_resource::<bjs::WorldResourceExt>()
+            .inner()
+            .clone();
+
+        let runtime = resource.lend(world, || R::into_runtime(resource.clone()));
 
         Self {
             runtime: Rc::new(RefCell::new(runtime)),
@@ -42,6 +42,7 @@ impl<R> JsRuntimeResource<R> {
     /// Executes a module on the [JsRuntime](bjs::JsRuntime)
     ///
     /// Module is executed by calling [JsRuntimeResource::poll_runtime]
+    #[allow(clippy::await_holding_refcell_ref)]
     pub fn execute_module(
         &self,
         specifier: bjs::ModuleSpecifier,
@@ -109,6 +110,15 @@ impl<R> JsRuntimeResource<R> {
     }
 }
 
+impl<R> Clone for JsRuntimeResource<R> {
+    fn clone(&self) -> Self {
+        Self {
+            runtime: self.runtime.clone(),
+            _phantom: self._phantom,
+        }
+    }
+}
+
 #[cfg(feature = "inspector")]
 impl<R> JsRuntimeResource<R> {
     /// Returns [InspectorInfo](bjs::inspector::InspectorInfo) necessary to
@@ -130,15 +140,14 @@ impl<R> JsRuntimeResource<R> {
 
 /// Drives a [JsRuntime] contained within a [JsRuntimeResource]
 pub fn drive_runtime<R: 'static>(world: &mut World) {
-    // TODO: Use World::resource_scope
-    let res = world
+    let resource = world
         .non_send_resource::<bjs::WorldResourceExt>()
         .inner()
         .clone();
 
-    world.resource_scope(|world, runtime: Mut<JsRuntimeResource<R>>| {
-        // Lend [World] reference to the resource and execute the Deno event loop
-        // within the scope
-        res.lend(world, || runtime.poll_runtime());
-    })
+    let runtime = world.non_send_resource::<JsRuntimeResource<R>>().clone();
+
+    // Lend [World] reference to the resource and execute the Deno event loop
+    // within the scope
+    resource.lend(world, || runtime.poll_runtime());
 }

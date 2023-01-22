@@ -27,5 +27,5 @@ pub fn op_asset_server_load(
         .get_resource::<AssetServer>()
         .ok_or_else(|| bjs::AnyError::msg("Could not get AssetServer resource from Bevy"))?;
 
-    Ok(asset_server.load_untyped(&path).id)
+    Ok(asset_server.load_untyped(path).id())
 }

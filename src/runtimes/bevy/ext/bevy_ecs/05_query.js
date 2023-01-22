@@ -31,9 +31,14 @@
     }
 
     static iter(worldResourceId, queryResourceId, callbackFn) {
-      ops.op_query_iter(worldResourceId, queryResourceId, (entity, args) =>
-        callbackFn(new Entity(worldResourceId, entity), args)
-      );
+      ops.op_query_iter(worldResourceId, queryResourceId, (entity, args) => {
+        const entity = new Entity(worldResourceId, entity);
+        entity.insert = core.ops.op_entity_delegated_insert_component.bind(
+          entity,
+          queryResourceId
+        );
+        callbackFn(entity, args);
+      });
     }
 
     drop() {

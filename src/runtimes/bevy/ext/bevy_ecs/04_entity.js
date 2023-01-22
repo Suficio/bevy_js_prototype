@@ -37,6 +37,7 @@
     }
   }
 
+  // TODO: Specialize on Rust side
   function recursiveInsert(worldResourceId, id, maybeBundle) {
     if (maybeBundle instanceof Bundle) {
       for (const component of Object.values(maybeBundle)) {

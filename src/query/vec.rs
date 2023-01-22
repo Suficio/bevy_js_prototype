@@ -3,7 +3,7 @@ use bevy::{
         archetype::{Archetype, ArchetypeComponentId},
         component::ComponentId,
         query::{Access, FilteredAccess, QueryItem, ReadOnlyWorldQuery, WorldQuery},
-        storage::Table,
+        storage::{Table, TableRow},
     },
     prelude::*,
 };
@@ -47,7 +47,7 @@ where
     }
 
     unsafe fn clone_fetch<'w>(fetch: &Self::Fetch<'w>) -> Self::Fetch<'w> {
-        fetch.into_iter().map(|item| T::clone_fetch(item)).collect()
+        fetch.iter().map(|item| T::clone_fetch(item)).collect()
     }
 
     #[inline]
@@ -73,7 +73,7 @@ where
     unsafe fn fetch<'w>(
         fetch: &mut Self::Fetch<'w>,
         entity: Entity,
-        table_row: usize,
+        table_row: TableRow,
     ) -> Self::Item<'w> {
         fetch
             .iter_mut()
@@ -82,14 +82,14 @@ where
     }
 
     #[inline]
-    unsafe fn filter_fetch<'w>(
-        fetch: &mut Self::Fetch<'w>,
+    unsafe fn filter_fetch(
+        fetch: &mut Self::Fetch<'_>,
         entity: Entity,
-        table_row: usize,
+        table_row: TableRow,
     ) -> bool {
-        fetch.iter_mut().fold(true, |fold, fetch| {
-            fold && T::filter_fetch(fetch, entity, table_row)
-        })
+        fetch
+            .iter_mut()
+            .all(|fetch| T::filter_fetch(fetch, entity, table_row))
     }
 
     fn update_component_access(state: &Self::State, access: &mut FilteredAccess<ComponentId>) {
@@ -116,8 +116,8 @@ where
         state: &Self::State,
         set_contains_id: &impl Fn(ComponentId) -> bool,
     ) -> bool {
-        state.iter().fold(true, |fold, state| {
-            fold && T::matches_component_set(state, set_contains_id)
-        })
+        state
+            .iter()
+            .all(|state| T::matches_component_set(state, set_contains_id))
     }
 }

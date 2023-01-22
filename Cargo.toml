@@ -22,13 +22,13 @@ members = ["crates/*"]
 # Bevy 0.9.0
 # TODO(https://github.com/bevyengine/bevy/pull/6240) QueryState::new_with_state
 # TODO(https://github.com/bevyengine/bevy/pull/5602) bevy_ecs: add untyped methods for inserting components and bundles
-bevy = { git = "https://github.com/Suficio/bevy.git", rev = "ba5e4b5efbefd7f7d1c20088224ee975016d0867" }
-deno_core = "0.160.0"
+bevy = { git = "https://github.com/Suficio/bevy.git", rev = "59b49f44fa13db5f2caf4b05ea158ed983847ebb" }
+deno_core = "0.165.0"
 
 [dependencies]
 bevy = { workspace = true }
 deno_core = { workspace = true }
-deno_console = "0.78.0"
+deno_console = "0.83.0"
 
 serde_path_to_error = "0.1"
 
