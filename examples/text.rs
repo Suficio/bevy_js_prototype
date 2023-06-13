@@ -5,11 +5,11 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_plugin(bjs::JsPlugin::<BevyRuntime>::default())
-        .add_startup_system(|mut commands: Commands| {
+        .add_systems(Startup, |mut commands: Commands| {
             // UI camera
             commands.spawn(Camera2dBundle::default());
         })
-        .add_startup_system(setup_runtime)
+        .add_systems(Startup, setup_runtime)
         .run();
 }
 

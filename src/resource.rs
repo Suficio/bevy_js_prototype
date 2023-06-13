@@ -11,12 +11,16 @@ pub struct JsRuntimeResource<R> {
 
 impl<R: bjs::IntoRuntime> FromWorld for JsRuntimeResource<R> {
     fn from_world(world: &mut World) -> Self {
-        let runtime = world.resource_scope(|world, resource: Mut<bjs::WorldResourceExt>| {
-            let resource = resource.inner();
-            // Runtime must be initialized in a Bevy context
-            let runtime = resource.lend(world, || R::into_runtime(resource.clone()));
-            runtime
-        });
+        let runtime = unsafe {
+            let world_cell = world.as_unsafe_world_cell();
+
+            let resource = world_cell
+                .get_non_send_resource::<bjs::WorldResourceExt>()
+                .expect("Requested non-send resource bevy_js::WorldResourceExt does not exist in the `World`.")
+                .inner();
+
+            resource.lend(world_cell.world_mut(), || R::into_runtime(resource.clone()))
+        };
 
         Self {
             runtime: Rc::new(RefCell::new(runtime)),
@@ -130,15 +134,20 @@ impl<R> JsRuntimeResource<R> {
 
 /// Drives a [JsRuntime] contained within a [JsRuntimeResource]
 pub fn drive_runtime<R: 'static>(world: &mut World) {
-    // TODO: Use World::resource_scope
-    let res = world
-        .non_send_resource::<bjs::WorldResourceExt>()
-        .inner()
-        .clone();
+    unsafe {
+        let world_cell = world.as_unsafe_world_cell();
 
-    world.resource_scope(|world, runtime: Mut<JsRuntimeResource<R>>| {
-        // Lend [World] reference to the resource and execute the Deno event loop
-        // within the scope
-        res.lend(world, || runtime.poll_runtime());
-    })
+        let resource = world_cell
+            .get_non_send_resource::<bjs::WorldResourceExt>()
+            .expect("Requested non-send resource bevy_js::WorldResourceExt does not exist in the `World`.")
+            .inner();
+
+        let runtime = world_cell
+            .get_non_send_resource_mut::<bjs::JsRuntimeResource<R>>()
+            .expect(
+            "Requested non-send resource bevy_js::WorldResourceExt does not exist in the `World`.",
+        );
+
+        resource.lend(world_cell.world_mut(), || runtime.poll_runtime())
+    }
 }

@@ -57,14 +57,15 @@ pub fn op_query_initialize(
         let type_id = keys::unwrap_type_id(scope, key_cache, constructor.into()).unwrap();
         let reflect_from_ptr = registry.get_type_data::<ReflectFromPtr>(type_id).unwrap();
 
-        let component_id = keys::unwrap_component_id(scope, &world, key_cache, constructor.into())
-            .ok_or_else(|| {
-                bjs::AnyError::msg(
-                    "Object must define `componentId` field and it must be an `ArrayBuffer`.
+        let component_id =
+            keys::unwrap_component_id(scope, world.components(), key_cache, constructor.into())
+                .ok_or_else(|| {
+                    bjs::AnyError::msg(
+                        "Object must define `componentId` field and it must be an `ArrayBuffer`.
                 Component may not have been initialized with `World::init_component`."
-                        .to_string(),
-                )
-            })?;
+                            .to_string(),
+                    )
+                })?;
 
         constructors.push((reflect_from_ptr.clone(), v8::Weak::new(scope, constructor)));
         fetch_parameters.push(component_id);

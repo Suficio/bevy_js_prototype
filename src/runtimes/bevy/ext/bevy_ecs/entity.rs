@@ -71,33 +71,36 @@ pub fn op_entity_insert_component<'a>(
                     ))
                 })?;
 
-            component_impl.apply_or_insert(&mut world, entity, component.as_reflect());
+            component_impl.apply_or_insert(&mut world.entity_mut(entity), component.as_reflect());
         }
         None => {
-            // If TypeId is not available, the component does not originate
-            // from Rust and is dynamic.
-            //
-            // Since we are inserting the component then it may not yet be
-            // registered.
-            let bundle_id = match keys::unwrap_bundle_id(scope, key_cache, constructor) {
-                Some(bundle_id) => bundle_id,
+            let component_id = match keys::unwrap_component_id(
+                scope,
+                world.components(),
+                key_cache,
+                constructor,
+            ) {
+                Some(component_id) => component_id,
                 None => {
+                    // Since we are inserting the component then it may not yet be
+                    // registered.
                     let descriptor = ComponentDescriptor::new::<ComponentExt>();
                     // [init_component_with_descriptor] avoids allocating a
                     // [Component] with an associated [TypeId].
                     let component_id = world.init_component_with_descriptor(descriptor);
                     keys::update_component_id(scope, key_cache, constructor, component_id);
 
-                    let bundle_id = world.init_dynamic_bundle(vec![component_id]).id();
-                    keys::update_bundle_id(scope, key_cache, constructor, bundle_id);
-
-                    bundle_id
+                    component_id
                 }
             };
 
             let component = ComponentExt(v8::Global::new(scope, component));
             OwningPtr::make(component, |component| {
-                unsafe { world.entity_mut(entity).insert_by_id(bundle_id, component) };
+                unsafe {
+                    world
+                        .entity_mut(entity)
+                        .insert_by_id(component_id, component)
+                };
             });
         }
     };
@@ -124,6 +127,7 @@ pub fn op_entity_get_component<'a>(
     let constructor = keys::unwrap_function(constructor.v8_value)?;
 
     let entity = bytes_to_entity(entity_id.as_ref());
+    let entity_ref = world.entity(entity);
 
     // TypeId may not be available for dynamically registered components
     // need to fallback to `ComponentId` implementation
@@ -144,7 +148,7 @@ pub fn op_entity_get_component<'a>(
 
             // Check if component exists
             let Some(component) = component_impl
-                .reflect(&world, entity) else {
+                .reflect(entity_ref) else {
                     return Ok(v8::Local::<v8::Value>::from(v8::null(scope)).into())
                 };
 
@@ -154,8 +158,8 @@ pub fn op_entity_get_component<'a>(
         // from Rust and is dynamic.
         None => {
             // Check if component exists
-            let Some(component) = keys::unwrap_component_id(scope, &world, key_cache, constructor.into())
-                .and_then(|component_id| world.entity(entity).get_by_id(component_id)) else {
+            let Some(component) = keys::unwrap_component_id(scope, world.components(), key_cache, constructor.into())
+                .and_then(|component_id| entity_ref.get_by_id(component_id)) else {
                     return Ok(v8::Local::<v8::Value>::from(v8::null(scope)).into())
                 };
 

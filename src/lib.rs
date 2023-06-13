@@ -54,7 +54,7 @@ pub fn register_runtime<R: IntoRuntime + 'static>(app: &mut App) {
     }
 
     app.init_non_send_resource::<JsRuntimeResource<R>>()
-        .add_system(drive_runtime::<R>);
+        .add_systems(Update, drive_runtime::<R>);
 }
 
 /// Provides a shorthand to register a runtime [R] and drive it

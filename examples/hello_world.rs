@@ -6,7 +6,7 @@ fn main() {
         .add_plugins(MinimalPlugins)
         .add_plugin(LogPlugin::default())
         .add_plugin(bjs::JsPlugin::<BevyRuntime>::default())
-        .add_startup_system(setup_runtime)
+        .add_systems(Startup, setup_runtime)
         .run();
 }
 

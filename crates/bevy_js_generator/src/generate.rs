@@ -7,7 +7,7 @@ use crate::{
 use bevy::{
     prelude::*,
     reflect::{
-        serde::TypedReflectSerializer, Array, ReflectRef, TypeInfo, TypeRegistration,
+        serde::TypedReflectSerializer, ReflectRef, TypeInfo, TypeRegistration,
         TypeRegistryInternal, VariantField, VariantInfo, VariantType,
     },
 };
@@ -15,16 +15,16 @@ use deno_core::serde::Serialize;
 use std::fmt::Write as _;
 
 /// Shorthand to generate type initialization for array types
-fn generate_array_type_init<A>(
+fn generate_array_type_init<'a, A>(
     o: &mut String,
     type_registry: &TypeRegistryInternal,
     module: &mut Module,
-    array: &A,
+    array: A,
 ) where
-    A: Array + ?Sized,
+    A: Iterator<Item = &'a dyn Reflect>,
 {
     write!(o, r#"["#).unwrap();
-    for e in array.iter() {
+    for e in array {
         write!(
             o,
             r#"{},"#,
@@ -44,10 +44,11 @@ fn generate_type_init(
 ) -> String {
     let mut o = String::new();
 
-    let registration = match type_registry.get(reflect.get_type_info().type_id()) {
-        Some(r) => r,
-        None => return "null".to_string(),
-    };
+    let registration =
+        match type_registry.get(reflect.get_represented_type_info().unwrap().type_id()) {
+            Some(r) => r,
+            None => return "null".to_string(),
+        };
 
     let (short_name, _) = strip_generics(registration.short_name());
     let (type_name, _generics) = strip_generics(registration.type_name());
@@ -84,24 +85,11 @@ fn generate_type_init(
             }
         }
         ReflectRef::TupleStruct(t) => {
-            write!(&mut o, r#"["#).unwrap();
-            for field in t.iter_fields() {
-                write!(
-                    &mut o,
-                    r#"{},"#,
-                    generate_type_init(type_registry, module, field, true)
-                )
-                .unwrap();
-            }
-            write!(&mut o, r#"]"#).unwrap();
+            generate_array_type_init(&mut o, type_registry, module, t.iter_fields())
         }
         ReflectRef::Tuple(_) => unimplemented!(),
-        ReflectRef::List(l) => {
-            generate_array_type_init(&mut o, type_registry, module, l);
-        }
-        ReflectRef::Array(a) => {
-            generate_array_type_init(&mut o, type_registry, module, a);
-        }
+        ReflectRef::List(l) => generate_array_type_init(&mut o, type_registry, module, l.iter()),
+        ReflectRef::Array(a) => generate_array_type_init(&mut o, type_registry, module, a.iter()),
         ReflectRef::Map(_) => unimplemented!(),
         ReflectRef::Value(v) => {
             let mut json_ser = serde_json::Serializer::new(unsafe { o.as_mut_vec() });
@@ -137,23 +125,15 @@ fn generate_type_init(
                     write!(&mut o, r#"}}"#).unwrap();
                 }
                 VariantType::Tuple => {
-                    write!(&mut o, r#"["#).unwrap();
-
-                    for field in e.iter_fields() {
-                        match field {
-                            VariantField::Tuple(value) => {
-                                write!(
-                                    &mut o,
-                                    r#"{},"#,
-                                    generate_type_init(type_registry, module, value, true)
-                                )
-                                .unwrap();
-                            }
-                            VariantField::Struct(_, _) => unreachable!(),
-                        }
-                    }
-
-                    write!(&mut o, r#"]"#).unwrap();
+                    generate_array_type_init(
+                        &mut o,
+                        type_registry,
+                        module,
+                        e.iter_fields().filter_map(|field| match field {
+                            VariantField::Tuple(value) => Some(value),
+                            _ => None,
+                        }),
+                    );
                 }
                 VariantType::Unit => {}
             }
@@ -314,7 +294,6 @@ pub fn generate_type(
         TypeInfo::Array(_) => unimplemented!(),
         TypeInfo::Map(_) => unimplemented!(),
         TypeInfo::Value(_) => {}
-        TypeInfo::Dynamic(_) => unimplemented!(),
         TypeInfo::Enum(e) => {
             for variant in e.iter() {
                 let name = variant.name();

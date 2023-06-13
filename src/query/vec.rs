@@ -1,9 +1,9 @@
 use bevy::{
     ecs::{
         archetype::{Archetype, ArchetypeComponentId},
-        component::ComponentId,
+        component::{ComponentId, Tick},
         query::{Access, FilteredAccess, QueryItem, ReadOnlyWorldQuery, WorldQuery},
-        storage::Table,
+        storage::{Table, TableRow},
     },
     prelude::*,
 };
@@ -37,12 +37,12 @@ where
     unsafe fn init_fetch<'w>(
         world: &'w World,
         state: &Vec<T::State>,
-        last_change_tick: u32,
-        change_tick: u32,
+        last_run: Tick,
+        this_run: Tick,
     ) -> Self::Fetch<'w> {
         state
             .iter()
-            .map(|state| T::init_fetch(world, state, last_change_tick, change_tick))
+            .map(|state| T::init_fetch(world, state, last_run, this_run))
             .collect()
     }
 
@@ -73,7 +73,7 @@ where
     unsafe fn fetch<'w>(
         fetch: &mut Self::Fetch<'w>,
         entity: Entity,
-        table_row: usize,
+        table_row: TableRow,
     ) -> Self::Item<'w> {
         fetch
             .iter_mut()
@@ -85,7 +85,7 @@ where
     unsafe fn filter_fetch<'w>(
         fetch: &mut Self::Fetch<'w>,
         entity: Entity,
-        table_row: usize,
+        table_row: TableRow,
     ) -> bool {
         fetch.iter_mut().fold(true, |fold, fetch| {
             fold && T::filter_fetch(fetch, entity, table_row)

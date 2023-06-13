@@ -1,9 +1,9 @@
 use bevy::{
     ecs::{
         archetype::{Archetype, ArchetypeComponentId},
-        component::{ComponentId, StorageType},
+        component::{ComponentId, StorageType, Tick},
         query::{Access, FilteredAccess, ReadOnlyWorldQuery, WorldQuery},
-        storage::{ComponentSparseSet, Table},
+        storage::{ComponentSparseSet, Table, TableRow},
     },
     prelude::*,
     ptr::Ptr,
@@ -33,11 +33,14 @@ unsafe impl WorldQuery for ComponentPtr {
         item
     }
 
+    const IS_DENSE: bool = false;
+    const IS_ARCHETYPAL: bool = true;
+
     unsafe fn init_fetch<'w>(
         world: &'w World,
         &component_id: &ComponentId,
-        _last_change_tick: u32,
-        _change_tick: u32,
+        _last_run: Tick,
+        _this_run: Tick,
     ) -> ReadFetchSparse<'w> {
         let component_info = world.components().get_info(component_id).unwrap();
         let storage_type = component_info.storage_type();
@@ -61,9 +64,6 @@ unsafe impl WorldQuery for ComponentPtr {
             sparse_set: fetch.sparse_set,
         }
     }
-
-    const IS_DENSE: bool = false;
-    const IS_ARCHETYPAL: bool = true;
 
     #[inline]
     unsafe fn set_archetype<'w>(
@@ -90,13 +90,13 @@ unsafe impl WorldQuery for ComponentPtr {
     unsafe fn fetch<'w>(
         fetch: &mut Self::Fetch<'w>,
         entity: Entity,
-        table_row: usize,
+        table_row: TableRow,
     ) -> Self::Item<'w> {
         match fetch.storage_type {
             StorageType::Table => fetch
                 .table_components
                 .debug_checked_unwrap()
-                .byte_add(table_row * fetch.component_size),
+                .byte_add(table_row.index() * fetch.component_size),
             StorageType::SparseSet => fetch
                 .sparse_set
                 .debug_checked_unwrap()
